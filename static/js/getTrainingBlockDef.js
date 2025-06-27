@@ -1,6 +1,10 @@
-const getTrainingBlockDef = function getTrainingBlockDef() {
-  // Fixed reward probabilities for each action
-  const fixedRewardProbs = { A1: 0.8, A2: 0.2, A3: 0.5, A4: 0.1 };
+const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
+
+  // Unpack key design variables
+  const rewardProbs = designVars["reward_probabilities"];
+  const nReps = designVars["n_repetitions"];
+  const hFactor = designVars["h_factor"];
+  const nForcedReps = designVars["n_forced_reps"]
 
   // Latin square–based 8 sets of action–key mappings
   const actionKeyMappings = [
@@ -24,8 +28,8 @@ const getTrainingBlockDef = function getTrainingBlockDef() {
 
     return pairOrder.map(pair => {
       const targets = (conditionLabel === "Condition 1")
-        ? generateTargetsForCondition1(pair, fixedRewardProbs) // Unequal target counts
-        : { [pair[0]]: 20, [pair[1]]: 20 }; // Equal target counts
+        ? generateTargetsForCondition1(pair, rewardProbs) // Unequal target counts
+        : { [pair[0]]: nReps, [pair[1]]: nReps }; // Equal target counts
 
       return { subset: pair, targets };
     });
@@ -35,8 +39,8 @@ const getTrainingBlockDef = function getTrainingBlockDef() {
   function generateTargetsForCondition1(subset, rewardProbs) {
     const sorted = [...subset].sort((a, b) => rewardProbs[a] - rewardProbs[b]); // Sort by reward prob
     return {
-      [sorted[0]]: 24, // Action with lower reward gets more trials
-      [sorted[1]]: 16  // Action with higher reward gets fewer trials
+      [sorted[0]]: nReps * hFactor, // Action with lower reward gets more trials
+      [sorted[1]]: nReps  // Action with higher reward gets fewer trials
     };
   }
 
@@ -52,11 +56,16 @@ const getTrainingBlockDef = function getTrainingBlockDef() {
       const subblocks = createSubblocks(["A1", "A2", "A3", "A4"], condition);
 
       // 5 times forced choice for each action in this block
-      const forcedTarget = {'A1':5, 'A2':5, 'A3':5, 'A4':5, };
+      const forcedTarget = {
+        'A1': nForcedReps, 
+        'A2': nForcedReps, 
+        'A3': nForcedReps, 
+        'A4': nForcedReps, 
+      };
 
       blocks.push({
         label: condition,
-        rewardProbs: fixedRewardProbs,
+        rewardProbs: rewardProbs,
         keyMapping: keyMap,
         subblocks: subblocks,
         forcedTarget: forcedTarget

@@ -1,0 +1,6 @@
+{
+    "reward_probabilities": {"A1": 0.8, "A2": 0.2, "A3": 0.5, "A4": 0.1},
+    "n_repetitions": 4,
+    "h_factor": 1.5,
+    "n_forced_reps": 1
+}
