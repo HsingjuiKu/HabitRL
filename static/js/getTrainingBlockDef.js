@@ -4,7 +4,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const rewardProbs = designVars["reward_probabilities"];
   const nReps = designVars["n_repetitions"];
   const hFactor = designVars["h_factor"];
-  const nForcedReps = designVars["n_forced_reps"]
+  const nForcedReps = 1
 
   // Latin square–based 8 sets of action–key mappings
   const actionKeyMappings = [
@@ -18,32 +18,6 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     { A1: "j", A2: "g", A3: "h", A4: "f" }
   ];
 
-  // Generate two subblocks (each consisting of two actions) and assign target counts
-  function createSubblocks(actions, conditionLabel) {
-    const shuffled = jsPsych.randomization.shuffle(actions); // Shuffle the 4 actions
-    const pair1 = [shuffled[0], shuffled[1]]; // First pair
-    const pair2 = [shuffled[2], shuffled[3]]; // Second pair
-
-    const pairOrder = jsPsych.randomization.shuffle([pair1, pair2]); // Shuffle the pair order
-
-    return pairOrder.map(pair => {
-      const targets = (conditionLabel === "Condition 1")
-        ? generateTargetsForCondition1(pair, rewardProbs) // Unequal target counts
-        : { [pair[0]]: nReps, [pair[1]]: nReps }; // Equal target counts
-
-      return { subset: pair, targets };
-    });
-  }
-
-  // For Condition 1: lower reward probability → more trials
-  function generateTargetsForCondition1(subset, rewardProbs) {
-    const sorted = [...subset].sort((a, b) => rewardProbs[a] - rewardProbs[b]); // Sort by reward prob
-    return {
-      [sorted[0]]: nReps * hFactor, // Action with lower reward gets more trials
-      [sorted[1]]: nReps  // Action with higher reward gets fewer trials
-    };
-  }
-
   // Build the full set of 8 training blocks
   function buildAllBlocks() {
     const blocks = [];
@@ -52,23 +26,43 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       const isCond1 = i < 4; // First 4 are Condition 1, last 4 are Condition 2
       const condition = isCond1 ? "Condition 1" : "Condition 2";
       const keyMap = actionKeyMappings[i]; // Select corresponding action–key mapping
-
-      const subblocks = createSubblocks(["A1", "A2", "A3", "A4"], condition);
-
-      // 5 times forced choice for each action in this block
-      const forcedTarget = {
-        'A1': nForcedReps, 
-        'A2': nForcedReps, 
-        'A3': nForcedReps, 
-        'A4': nForcedReps, 
-      };
+      const subBlockOrder = i % 2 == 0 ? "A12A34" : "A34A12"  // Alternate order of sub-blocks
+      
+      if (condition == "Condition 1"){
+        if (subBlockOrder == "A12A34"){
+          subblocks = [
+            {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}},
+            {subset: ['A3', 'A4'], targets: {'A3': nReps, 'A4': 0}}
+          ];
+        }
+        else {
+          subblocks = [
+            {subset: ['A3', 'A4'], targets: {'A3': nReps, 'A4': 0}},
+            {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}}
+          ];
+        }
+      }
+      else {
+        if (subBlockOrder == "A12A34"){
+          subblocks = [
+            {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}},
+            {subset: ['A3', 'A4'], targets: {'A3': nReps * hFactor, 'A4': 0}}
+          ];
+        }
+        else {
+          subblocks = [
+            {subset: ['A3', 'A4'], targets: {'A3': nReps * hFactor, 'A4': 0}},
+            {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}}
+          ];
+        }
+      }
 
       blocks.push({
         label: condition,
         rewardProbs: rewardProbs,
         keyMapping: keyMap,
         subblocks: subblocks,
-        forcedTarget: forcedTarget
+        nForcedReps: nForcedReps
       });
     }
 

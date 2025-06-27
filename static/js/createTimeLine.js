@@ -1,4 +1,5 @@
 const createTimeLine = function createTimeLine(imageList, designVars){
+  const actions = ["A1", "A2", "A3", "A4"]
 	
 	// preload images
 	const preload = {
@@ -87,9 +88,8 @@ const createTimeLine = function createTimeLine(imageList, designVars){
 
     // Forced-choice trials: each action shown a number of times
     let forcedTrials = [];
-    const forcedList = jsPsych.randomization.shuffle(
-      Object.entries(blockDef.forcedTarget).flatMap(([a, n]) => Array(n).fill(a))
-    );
+    shuffledActions = jsPsych.randomization.shuffle(actions)
+    const forcedList = [].concat(...shuffledActions.map(a => Array(blockDef.nForcedReps).fill(a)));
 
     forcedList.forEach(actionLabel => {
       const key = actionKeyMap[actionLabel];
