@@ -1,110 +1,145 @@
-# 🎮 jsPsych 实验说明文档
+# README
 
-## ⭐ 简单体验
+## Contents
 
-使用浏览器打开 index.html 即可体验整个实验流程，需要用户在桌面端进行，建议使用 Chrome 或 Firefox 等浏览器。
-
-## 📁 目录
-
-- [一、实验简介](#一实验简介)
-- [二、实验流程](#二实验流程)
-- [三、操作步骤](#三操作步骤)
-- [四、实验数据保存](#四实验数据保存)
-- [五、实验特点](#五实验特点)
-- [六、自定义与修改](#六自定义与修改)
+- [Overview](#overview)
+- [1. How to Run the Experiment](#1-how-to-run-the-experiment)
+- [2. Project Structure and Flow](#2-project-structure-and-flow)
+- [3. Paradigm Design Details](#3-paradigm-design-details)
+- [4. How to Customize](#4-how-to-customize)
+- [5. Notes](#5-notes)
+- [Contact](#contact)
 
 ---
 
-## 一、实验简介
+## Overview
 
-本实验基于 jsPsych （v8.2.1），采用动作-奖励学习偏子范式，探索在不同奖励结构下，参与者的选择行为。
+This project implements a full browser-based cognitive experiment using **jsPsych v8**. It includes training and testing phases with dynamic stimulus display, response tracking, reward mechanisms, and tab-switch monitoring.
 
-设计包含两个条件：
-
-- 条件 1：某一反应的奖励概率较低，但被选择的频率较高；
-- 条件 2：两种反应的选择频率相同，但其中一种的奖励概率较高。 
-
-所有段落分模块组织，方便扩展和维护。
+You can launch the experiment locally by serving the files with a simple HTTP server.
 
 ---
 
-## 二、实验流程
+## 1. How to Run the Experiment
 
-1. **全屏启动和被试信息采集**
-2. **条件 1 训练**：包括强制选择 + sub-blocks
-3. **条件 1 测试**：无反馈，其中每个动作重复 4 次
-4. **条件 2 训练**
-5. **条件 2 测试**
-6. **实验结束和数据下载**
+### Prerequisites
 
----
+Modern browser (preferably Chrome).
 
-## 三、操作步骤
+### Running Locally
 
-1. 打开 `index.html`
-2. 填写被试信息：编号/姓名/性别/年龄/手机/学历
-3. 阅读实验指导说明
-4. 按回车进入训练阶段
-5. 通过按键（F/G/H/J）选择动作，接收奖励或 0
-6. 测试阶段不提供反馈
-7. 结束后自动下载数据 CSV 文件
+Due to browser security restrictions (e.g., CORS), you must run this project on a local server.
 
----
+#### Using Python (recommended)
 
-## 四、实验数据保存
+Navigate to the project folder and run:
 
-- 自动生成 CSV 文件
-- 格式：`被试编号-日期.csv`
-- 包括：每个 trial 的 action / reward / key / phase / 条件 等字段
-
----
-
-## 五、实验特点
-
-| 特点        | 描述                          |
-| --------- | --------------------------- |
-| 🔍 数据跟踪   | 接入反应、奖励结果、动作等               |
-| 👁 全屏     | 开始入全屏，结束退出，避免干扰             |
-| ☕ 模块化     | 各段落独立包装，方便扩展                |
-| 🌟 按键映射   | 自动打乱动作-按键映射关系               |
-| ⏱ 转换控制    | sub-blocks 自动 loop，直到达到选择次数 |
-| 📄 本地数据保存 | 以被试编号命名，日期形式                |
-
----
-
-## 六、自定义与修改
-
-### 1. 修改每个动作重复次数
-
-测试阶段中，可修改:
-
-```js
-[].concat(...actions.map(a => Array(4).fill(a)))
+```bash
+# For Python 3.x
+python -m http.server 8000
 ```
 
-将 4 改成其他值即可
+Then open the experiment in your browser at:
 
-### 2. 修改奖励概率
-
-
-```js
-const rewardProbs_cond1 = { A1: 0.2, A2: 0.8, A3: 0.1, A4: 0.5 };
-const rewardProbs_cond2 = { A1: 0.6, A2: 0.4, A3: 0.6, A4: 0.4 };
+```
+http://localhost:8000/index.html
 ```
 
-### 3. 启用或关闭某一段
-
-在 timeline 中，按需添加或注释:
-
-```js
-timeline.push(...c1trainblock);
-//timeline.push(...c1testblock);
-//timeline.push(...c2trainblock);
-//timeline.push(...c2testblock);
-```
+You can also use other local server tools such as Node.js, Live Server (VSCode), or `http-server`.
 
 ---
 
+## 2. Project Structure and Flow
 
-📧 如需帮助或反馈，请联系开发者。
+### Key Files and Modules
 
+
+| File/Folder                        | Purpose                                                         |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `index.html`                       | Entry point that loads all scripts and initiates the experiment |
+| `static/js/createTimeLine.js`      | Generates the jsPsych timeline, handles all experiment phases   |
+| `static/js/getTrainingBlockDef.js` | Defines how the training blocks are constructed                 |
+| `static/js/generateStimulus.js`    | Defines the HTML used to render each stimulus                   |
+| `static/js/endExperimentNow.js`    | Define the function to terminate the experiment early           |
+| `static/images/`                   | Folder storing stimulus images                                  |
+| `static/images/images.json`        | JSON array listing all image filenames to preload               |
+
+### Flow
+
+1. Images are loaded from `images.json`
+2. Timeline is generated using `createTimeLine(imageList)`
+3. The timeline includes:
+   - Fullscreen and survey intro
+   - 8 training blocks (4 per condition)
+   - Test block
+   - Final save + exit
+
+### Data Saving
+
+At the end, participant data is saved as a CSV file named by ID and date, e.g., `101-20250617.csv`
+
+---
+
+## 3. Paradigm Design Details
+
+### General
+
+- **Actions**: A1, A2, A3, A4
+- **Keys**: f, g, h, j (varied via Latin square)
+- **Reward Probabilities**:
+  - A1: 0.8, A2: 0.2, A3: 0.5, A4: 0.1
+
+### Training Phase
+
+- 8 blocks total
+  - 4 blocks: **Condition 1** (low-reward actions require more trials)
+  - 4 blocks: **Condition 2** (equal trials per action)
+- Each block includes:
+  - Forced-choice trials (each action shown 5 times)
+  - Two sub-blocks of free choice with action pairings
+- Sub-block order and pairings are pseudo-random
+
+### Test Phase
+
+- Each trained image shown multiple times
+- Free choice between all actions
+- No feedback is given
+
+---
+
+## 4. How to Customize
+
+### Customize Block Design
+
+Search for `REPLACEME` in the source code (e.g., in `getTrainingBlockDef.js`) to find where to modify:
+
+- Reward probabilities
+- Action-key mappings
+- Sub-block structure
+
+### Customize Stimulus Display
+
+Edit `generateStimulus.js` to:
+
+- Change image presentation
+- Highlight available keys
+- Adjust styles or layout
+
+### Add More Images
+
+1. Add images to `static/images/`
+2. Update `images.json` with new filenames
+
+---
+
+## 5. Notes
+
+- The experiment will automatically exit if the participant switches tabs more than 3 times.
+- The cursor is hidden during the task.
+- Works only in fullscreen mode for best participant control.
+
+---
+
+## Contact
+
+For questions or collaboration, contact the project maintainer.

@@ -1,26 +1,29 @@
 const createTimeLine = function createTimeLine(imageList){
+    // This script defines the full timeline for a jsPsych experiment involving training and test phases,
+    // with reward-based decision-making and enforced attention monitoring.
+    // The function takes a list of image file names (imageList), sets up preload, fullscreen, survey, training blocks,
+    // and testing blocks, then returns the full timeline to be passed into jsPsych.run().
+
     const actions = ["A1", "A2", "A3", "A4"];
     const keys = ["f", "g", "h", "j"];
-	
-	// preload images
-	const preload = {
-	  type: jsPsychPreload,
-	  images: imageList.map(img => `static/images/${img}`)
-	};
-	
-    // Monitor tab visibility change to track if participant leaves the task window
+
+    // Preload all image stimuli
+    const preload = {
+      type: jsPsychPreload,
+      images: imageList.map(img => `static/images/${img}`)
+    };
+
+    // Monitor tab visibility and abort experiment if participant leaves the page too many times
     let num_tab_switches = 0;
     document.addEventListener("visibilitychange",()=>{
       if (document.visibilityState === "hidden"){
         if (num_tab_switches >= 3) { 
-          // Abort experiment if participant left the page more than 3 times
           console.log('Ending exp because they left too many times');
           setTimeout(function(){
             jsPsych.finishTrial();
             jsPsych.abortExperiment('The task has ended. Thank you for your participation.');
           });
         } else {
-          // Warn participant if they have left but not yet exceeded the threshold
           num_tab_switches += 1; 
           console.log(`Num switches: ${num_tab_switches}`);
           alert(`Please stay on the task page! You have left ${num_tab_switches} time(s).`)
@@ -30,7 +33,7 @@ const createTimeLine = function createTimeLine(imageList){
 
     let timeline = [];
 
-    // Fullscreen entry prompt with instructions
+    // Fullscreen mode prompt with instructions
     const fullscreen = {
       type: jsPsychFullscreen,
       fullscreen_mode: true,
@@ -40,7 +43,7 @@ const createTimeLine = function createTimeLine(imageList){
       delay_after: 100
     };
 
-    // Collect demographic information using a survey form
+    // Participant demographic survey
     const survey = {
       type: jsPsychSurvey,
       survey_json: {
@@ -61,7 +64,7 @@ const createTimeLine = function createTimeLine(imageList){
       }
     };
 
-    // Welcome screen before experiment starts; hides cursor
+    // Welcome screen, hides cursor
     const introduction = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: '<h2>Welcome to the experiment</h2><p>Please follow the instructions on screen.</p><p>Press Enter to begin</p>',
@@ -74,20 +77,19 @@ const createTimeLine = function createTimeLine(imageList){
       }
     };
 
-    // Function to create one full training block, including forced-choice trials and free-choice subblocks
+    // Create one training block from definition
     function createTrainingBlock(blockDef) {
       const rewardProbs = blockDef.rewardProbs;
       const blockTimeline = [];
       const actionKeyMap = blockDef.keyMapping;
 
-      // Display condition label at block start
       blockTimeline.push({
         type: jsPsychHtmlKeyboardResponse,
         stimulus: `<h3>${blockDef.label}</h3><p>Beginning forced-choice phase.</p><p>Press ENTER to continue</p>`,
         choices: ["Enter"]
       });
 
-      // Forced-choice trials: each action shown a number of times
+      // Forced-choice phase
       let forcedTrials = [];
       const forcedList = jsPsych.randomization.shuffle(
         Object.entries(blockDef.forcedTarget).flatMap(([a, n]) => Array(n).fill(a))
@@ -117,7 +119,7 @@ const createTimeLine = function createTimeLine(imageList){
       });
       blockTimeline.push(...forcedTrials);
 
-      // Loop over sub-blocks within the block
+      // Sub-blocks (free-choice trials)
       blockDef.subblocks.forEach(sub => {
         const currentSubset = sub.subset;
         const allowedKeys = currentSubset.map(a => actionKeyMap[a]);
@@ -155,10 +157,10 @@ const createTimeLine = function createTimeLine(imageList){
       return blockTimeline;
     }
 
-    // Test phase: free response with no feedback
+    // Test phase: free-choice with no feedback, each image shown 4 times
 	const testBlock = (label) => {
 	  const testTrials = jsPsych.randomization.shuffle(
-		[].concat(...imageList.map(img => Array(4).fill(img))) // repeat each image 4 times
+		[].concat(...imageList.map(img => Array(4).fill(img)))
 	  );
 
 	  const block = [
@@ -179,7 +181,7 @@ const createTimeLine = function createTimeLine(imageList){
 		  },
 		  {
 			type: jsPsychHtmlKeyboardResponse,
-			stimulus: () => generateStimulus(`static/images/${imageFile}`, keys), // ✅ 用图片名生成stimulus
+			stimulus: () => generateStimulus(`static/images/${imageFile}`, keys),
 			choices: keys,
 			trial_duration: 1500,
 			on_finish: d => {
@@ -193,12 +195,10 @@ const createTimeLine = function createTimeLine(imageList){
 	  return block;
 	};
 
-
-    // Generate training and test blocks
+    // Define and push all experiment phases
     const allTrainingBlocksDef = getTrainingBlockDef();
     const testblock = testBlock("Test Phase");
 
-    // Final trial showing thank-you message and saving data
     const lastTrial = {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: '<h3>Experiment Complete</h3><p>Thank you for your participation!</p><p>Press ENTER to finish</p>',
@@ -211,7 +211,7 @@ const createTimeLine = function createTimeLine(imageList){
       trial_duration: 5000
     };
 
-    // Exit fullscreen and show mouse cursor again
+    // Exit fullscreen mode and show cursor
     const exitFullscreen = {
       type: jsPsychFullscreen,
       fullscreen_mode: false,
@@ -223,7 +223,7 @@ const createTimeLine = function createTimeLine(imageList){
       }
     };
 
-    // Push all phases into the timeline in correct order
+    // Construct the final timeline in proper order
 	timeline.push(preload);
     timeline.push(fullscreen);
     timeline.push(survey);
@@ -235,6 +235,6 @@ const createTimeLine = function createTimeLine(imageList){
     timeline.push(...testblock);
     timeline.push(lastTrial);
     timeline.push(exitFullscreen);
-	
+
 	return timeline;
 }

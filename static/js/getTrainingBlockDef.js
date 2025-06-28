@@ -1,8 +1,15 @@
+// Use "Ctrl+ 'F'", search for "REPLACEME" in this file to customize your own block definitions
 const getTrainingBlockDef = function getTrainingBlockDef() {
-  // Fixed reward probabilities for each action
+  // This function defines the structure of 8 training blocks used in the experiment.
+  // Each block includes reward probabilities for four actions (A1–A4), a specific key mapping (from a Latin square),
+  // and two subblocks that determine which pairs of actions are presented together. Condition 1 adjusts trial targets
+  // based on reward probabilities (lower reward = more trials), while Condition 2 keeps targets equal.
+  
+
+  // REPLACEME:Fixed reward probabilities for each action 
   const fixedRewardProbs = { A1: 0.8, A2: 0.2, A3: 0.5, A4: 0.1 };
 
-  // Latin square–based 8 sets of action–key mappings
+  // REPLACEME:Latin square–based 8 sets of action–key mappings
   const actionKeyMappings = [
     { A1: "f", A2: "g", A3: "h", A4: "j" },
     { A1: "g", A2: "f", A3: "j", A4: "h" },
@@ -14,7 +21,7 @@ const getTrainingBlockDef = function getTrainingBlockDef() {
     { A1: "j", A2: "g", A3: "h", A4: "f" }
   ];
 
-  // Generate two subblocks (each consisting of two actions) and assign target counts
+  // Create two subblocks from four actions; each subblock includes two actions and trial targets
   function createSubblocks(actions, conditionLabel) {
     const shuffled = jsPsych.randomization.shuffle(actions); // Shuffle the 4 actions
     const pair1 = [shuffled[0], shuffled[1]]; // First pair
@@ -25,34 +32,35 @@ const getTrainingBlockDef = function getTrainingBlockDef() {
     return pairOrder.map(pair => {
       const targets = (conditionLabel === "Condition 1")
         ? generateTargetsForCondition1(pair, fixedRewardProbs) // Unequal target counts
-        : { [pair[0]]: 20, [pair[1]]: 20 }; // Equal target counts
+        : { [pair[0]]: 20, [pair[1]]: 20 }; // REPLACEME:Equal target counts
 
       return { subset: pair, targets };
     });
   }
 
-  // For Condition 1: lower reward probability → more trials
+  // For Condition 1: assign more trials to lower reward-probability actions
   function generateTargetsForCondition1(subset, rewardProbs) {
-    const sorted = [...subset].sort((a, b) => rewardProbs[a] - rewardProbs[b]); // Sort by reward prob
+    const sorted = [...subset].sort((a, b) => rewardProbs[a] - rewardProbs[b]); // Sort actions by reward probability
     return {
-      [sorted[0]]: 24, // Action with lower reward gets more trials
-      [sorted[1]]: 16  // Action with higher reward gets fewer trials
+	  // REPLACEME
+      [sorted[0]]: 24, // Lower-reward action gets 24 trials
+      [sorted[1]]: 16  // Higher-reward action gets 16 trials
     };
   }
 
-  // Build the full set of 8 training blocks
+  // Construct all 8 training blocks
   function buildAllBlocks() {
     const blocks = [];
 
-    for (let i = 0; i < 8; i++) {
-      const isCond1 = i < 4; // First 4 are Condition 1, last 4 are Condition 2
+    for (let i = 0; i < actionKeyMappings.length; i++) {
+      const isCond1 = i < actionKeyMappings.length/2; // First 4 blocks are Condition 1, next 4 are Condition 2
       const condition = isCond1 ? "Condition 1" : "Condition 2";
-      const keyMap = actionKeyMappings[i]; // Select corresponding action–key mapping
+      const keyMap = actionKeyMappings[i]; // Choose corresponding action–key mapping
 
       const subblocks = createSubblocks(["A1", "A2", "A3", "A4"], condition);
 
-      // 5 times forced choice for each action in this block
-      const forcedTarget = {'A1':5, 'A2':5, 'A3':5, 'A4':5, };
+      // REPLACEME:Fixed number of forced-choice trials for each action
+      const forcedTarget = { 'A1': 5, 'A2': 5, 'A3': 5, 'A4': 5 };
 
       blocks.push({
         label: condition,
@@ -63,12 +71,11 @@ const getTrainingBlockDef = function getTrainingBlockDef() {
       });
     }
 
-    // Randomize the block order before returning
+    // Randomize the order of blocks before returning
     return jsPsych.randomization.shuffle(blocks);
   }
 
-  // Generate and return the 8 training blocks
+  // Return the full randomized block definition list
   const allBlockDefs = buildAllBlocks();
-
   return allBlockDefs;
 }
