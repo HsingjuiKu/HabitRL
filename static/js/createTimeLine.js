@@ -113,7 +113,7 @@ const createTimeLine = function createTimeLine(imageList, designVars){
         trial_duration: 1000
       });
     });
-    blockTimeline.push(...forcedTrials);
+    //blockTimeline.push(...forcedTrials);
 
     // Loop over sub-blocks within the block
     blockDef.subblocks.forEach(sub => {
