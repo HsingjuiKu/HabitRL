@@ -16,7 +16,7 @@
     <script src="static/js/getTrainingBlockDef.js"></script>
     <script src="static/js/generateStimulus.js"></script>
     <script src="static/js/createTimeLine.js"></script>
-	
+    <script src="static/js/createInstructions.js"></script>
     <!-- CSS styles for jsPsych and survey plugin -->
     <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@2.1.0/css/survey.css">
     <link rel="stylesheet" href="https://unpkg.com/jspsych@8.2.1/css/jspsych.css">
@@ -24,19 +24,19 @@
 <body>
 <script>
 	const jsPsych = initJsPsych();
-	
-	// preload images then start experiment
-	let imageList = [];
-	fetch('static/images/images.json')
-	  .then(response => response.json())
-	  .then(data => {
-		imageList = data;
-		console.log("Loaded image list:", imageList);
-		return createTimeLine(imageList);})
-	  .then(timeline => {
-		jsPsych.run(timeline);
-	  });
 
+  async function runExp(){
+    const response_vars = await fetch('static/vars.json');
+    const vars = await response_vars.json();
+    console.log("Loaded vars:", vars);
+    const response_img = await fetch('static/images/images.json');
+    const imgs = await response_img.json();
+    console.log("Loaded image list:", imgs);
+    const timeline = createTimeLine(imgs, vars);
+    jsPsych.run(timeline)
+  }
+
+  runExp()
 </script>
 </body>
 </html>

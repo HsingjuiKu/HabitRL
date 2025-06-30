@@ -1,0 +1,11 @@
+// to start, run python -m http.server 8000 in terminal
+{
+    "configurations": [
+        {
+            "type": "chrome",
+            "name": "http://[::]:8000/",
+            "request": "launch",
+            "url": "http://[::]:8000/"
+        }
+    ]
+}
