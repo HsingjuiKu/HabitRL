@@ -24,29 +24,18 @@
 <script>
 	const jsPsych = initJsPsych();
 
-  // load key design variables
-  let vars = {};
-  fetch('static/vars.json')
-    .then(response => response.json())
-    .then(data => {
-      vars = data;
-      console.log("Loaded vars:", vars);
-    });
-	
-	// preload images then start experiment
-	let imageList = [];
-	fetch('static/images/images.json')
-	  .then(response => response.json())
-	  .then(data => {
-		imageList = data;
-		console.log("Loaded image list:", imageList);
-		return createTimeLine(imageList, vars);})
-	  .then(timeline => {
-		jsPsych.run(timeline);
-	  });
+  async function runExp(){
+    const response_vars = await fetch('static/vars.json');
+    const vars = await response_vars.json();
+    console.log("Loaded vars:", vars);
+    const response_img = await fetch('static/images/images.json');
+    const imgs = await response_img.json();
+    console.log("Loaded image list:", imgs);
+    const timeline = createTimeLine(imgs, vars);
+    jsPsych.run(timeline)
+  }
 
-
-
+  runExp()
 </script>
 </body>
 </html>
