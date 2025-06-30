@@ -29,15 +29,8 @@ const createTimeLine = function createTimeLine(imageList, designVars){
 
   let timeline = [];
 
-  // Fullscreen entry prompt with instructions
-  const fullscreen = {
-    type: jsPsychFullscreen,
-    fullscreen_mode: true,
-    message: '<p style="font: 16pt Microsoft YaHei; text-align: left; line-height: 1.6em">'+
-      '<b>'+ 'The test will begin in full screen mode. For best performance, please:<br/>'+ '(1) Use a computer and a modern browser (Chrome, Edge, Firefox, Safari, not IE)<br/>'+ '(2) Close or minimize other programs<br/>'+ '(3) Silence your phone and minimize background noise<br/>'+ '(4) Do not exit full screen during the test<br/>'+ '(5) Take the test seriously<br/><br/>'+ '</b>'+ 'If you agree to participate and understand the requirements, click to start:'+ '</p>',
-    button_label: 'Click here to start in fullscreen',
-    delay_after: 100
-  };
+  // Instructions, fullscreen, hide cursor
+  timeline.push(...createInstructions1())
 
   // Collect demographic information using a survey form
   const survey = {
@@ -57,19 +50,6 @@ const createTimeLine = function createTimeLine(imageList, designVars){
     on_finish: data => {
       const responses = data.response;
       jsPsych.data.addProperties(responses);
-    }
-  };
-
-  // Welcome screen before experiment starts; hides cursor
-  const introduction = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<h2>Welcome to the experiment</h2><p>Please follow the instructions on screen.</p><p>Press Enter to begin</p>',
-    choices: ["Enter"],
-    on_finish: function () {
-      const bodyNode = document.getElementsByTagName("body");
-      for (let i = 0; i < bodyNode.length; i++) {
-        bodyNode[i].style.cursor = "none";
-      }
     }
   };
 
@@ -224,7 +204,7 @@ const createTimeLine = function createTimeLine(imageList, designVars){
 	timeline.push(preload);
   //timeline.push(fullscreen);
   //timeline.push(survey);
-  timeline.push(introduction);
+  //timeline.push(introduction);
   allTrainingBlocksDef.forEach(blockDef => {
     block = createTrainingBlock(blockDef);
     timeline.push(block);
