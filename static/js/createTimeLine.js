@@ -32,26 +32,11 @@ const createTimeLine = function createTimeLine(imageList, designVars){
   // Instructions, fullscreen, hide cursor
   timeline.push(...createInstructions1())
 
-  // Collect demographic information using a survey form
-  const survey = {
-    type: jsPsychSurvey,
-    survey_json: {
-      showQuestionNumbers: false,
-      elements: [
-        { name: "id", type: "text", title: "ID", inputType: "number", min: 0, max: 300, defaultValue: 0, isRequired: true },
-        { type: 'text', title: 'Name', name: 'name', isRequired: true },
-        { type: 'radiogroup', title: "Gender", name: 'sex', choices: ['Male', 'Female'], isRequired: true },
-        { name: "age", type: "text", title: "Age", inputType: "number", min: 0, max: 100, defaultValue: null, isRequired: true },
-        { type: 'text', name: 'tel', title: 'Phone number', inputType: 'tel', validators: [{ type: 'regex', regex: '[0-9]{10}', text: 'Please enter a valid phone number' }], isRequired: true },
-        { type: 'dropdown', title: "Education", name: 'education', description: "Highest degree obtained", choices: ['Primary', 'Middle School', 'High School', 'Undergraduate', 'Master', 'PhD'], showOtherItem: false, showNoneItem: false, isRequired: true }
-      ],
-      completeText: 'Submit'
-    },
-    on_finish: data => {
-      const responses = data.response;
-      jsPsych.data.addProperties(responses);
-    }
-  };
+  // Practice block
+  // TODO
+
+  // Instruction for main phase of experiment
+  timeline.push(...createInstructions2())
 
   // Function to create one full training block, including forced-choice trials and free-choice subblocks
   function createTrainingBlock(blockDef) {
@@ -59,13 +44,9 @@ const createTimeLine = function createTimeLine(imageList, designVars){
     const blockTimeline = [];
     const actionKeyMap = blockDef.keyMapping;
 
-    // Display condition label at block start
-    blockTimeline.push({
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h3>${blockDef.label}</h3><p>Beginning forced-choice phase.</p><p>Press ENTER to continue</p>`,
-      choices: ["Enter"]
-    });
-
+    // Participant information
+    blockTimeline.push(...createBlockInstructions1(blockDef.label, blockDef.number))
+    
     // Forced-choice trials: each action shown a number of times
     let forcedTrials = [];
     shuffledActions = jsPsych.randomization.shuffle(actions)
@@ -100,6 +81,11 @@ const createTimeLine = function createTimeLine(imageList, designVars){
       const currentSubset = sub.subset;
       const allowedKeys = currentSubset.map(a => actionKeyMap[a]);
       const actionCounts = { A1: 0, A2: 0, A3: 0, A4: 0 };
+
+      // Participant information
+      blockTimeline.push(...createBlockInstructions2(blockDef.label, blockDef.number, allowedKeys))
+
+      // Training trails
       blockTimeline.push({
         timeline: [
           { type: jsPsychHtmlKeyboardResponse, stimulus: '<div style="font-size:64px">+</div>', choices: "NO_KEYS", trial_duration: 500 },

@@ -61,7 +61,8 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
         rewardProbs: rewardProbs,
         keyMapping: keyMap,
         subblocks: subblocks,
-        nForcedReps: nForcedReps
+        nForcedReps: nForcedReps,
+        number: 0,
       });
     }
 
@@ -71,6 +72,9 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
 
   // Generate and return the training blocks
   const allBlockDefs = buildAllBlocks();
+  allBlockDefs.forEach((block, idx) => {
+    block.number = idx + 1;
+  });
 
   return allBlockDefs;
 }

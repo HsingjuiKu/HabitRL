@@ -12,13 +12,13 @@ const createInstructions1 = function() {
   instrTimeline.push({
     type: jsPsychFullscreen,
     fullscreen_mode: true,
-    message: '<p style="font: 16pt Microsoft YaHei; text-align: left; line-height: 1.6em">'+
-      '<b>' + 'Welcome to this experiment! Before we begin, ensure the following:<br/>'
+    message: '<p style="text-align: left; line-height: 1.6em">'
+      + 'Welcome to this experiment! Before we begin, ensure the following:<br/>'
       + '(1) Use a computer and a modern browser (Chrome, Edge, Firefox, or Safari)<br/>'
       + '(2) Close or minimize other programs and turn off all notifications<br/>'
       + '(3) Silence your phone and minimize background noise<br/>'
       + '(4) Do not exit full screen during the experiment<br/>'
-      + '</b>' + 'If you agree to participate and understand the requirements, click to start:' + '</p>',
+      + 'If you agree to participate and understand the requirements, click to start:' + '</p>',
     button_label: 'Click here to start in fullscreen',
     delay_after: 100,
     on_finish: function () {
@@ -30,29 +30,83 @@ const createInstructions1 = function() {
   })
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<div class='center'><p>In this experiment, you will see a series of images on the screen.<br><br>
-    Please respond to each image by pressing one of the four buttons on the keyboard, F, G, H, or J, with your dominant hand.<br><br>
-    At each time, only a subset of these four buttons will be available.<br><br>
-    This will be indicated to you below the image.<br><br>
-    </p></div>` + CONTINUE,
+    stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + 'In this experiment, you will see a series of images on the screen.<br/>'
+    + 'Please respond to each image by pressing a buttons on the keyboard with your dominant hand.<br/>'
+    + 'At each time, only a subset of these four buttons will be available.<br/>'
+    + 'This will be indicated to you below the image.<br/>'
+    + '</p></div>' + CONTINUE,
     choices: ["Enter"],
   });
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<div class='center'><p>Pressing a button in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> point<br><br>
-    The probability of receiving <span style="color:red;">0</span> or <span style="color:green;">+1</span> point differs for each button and each image.<br><br>
-    Your goal is to collect as many points as possible.<br><br>
-    At each iteration, you have two seconds to respond.<br><br>
-    If you do not respond, the trial will be counted as a loss.
-    </p></div>` + CONTINUE,
+    stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + 'Pressing a button in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> point<br/>'
+    + 'The probability of receiving <span style="color:red;">0</span> or <span style="color:green;">+1</span> point differs for each button and each image.<br/>'
+    + 'Your goal is to collect as many points as possible.<br/>'
+    + '</p></div>' + CONTINUE,
     choices: ["Enter"],
   });
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<div class='center'><p>Push the space bar to try this task out.<br><br>
-    </p></div>` + CONTINUE,
+    stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + 'In each trial, you have two seconds to respond.<br/>'
+    + 'If you do not respond in time, the trial will be counted as <span style="color:red;">0</span> points.'
+    + '</p></div>' + CONTINUE,
+    choices: ["Enter"],
+  });
+  instrTimeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + 'Press ENTER to try this task out.',
     choices: ["Enter"],
   });
 
+  return instrTimeline
+}
+
+const createInstructions2 = function() {
+  let instrTimeline = []
+
+  instrTimeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + 'Well done! You can now continue with the main experiment.<br/>'
+    + 'There will be 12 blocks, each of which will consist of a single image.<br/>'
+    + 'In each block you will initially have only a single button available.<br/>'
+    + 'After this, you will first have two actions available and then the remaining two.'
+    + '</p></div>' + CONTINUE,
+    choices: ["Enter"],
+  });
+  
+  return instrTimeline
+}
+
+const createBlockInstructions1 = function(condition, blockCount, subset) {
+  let instrTimeline = []
+
+  instrTimeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<h3>Block ${blockCount} (${condition})</h3>`
+    + 'Only <b>single</b> actions will be available'
+    + '</p></div>' + CONTINUE,
+    choices: ["Enter"],
+  });
+  
+  return instrTimeline
+}
+
+const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
+  let instrTimeline = []
+
+  instrTimeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `<h3>Block ${blockCount} (${condition})</h3>`
+    + 'The following actions will be available:<br/>'
+    + `${allowedKeys}`
+    + '</p></div>' + CONTINUE,
+    choices: ["Enter"],
+  });
+  
   return instrTimeline
 }
