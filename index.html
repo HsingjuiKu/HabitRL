@@ -15,8 +15,9 @@
   <script src="static/js/endExperimentNow.js"></script>
   <script src="static/js/getTrainingBlockDef.js"></script>
   <script src="static/js/generateStimulus.js"></script>
-  <script src="static/js/createTimeLine.js"></script>
+  <script src="static/js/createExpLogic.js"></script>
   <script src="static/js/createInstructions.js"></script>
+  <script src="static/js/createTimeLine.js"></script>
   <!-- CSS styles for jsPsych and survey plugin -->
   <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@2.1.0/css/survey.css">
   <link rel="stylesheet" href="https://unpkg.com/jspsych@8.2.1/css/jspsych.css">
@@ -25,16 +26,49 @@
 <script>
 	const jsPsych = initJsPsych();
 
-  async function runExp(){
+  // Monitor tab visibility and abort experiment if participant leaves the page too many times
+  let num_tab_switches = 0;
+  document.addEventListener("visibilitychange",()=>{
+    if (document.visibilityState === "hidden"){
+      if (num_tab_switches >= 3) { 
+        // Abort experiment if participant left the page more than 3 times
+        console.log('Ending exp because they left too many times');
+        setTimeout(function(){
+          jsPsych.finishTrial();
+          jsPsych.abortExperiment('The task has ended. Thank you for your participation.');
+        });
+      } else {
+        // Warn participant if they have left but not yet exceeded the threshold
+        num_tab_switches += 1; 
+        console.log(`Num switches: ${num_tab_switches}`);
+        alert(`Please stay on the task page! You have left ${num_tab_switches} time(s).`)
+      }
+    }
+  });
+
+  async function runExp() {
+
+    // Load files
     const response_vars = await fetch('static/vars.json');
-    const vars = await response_vars.json();
-    console.log("Loaded vars:", vars);
+    const designVars = await response_vars.json();
+    console.log("Loaded vars:", designVars);
     const response_img = await fetch('static/images/images.json');
     const imgs = await response_img.json();
     console.log("Loaded image list:", imgs);
-    const timeline = createTimeLine(imgs, vars);
+    const img_paths = imgs.map(img => `static/images/${img}`)
+
+    // Create timeline
+    let timeline = []
+	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
+    //timeline.push(...createInstructions1())
+    // Practice block TODO
+    //timeline.push(...createInstructions2())
+    timeline.push(...createTrainingPhase(designVars));
+    timeline.push(...createTestPhase(imgs));
+    timeline.push(...createEndInstructions());
+
     jsPsych.run(timeline)
-  }
+  };
 
   runExp()
 </script>

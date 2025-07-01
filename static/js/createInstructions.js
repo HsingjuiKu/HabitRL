@@ -63,7 +63,7 @@ const createInstructions1 = function() {
   });
 
   return instrTimeline
-}
+};
 
 const createInstructions2 = function() {
   let instrTimeline = []
@@ -80,7 +80,7 @@ const createInstructions2 = function() {
   });
   
   return instrTimeline
-}
+};
 
 const createBlockInstructions1 = function(condition, blockCount, subset) {
   let instrTimeline = []
@@ -94,7 +94,7 @@ const createBlockInstructions1 = function(condition, blockCount, subset) {
   });
   
   return instrTimeline
-}
+};
 
 const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
   let instrTimeline = []
@@ -109,4 +109,34 @@ const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
   });
   
   return instrTimeline
-}
+};
+
+const createEndInstructions = function() {
+  let instrTimeline = []
+  // Final trial showing thank-you message and saving data
+  instrTimeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<h3>Experiment Complete</h3><p>Thank you for your participation!</p><p>Press ENTER to finish</p>',
+    choices: ["Enter"],
+    on_finish: () => {
+      const id = jsPsych.data.get().values()[1].id || 'unknown';
+      const d = new Date(), ymd = d.toISOString().slice(0,10).replace(/-/g, '');
+      jsPsych.data.get().localSave('csv', `${id}-${ymd}.csv`);
+    },
+    trial_duration: 5000
+  });
+
+  // Exit fullscreen and show mouse cursor again
+  instrTimeline.push({
+    type: jsPsychFullscreen,
+    fullscreen_mode: false,
+    on_finish: function () {
+      var bodyNode = document.getElementsByTagName("body");
+      for (let i = 0; i < bodyNode.length; i++) {
+        bodyNode[i].style.cursor = "default";
+      }
+    }
+  })
+
+  return instrTimeline
+};
