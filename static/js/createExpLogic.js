@@ -19,7 +19,7 @@ function createTrainingBlock(blockDef) {
     const key = actionKeyMap[actionLabel];
     forcedTrials.push({
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: () => generateStimulus(`static/images/${blockDef.img}`, key),
+      stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, key),
       choices: [key],
       trial_duration: 10000,
       on_finish: d => {
@@ -37,7 +37,7 @@ function createTrainingBlock(blockDef) {
       trial_duration: 1000
     });
   });
-  //blockTimeline.push(...forcedTrials);
+  blockTimeline.push(...forcedTrials);
 
   // Loop over sub-blocks within the block
   blockDef.subblocks.forEach(sub => {

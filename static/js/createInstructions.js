@@ -72,8 +72,8 @@ const createInstructions2 = function() {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
     + 'Well done! You can now continue with the main experiment.<br/>'
-    + 'There will be 12 blocks, each of which will consist of a single image.<br/>'
-    + 'In each block you will initially have only a single button available.<br/>'
+    + 'There will be 12 images, each of which will be presented repeatedly.<br/>'
+    + 'For each image you will initially have only a single button available.<br/>'
     + 'After this, you will first have two actions available and then the remaining two.'
     + '</p></div>' + CONTINUE,
     choices: ["Enter"],

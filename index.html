@@ -60,13 +60,14 @@
     // Create timeline
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
-    //timeline.push(...createInstructions1())
+    timeline.push(...createInstructions1())
     // Practice block TODO
-    //timeline.push(...createInstructions2())
+    timeline.push(...createInstructions2())
     timeline.push(...createTrainingPhase(designVars));
     timeline.push(...createTestPhase(imgs));
     timeline.push(...createEndInstructions());
 
+    // Pass timeline to jsPsych
     jsPsych.run(timeline)
   };
 
