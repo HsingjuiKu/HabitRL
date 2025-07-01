@@ -1,13 +1,18 @@
-const createTimeLine = function createTimeLine(imageList, designVars){
+// This script defines the full timeline for a jsPsych experiment involving training and test phases,
+// with reward-based decision-making and enforced attention monitoring.
+// The function takes a list of image file names (imgs), sets up preload, fullscreen, training blocks,
+// and testing blocks, then returns the full timeline to be passed into jsPsych.run().
+
+const createTimeLine = function createTimeLine(imgs, designVars){
   const actions = ["A1", "A2", "A3", "A4"]
 	
-	// preload images
+	// Preload all image stimuli
 	const preload = {
 	  type: jsPsychPreload,
-	  images: imageList.map(img => `static/images/${img}`)
+	  images: imgs.map(img => `static/images/${img}`)
 	};
 	
-  // Monitor tab visibility change to track if participant leaves the task window
+  // Monitor tab visibility and abort experiment if participant leaves the page too many times
   let num_tab_switches = 0;
   document.addEventListener("visibilitychange",()=>{
     if (document.visibilityState === "hidden"){
@@ -27,17 +32,6 @@ const createTimeLine = function createTimeLine(imageList, designVars){
     }
   });
 
-  let timeline = [];
-
-  // Instructions, fullscreen, hide cursor
-  timeline.push(...createInstructions1())
-
-  // Practice block
-  // TODO
-
-  // Instruction for main phase of experiment
-  timeline.push(...createInstructions2())
-
   // Function to create one full training block, including forced-choice trials and free-choice subblocks
   function createTrainingBlock(blockDef) {
     const rewardProbs = blockDef.rewardProbs;
@@ -47,7 +41,7 @@ const createTimeLine = function createTimeLine(imageList, designVars){
     // Participant information
     blockTimeline.push(...createBlockInstructions1(blockDef.label, blockDef.number))
     
-    // Forced-choice trials: each action shown a number of times
+    // Sub-blocks (free-choice trials)
     let forcedTrials = [];
     shuffledActions = jsPsych.randomization.shuffle(actions)
     const forcedList = [].concat(...shuffledActions.map(a => Array(blockDef.nForcedReps).fill(a)));
@@ -56,7 +50,7 @@ const createTimeLine = function createTimeLine(imageList, designVars){
       const key = actionKeyMap[actionLabel];
       forcedTrials.push({
         type: jsPsychHtmlKeyboardResponse,
-        stimulus: () => generateStimulus("red.jpg", key),
+        stimulus: () => generateStimulus(`static/images/${blockDef.img}`, key),
         choices: [key],
         trial_duration: 10000,
         on_finish: d => {
@@ -91,7 +85,7 @@ const createTimeLine = function createTimeLine(imageList, designVars){
           { type: jsPsychHtmlKeyboardResponse, stimulus: '<div style="font-size:64px">+</div>', choices: "NO_KEYS", trial_duration: 500 },
           {
             type: jsPsychHtmlKeyboardResponse,
-            stimulus: () => generateStimulus("red.jpg", allowedKeys),
+            stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, allowedKeys),
             choices: allowedKeys,
             trial_duration: 10000,
             on_finish: d => {
@@ -119,10 +113,10 @@ const createTimeLine = function createTimeLine(imageList, designVars){
     return blockTimeline;
   }
 
-    // Test phase: free-choice with no feedback, each image shown 4 times
+  // Test phase: free-choice with no feedback, each image shown 4 times
 	const testBlock = (label) => {
 	  const testTrials = jsPsych.randomization.shuffle(
-		[].concat(...imageList.map(img => Array(4).fill(img)))
+		[].concat(...imgs.map(img => Array(4).fill(img)))
 	  );
 
 	  const block = [
@@ -143,7 +137,7 @@ const createTimeLine = function createTimeLine(imageList, designVars){
 		  },
 		  {
 			type: jsPsychHtmlKeyboardResponse,
-			stimulus: () => generateStimulus(`static/images/${imageFile}`, ["f", "g", "h", "j"]), // ✅ 用图片名生成stimulus
+			stimulus: () => generateStimulus(`static/images/${imageFile}`, ["f", "g", "h", "j"]),
 			choices: ["f", "g", "h", "j"],
 			trial_duration: 10000,
 			on_finish: d => {
@@ -187,10 +181,11 @@ const createTimeLine = function createTimeLine(imageList, designVars){
   };
 
   // Push all phases into the timeline in correct order
+  let timeline = [];
 	timeline.push(preload);
-  //timeline.push(fullscreen);
-  //timeline.push(survey);
-  //timeline.push(introduction);
+  //timeline.push(...createInstructions1())
+  // Practice block TODO
+  //timeline.push(...createInstructions2())
   allTrainingBlocksDef.forEach(blockDef => {
     block = createTrainingBlock(blockDef);
     timeline.push(block);

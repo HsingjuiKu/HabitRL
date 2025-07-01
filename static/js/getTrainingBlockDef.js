@@ -7,7 +7,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const nForcedReps = 1;
   const nBlocks = designVars["n_blocks"];
 
-  // REPLACEME:Latin square–based 8 sets of action–key mappings
+  // Latin square–based 6 sets of action–key mappings (for each condition)
   const actionKeyMappings = [
     { A1: "f", A2: "g", A3: "h", A4: "j" },
     { A1: "g", A2: "h", A3: "j", A4: "f" },
@@ -17,12 +17,16 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     { A1: "h", A2: "f", A3: "j", A4: "g" },
   ];
 
-  // Construct all 8 training blocks
+  // Assign images
+  let imgs_numbers = Array.from({ length: 13 }, (_, i) => i + 1);
+  imgs_numbers = jsPsych.randomization.shuffle(imgs_numbers)
+
+  // Construct all training blocks
   function buildAllBlocks() {
     const blocks = [];
 
     for (let i = 0; i < nBlocks; i++) {
-      const isCond1 = i < 4; // First 4 are Condition 1, last 4 are Condition 2
+      const isCond1 = i < nBlocks / 2; // First half Condition 1, last half Condition 2
       const condition = isCond1 ? "Condition 1" : "Condition 2";
       const keyMap = actionKeyMappings[i % (nBlocks / 2)]; // Select corresponding action–key mapping
       const subBlockOrder = i % 2 == 0 ? "A12A34" : "A34A12"  // Alternate order of sub-blocks
@@ -63,6 +67,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
         subblocks: subblocks,
         nForcedReps: nForcedReps,
         number: 0,
+        img: imgs_numbers[i + 1]  // plus 1 because of practice block
       });
     }
 
