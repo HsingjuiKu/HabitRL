@@ -4,7 +4,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const rewardProbs = designVars["reward_probabilities"];
   const nReps = designVars["n_repetitions"];
   const hFactor = designVars["h_factor"];
-  const nForcedReps = 1;
+  const nForcedReps = designVars["n_forced_reps"];
   const nBlocks = designVars["n_blocks"];
 
   // Latin square–based 6 sets of action–key mappings (for each condition)

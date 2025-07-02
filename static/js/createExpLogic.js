@@ -8,38 +8,51 @@ function createTrainingBlock(blockDef) {
   const actionKeyMap = blockDef.keyMapping;
 
   // Participant information
-  blockTimeline.push(...createBlockInstructions1(blockDef.label, blockDef.number))
+  blockTimeline.push(...createBlockInstructions1(blockDef.label, blockDef.number));
   
-  // Sub-blocks (free-choice trials)
+  // Forced choice phase
   let forcedTrials = [];
-  shuffledActions = jsPsych.randomization.shuffle(actions)
+  const shuffledActions = jsPsych.randomization.shuffle(actions);
+  const forcedRewards = {};
+
+  shuffledActions.forEach(actionLabel => {
+    const key = actionKeyMap[actionLabel];
+    const prob = blockDef.rewardProbs[actionLabel];
+    const nOnes = Math.ceil(blockDef.nForcedReps * prob);
+    const arr = Array(nOnes).fill(1).concat(Array(5 - nOnes).fill(0));
+    forcedRewards[actionLabel] = jsPsych.randomization.shuffle(arr);
+
+    for (let i = 0; i < blockDef.nForcedReps; i++) {
+      forcedTrials.push({
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, key),
+        choices: [key],
+        on_finish: d => {
+          d.action = actionLabel;
+          d.reward = forcedRewards[actionLabel][i];
+        }
+      });
+      forcedTrials.push({
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: () => {
+          const r = jsPsych.data.get().last(1).values()[0].reward;
+          return `<p style='color:${r === 1 ? "green" : "gray"}; font-size: 48px;'>${r === 1 ? "+1" : "0"}</p>`;
+        },
+        choices: "NO_KEYS",
+        trial_duration: 1000
+      });
+      }
+  });
   const forcedList = [].concat(...shuffledActions.map(a => Array(blockDef.nForcedReps).fill(a)));
 
   forcedList.forEach(actionLabel => {
     const key = actionKeyMap[actionLabel];
-    forcedTrials.push({
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, key),
-      choices: [key],
-      trial_duration: 10000,
-      on_finish: d => {
-        d.action = actionLabel;
-        d.reward = Math.random() < rewardProbs[actionLabel] ? 1 : 0;
-      }
-    });
-    forcedTrials.push({
-      type: jsPsychHtmlKeyboardResponse,
-      stimulus: () => {
-        const r = jsPsych.data.get().last(1).values()[0].reward;
-        return `<p style='color:${r === 1 ? "green" : "gray"}; font-size: 48px;'>${r === 1 ? "+1" : "0"}</p>`;
-      },
-      choices: "NO_KEYS",
-      trial_duration: 1000
-    });
+
+    
   });
   blockTimeline.push(...forcedTrials);
 
-  // Loop over sub-blocks within the block
+  // Free (subset) choice phase
   blockDef.subblocks.forEach(sub => {
     const currentSubset = sub.subset;
     const allowedKeys = currentSubset.map(a => actionKeyMap[a]);
@@ -56,7 +69,7 @@ function createTrainingBlock(blockDef) {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, allowedKeys),
           choices: allowedKeys,
-          trial_duration: 10000,
+          trial_duration: 2000,
           on_finish: d => {
             const key = d.response;
             const a = Object.entries(actionKeyMap).find(([k, v]) => v === key)?.[0];
@@ -119,7 +132,7 @@ function createTestPhase(imgs) {
 		type: jsPsychHtmlKeyboardResponse,
 		stimulus: () => generateStimulus(`static/images/${imageFile}`, ["f", "g", "h", "j"]),
 		choices: ["f", "g", "h", "j"],
-		trial_duration: 10000,
+		trial_duration: 2000,
 		on_finish: d => {
 		  d.image = imageFile;
 		  d.reward = null;

@@ -86,7 +86,7 @@ const createBlockInstructions1 = function(condition, blockCount) {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<h3>Stimulus ${blockCount} (${condition})</h3>`
-    + 'Only <b>single</b> actions will be available'
+    + 'No time limit. Only <b>single</b> actions will be available'
     + '</p></div>' + CONTINUE,
     choices: ["Enter"],
   });
@@ -99,7 +99,7 @@ const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
   let htmlString = `
     <div style="text-align: center;">
       <h3>Stimulus ${blockCount} (${condition})</h3>
-      The following actions will be available:<br/><br/>
+      Two second time limit! The following actions will be available:<br/><br/>
       <div style="display: flex; justify-content: center; gap: 40px;">`;
 
   for (let key of ["f", "g", "h", "j"]) {
