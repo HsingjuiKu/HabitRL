@@ -73,8 +73,6 @@ const createInstructions2 = function() {
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
     + 'Well done! You can now continue with the main experiment.<br/>'
     + 'There will be 12 images, each of which will be presented repeatedly.<br/>'
-    + 'For each image you will initially have only a single button available.<br/>'
-    + 'After this, you will first have two actions available and then the remaining two.'
     + '</p></div>' + CONTINUE,
     choices: ["Enter"],
   });
@@ -82,12 +80,12 @@ const createInstructions2 = function() {
   return instrTimeline
 };
 
-const createBlockInstructions1 = function(condition, blockCount, subset) {
+const createBlockInstructions1 = function(condition, blockCount) {
   let instrTimeline = []
 
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<h3>Block ${blockCount} (${condition})</h3>`
+    stimulus: `<h3>Stimulus ${blockCount} (${condition})</h3>`
     + 'Only <b>single</b> actions will be available'
     + '</p></div>' + CONTINUE,
     choices: ["Enter"],
@@ -98,13 +96,38 @@ const createBlockInstructions1 = function(condition, blockCount, subset) {
 
 const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
   let instrTimeline = []
+  let htmlString = `
+    <div style="text-align: center;">
+      <h3>Stimulus ${blockCount} (${condition})</h3>
+      The following actions will be available:<br/><br/>
+      <div style="display: flex; justify-content: center; gap: 40px;">`;
+
+  for (let key of ["f", "g", "h", "j"]) {
+    const isActive = allowedKeys.includes(key);
+    const opacity = isActive ? 1 : 0.3;
+    const borderColor = isActive ? '#000' : '#999';
+
+    htmlString += `
+      <div style="
+        text-align: center;
+        font-size: 24px;
+        opacity: ${opacity};
+        border: 2px solid ${borderColor};
+        border-radius: 8px;
+        padding: 20px 15px;
+        width: 60px;
+        box-shadow: ${isActive ? '0 0 10px #333' : 'none'};
+      ">
+        ${key.toUpperCase()}<br>
+      </div>
+    `;
+  }
+
+  htmlString += '</p></div>' + CONTINUE;
 
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<h3>Block ${blockCount} (${condition})</h3>`
-    + 'The following actions will be available:<br/>'
-    + `${allowedKeys}`
-    + '</p></div>' + CONTINUE,
+    stimulus: htmlString,
     choices: ["Enter"],
   });
   
