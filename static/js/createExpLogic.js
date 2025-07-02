@@ -25,7 +25,7 @@ function createTrainingBlock(blockDef) {
     for (let i = 0; i < blockDef.nForcedReps; i++) {
       forcedTrials.push({
         type: jsPsychHtmlKeyboardResponse,
-        stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, key),
+        stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, key) + showAvailableKeys(key),
         choices: [key],
         on_finish: d => {
           d.action = actionLabel;
@@ -64,7 +64,12 @@ function createTrainingBlock(blockDef) {
     // Training trails
     blockTimeline.push({
       timeline: [
-        { type: jsPsychHtmlKeyboardResponse, stimulus: '<div style="font-size:64px">+</div>', choices: "NO_KEYS", trial_duration: 500 },
+        { type: jsPsychHtmlKeyboardResponse, 
+          stimulus: `<div style="text-align: center; font-size:64px">+
+            <div style="display: flex; justify-content: center; gap: 40px;">`, 
+            choices: "NO_KEYS", 
+            trial_duration: 500 
+        },
         {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, allowedKeys),
@@ -111,7 +116,7 @@ function createTrainingPhase(designVars) {
 // Test phase: free-choice with no feedback, each image shown 4 times
 function createTestPhase(imgs) {
   const testTrials = jsPsych.randomization.shuffle(
-	[].concat(...imgs.map(img => Array(4).fill(img)))
+    [].concat(...imgs.map(img => Array(4).fill(img)))
   );
   const block = [
 	{

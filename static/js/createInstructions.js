@@ -31,6 +31,7 @@ const createInstructions1 = function() {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + '<h3>Instruction 1/4</h3>'
     + 'In this experiment, you will see a series of images on the screen.<br/>'
     + 'Please respond to each image by pressing a buttons on the keyboard with your dominant hand.<br/>'
     + 'At each time, only a subset of these four buttons will be available.<br/>'
@@ -41,8 +42,9 @@ const createInstructions1 = function() {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
-    + 'Pressing a button in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> point<br/>'
-    + 'The probability of receiving <span style="color:red;">0</span> or <span style="color:green;">+1</span> point differs for each button and each image.<br/>'
+    + '<h3>Instruction 2/4</h3>'
+    + 'Pressing a button in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> points<br/>'
+    + 'The probability of receiving <span style="color:red;">0</span> or <span style="color:green;">+1</span> points differs for each button and each image.<br/>'
     + 'Your goal is to collect as many points as possible.<br/>'
     + '</p></div>' + CONTINUE,
     choices: ["Enter"],
@@ -50,6 +52,7 @@ const createInstructions1 = function() {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + '<h3>Instruction 3/4</h3>'
     + 'In each trial, you have two seconds to respond.<br/>'
     + 'If you do not respond in time, the trial will be counted as <span style="color:red;">0</span> points.'
     + '</p></div>' + CONTINUE,
@@ -71,6 +74,7 @@ const createInstructions2 = function() {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + '<h3>Instruction 4/4</h3>'
     + 'Well done! You can now continue with the main experiment.<br/>'
     + 'There will be 12 images, each of which will be presented repeatedly.<br/>'
     + '</p></div>' + CONTINUE,
@@ -85,8 +89,8 @@ const createBlockInstructions1 = function(condition, blockCount) {
 
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<h3>Stimulus ${blockCount} (${condition})</h3>`
-    + 'No time limit. Only <b>single</b> actions will be available'
+    stimulus: `<h3>Image ${blockCount} (${condition})</h3>`
+    + 'Only <b>single</b> actions will be available. There is no time limit.'
     + '</p></div>' + CONTINUE,
     choices: ["Enter"],
   });
@@ -98,32 +102,13 @@ const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
   let instrTimeline = []
   let htmlString = `
     <div style="text-align: center;">
-      <h3>Stimulus ${blockCount} (${condition})</h3>
-      Two second time limit! The following actions will be available:<br/><br/>
+      <h3>Image ${blockCount} (${condition})</h3>
+      The following actions will be available:<br/><br/>
       <div style="display: flex; justify-content: center; gap: 40px;">`;
 
-  for (let key of ["f", "g", "h", "j"]) {
-    const isActive = allowedKeys.includes(key);
-    const opacity = isActive ? 1 : 0.3;
-    const borderColor = isActive ? '#000' : '#999';
+  htmlString += showAvailableKeys(allowedKeys)
 
-    htmlString += `
-      <div style="
-        text-align: center;
-        font-size: 24px;
-        opacity: ${opacity};
-        border: 2px solid ${borderColor};
-        border-radius: 8px;
-        padding: 20px 15px;
-        width: 60px;
-        box-shadow: ${isActive ? '0 0 10px #333' : 'none'};
-      ">
-        ${key.toUpperCase()}<br>
-      </div>
-    `;
-  }
-
-  htmlString += '</p></div>' + CONTINUE;
+  htmlString += '</p></div>' + 'You have to respond within <b>two seconds</b><br/>'  + CONTINUE;
 
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,

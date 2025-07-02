@@ -1,4 +1,4 @@
-const generateStimulus = function generateStimulus(imgSrc, activeKeys) {
+const generateStimulus = function generateStimulus(imgSrc, availableKeys) {
   const allKeys = ["f", "g", "h", "j"];
   const keyLabels = {
     "f": "A1",
@@ -10,16 +10,21 @@ const generateStimulus = function generateStimulus(imgSrc, activeKeys) {
   // Construct the HTML string
   let stimulusHTML = `
     <div style="text-align: center;">
-      <img src="${imgSrc}" style="width: 200px; height: 200px; margin-bottom: 30px;">
-      <div style="display: flex; justify-content: center; gap: 40px;">
-  `;
+      <img src="${imgSrc}" style="width: 400px; height: 400px; margin-bottom: 30px;">
+      <div style="display: flex; justify-content: center; gap: 40px;">`;
+  //stimulusHTML += showAvailableKeys(availableKeys);
+  return stimulusHTML;
+}
 
-  for (let key of allKeys) {
-    const isActive = activeKeys.includes(key);
+const showAvailableKeys = function showAvailableKeys(availableKeys){
+  
+  htmlString = ``
+  for (let key of ["f", "g", "h", "j"]) {
+    const isActive = availableKeys.includes(key);
     const opacity = isActive ? 1 : 0.3;
     const borderColor = isActive ? '#000' : '#999';
 
-    stimulusHTML += `
+    htmlString += `
       <div style="
         text-align: center;
         font-size: 24px;
@@ -31,10 +36,8 @@ const generateStimulus = function generateStimulus(imgSrc, activeKeys) {
         box-shadow: ${isActive ? '0 0 10px #333' : 'none'};
       ">
         ${key.toUpperCase()}<br>
-      </div>
-    `;
+      </div>`;
   }
-
-  stimulusHTML += `</div></div>`;
-  return stimulusHTML;
+  htmlString += `</div></div>`;
+  return htmlString
 }

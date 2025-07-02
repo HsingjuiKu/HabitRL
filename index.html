@@ -64,7 +64,7 @@
     // Practice block TODO
     timeline.push(...createInstructions2())
     timeline.push(...createTrainingPhase(designVars));
-    timeline.push(...createTestPhase(imgs));
+    timeline.push(...createTestPhase(imgs, designVars));
     timeline.push(...createEndInstructions());
 
     // Pass timeline to jsPsych
