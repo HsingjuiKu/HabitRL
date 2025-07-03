@@ -18,7 +18,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   ];
 
   // Assign images
-  let imgs_numbers = Array.from({ length: 13 }, (_, i) => i + 1);
+  let imgs_numbers = Array.from({ length: 12 }, (_, i) => i + 1);
   imgs_numbers = jsPsych.randomization.shuffle(imgs_numbers)
 
   // Construct all training blocks
@@ -66,7 +66,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
         keyMapping: keyMap,
         subblocks: subblocks,
         nForcedReps: nForcedReps,
-        number: 0,
+        blockNumber: i,
         img: imgs_numbers[i + 1]  // plus 1 because of practice block
       });
     }

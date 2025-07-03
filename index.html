@@ -17,7 +17,6 @@
   <script src="static/js/generateStimulus.js"></script>
   <script src="static/js/createExpLogic.js"></script>
   <script src="static/js/createInstructions.js"></script>
-  <script src="static/js/createTimeLine.js"></script>
   <!-- CSS styles for jsPsych and survey plugin -->
   <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@2.1.0/css/survey.css">
   <link rel="stylesheet" href="https://unpkg.com/jspsych@8.2.1/css/jspsych.css">
@@ -57,14 +56,15 @@
     console.log("Loaded image list:", imgs);
     const img_paths = imgs.map(img => `static/images/${img}`)
 
+    // Create training block definition
+    const allTrainingBlocksDef = getTrainingBlockDef(designVars);
+
     // Create timeline
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
     timeline.push(...createInstructions1())
-    // Practice block TODO
-    timeline.push(...createInstructions2())
-    timeline.push(...createTrainingPhase(designVars));
-    timeline.push(...createTestPhase(imgs, designVars));
+    //timeline.push(...createTrainingPhase(allTrainingBlocksDef));
+    timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
     timeline.push(...createEndInstructions());
 
     // Pass timeline to jsPsych
@@ -72,6 +72,7 @@
   };
 
   runExp()
+
 </script>
 </body>
 </html>

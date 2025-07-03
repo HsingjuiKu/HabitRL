@@ -3,7 +3,7 @@ is an object to be pushed to the instrTimeline. You'll mainly have to replace th
 the stimulus property. The type will be "html-button-response" if you're using a button
 or "html-keyboard-response" for keys. Check jsPsych to see more configurations. */
 
-const CONTINUE = '<p class="continue">[Press ENTER to continue]</p>'; // instruction page footer
+const CONTINUE = '<p class="continue">[Press SPACE to continue]</p>'; // instruction page footer
 
 const createInstructions1 = function() {
   let instrTimeline = []
@@ -37,7 +37,7 @@ const createInstructions1 = function() {
     + 'At each time, only a subset of these four buttons will be available.<br/>'
     + 'This will be indicated to you below the image.<br/>'
     + '</p></div>' + CONTINUE,
-    choices: ["Enter"],
+    choices: [" "],
   });
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
@@ -47,7 +47,7 @@ const createInstructions1 = function() {
     + 'The probability of receiving <span style="color:red;">0</span> or <span style="color:green;">+1</span> points differs for each button and each image.<br/>'
     + 'Your goal is to collect as many points as possible.<br/>'
     + '</p></div>' + CONTINUE,
-    choices: ["Enter"],
+    choices: [" "],
   });
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
@@ -56,29 +56,16 @@ const createInstructions1 = function() {
     + 'In each trial, you have two seconds to respond.<br/>'
     + 'If you do not respond in time, the trial will be counted as <span style="color:red;">0</span> points.'
     + '</p></div>' + CONTINUE,
-    choices: ["Enter"],
+    choices: [" "],
   });
-  instrTimeline.push({
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<p style="text-align: center; line-height: 1.6em">'
-    + 'Press ENTER to try this task out.',
-    choices: ["Enter"],
-  });
-
-  return instrTimeline
-};
-
-const createInstructions2 = function() {
-  let instrTimeline = []
-
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
     + '<h3>Instruction 4/4</h3>'
-    + 'Well done! You can now continue with the main experiment.<br/>'
     + 'There will be 12 images, each of which will be presented repeatedly.<br/>'
+    + 'You will now start the main experiment.<br/>'
     + '</p></div>' + CONTINUE,
-    choices: ["Enter"],
+    choices: [" "],
   });
   
   return instrTimeline
@@ -92,7 +79,7 @@ const createBlockInstructions1 = function(condition, blockCount) {
     stimulus: `<h3>Image ${blockCount} (${condition})</h3>`
     + 'Only <b>single</b> actions will be available. There is no time limit.'
     + '</p></div>' + CONTINUE,
-    choices: ["Enter"],
+    choices: [" "],
   });
   
   return instrTimeline
@@ -113,7 +100,7 @@ const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: htmlString,
-    choices: ["Enter"],
+    choices: [" "],
   });
   
   return instrTimeline
@@ -124,8 +111,8 @@ const createEndInstructions = function() {
   // Final trial showing thank-you message and saving data
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<h3>Experiment Complete</h3><p>Thank you for your participation!</p><p>Press ENTER to finish</p>',
-    choices: ["Enter"],
+    stimulus: '<h3>Experiment Complete</h3><p>Thank you for your participation!</p><p>Press SPACE to finish</p>',
+    choices: [" "],
     on_finish: () => {
       const id = jsPsych.data.get().values()[1].id || 'unknown';
       const d = new Date(), ymd = d.toISOString().slice(0,10).replace(/-/g, '');
@@ -138,6 +125,7 @@ const createEndInstructions = function() {
   instrTimeline.push({
     type: jsPsychFullscreen,
     fullscreen_mode: false,
+    message: '<p style="text-align: left; line-height: 1.6em">You can now close this window.',
     on_finish: function () {
       var bodyNode = document.getElementsByTagName("body");
       for (let i = 0; i < bodyNode.length; i++) {
