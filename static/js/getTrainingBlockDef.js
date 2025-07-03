@@ -8,13 +8,15 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const nBlocks = designVars["n_blocks"];
 
   // Latin square–based 6 sets of action–key mappings (for each condition)
+  const actions = ["A1", "A2", "A3", "A4"]
+  shuffledActions = jsPsych.randomization.shuffle(actions)
   const actionKeyMappings = [
-    { A1: "f", A2: "g", A3: "h", A4: "j" },
-    { A1: "g", A2: "h", A3: "j", A4: "f" },
-    { A1: "h", A2: "j", A3: "f", A4: "g" },
-    { A1: "j", A2: "f", A3: "g", A4: "h" },
-    { A1: "f", A2: "h", A3: "g", A4: "j" },
-    { A1: "h", A2: "f", A3: "j", A4: "g" },
+    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "g", [shuffledActions[2]]: "h", [shuffledActions[3]]: "j" },
+    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "h", [shuffledActions[2]]: "j", [shuffledActions[3]]: "f" },
+    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "j", [shuffledActions[2]]: "f", [shuffledActions[3]]: "g" },
+    { [shuffledActions[0]]: "j", [shuffledActions[1]]: "f", [shuffledActions[2]]: "g", [shuffledActions[3]]: "h" },
+    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "h", [shuffledActions[2]]: "g", [shuffledActions[3]]: "j" },
+    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "f", [shuffledActions[2]]: "j", [shuffledActions[3]]: "g" },
   ];
 
   // Assign images

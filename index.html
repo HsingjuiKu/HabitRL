@@ -56,14 +56,14 @@
     console.log("Loaded image list:", imgs);
     const img_paths = imgs.map(img => `static/images/${img}`)
 
-    // Create training block definition
+    // Create training block definition (assign conditions, stimuli, key-action mapping)
     const allTrainingBlocksDef = getTrainingBlockDef(designVars);
 
     // Create timeline
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
     timeline.push(...createInstructions1())
-    //timeline.push(...createTrainingPhase(allTrainingBlocksDef));
+    timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
     timeline.push(...createEndInstructions());
 

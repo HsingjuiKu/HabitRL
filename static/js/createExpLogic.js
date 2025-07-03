@@ -111,11 +111,6 @@ function createTrainingBlock(blockDef) {
           },
           choices: "NO_KEYS",
           trial_duration: 1000,
-          on_finish: () => {
-            const id = jsPsych.data.get().values()[1].id || 'unknown';
-            const d = new Date(), ymd = d.toISOString().slice(0,10).replace(/-/g, '');
-            jsPsych.data.get().localSave('csv', `${id}-${ymd}.csv`);
-          },
         }
       ],
       loop_function: () => currentSubset.some(a => actionCounts[a] < sub.targets[a])
