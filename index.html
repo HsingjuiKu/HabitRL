@@ -50,10 +50,8 @@
     // Load files
     const response_vars = await fetch('static/vars.json');
     const designVars = await response_vars.json();
-    console.log("Loaded vars:", designVars);
     const response_img = await fetch('static/images/images.json');
     const imgs = await response_img.json();
-    console.log("Loaded image list:", imgs);
     const img_paths = imgs.map(img => `static/images/${img}`)
 
     // Create training block definition (assign conditions, stimuli, key-action mapping)

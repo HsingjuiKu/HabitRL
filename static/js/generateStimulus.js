@@ -12,7 +12,7 @@ const generateStimulus = function generateStimulus(imgSrc, availableKeys) {
     <div style="text-align: center;">
       <img src="${imgSrc}" style="width: 400px; height: 400px; margin-bottom: 30px;">
       <div style="display: flex; justify-content: center; gap: 40px;">`;
-  //stimulusHTML += showAvailableKeys(availableKeys);
+  stimulusHTML += showAvailableKeys(availableKeys);
   return stimulusHTML;
 }
 

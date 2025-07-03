@@ -31,18 +31,18 @@ const createInstructions1 = function() {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
-    + '<h3>Instruction 1/4</h3>'
+    + '<h3>Instruction 1/5</h3>'
     + 'In this experiment, you will see a series of images on the screen.<br/>'
-    + 'Please respond to each image by pressing a buttons on the keyboard with your dominant hand.<br/>'
-    + 'At each time, only a subset of these four buttons will be available.<br/>'
-    + 'This will be indicated to you below the image.<br/>'
+    + 'You can respond to each image by pressing one of the following buttons on the keyboard:<br/><br/>'
+    + `<div style="display: flex; justify-content: center; gap: 40px;">`
+    + showAvailableKeys(['f', 'g', 'h', 'j'])
     + '</p></div>' + CONTINUE,
     choices: [" "],
   });
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
-    + '<h3>Instruction 2/4</h3>'
+    + '<h3>Instruction 2/5</h3>'
     + 'Pressing a button in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> points<br/>'
     + 'The probability of receiving <span style="color:red;">0</span> or <span style="color:green;">+1</span> points differs for each button and each image.<br/>'
     + 'Your goal is to collect as many points as possible.<br/>'
@@ -52,22 +52,31 @@ const createInstructions1 = function() {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
-    + '<h3>Instruction 3/4</h3>'
-    + 'In each trial, you have two seconds to respond.<br/>'
-    + 'If you do not respond in time, the trial will be counted as <span style="color:red;">0</span> points.'
+    + '<h3>Instruction 3/5</h3>'
+    + 'Each trial will first show a fixation cross. Please focus on this.<br/>'
+    + 'When the image is shown, you have two seconds to respond.<br/>'
     + '</p></div>' + CONTINUE,
     choices: [" "],
   });
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<p style="text-align: center; line-height: 1.6em">'
-    + '<h3>Instruction 4/4</h3>'
+    + '<h3>Instruction 4/5</h3>'
+    + 'Not all four actions might be available to you at a given time.<br/>'
+    + 'This will be indicated to you.'
+    + '</p></div>' + CONTINUE,
+    choices: [" "],
+  });
+  instrTimeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<p style="text-align: center; line-height: 1.6em">'
+    + '<h3>Instruction 5/5</h3>'
     + 'There will be 12 images, each of which will be presented repeatedly.<br/>'
+    + 'To respond, please use your dominant with one finger on each button at all times.<br/>'
     + 'You will now start the main experiment.<br/>'
     + '</p></div>' + CONTINUE,
     choices: [" "],
   });
-  
   return instrTimeline
 };
 
@@ -77,7 +86,7 @@ const createBlockInstructions1 = function(condition, blockCount) {
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<h3>Image ${blockCount} (${condition})</h3>`
-    + 'Only <b>single</b> actions will be available. There is no time limit.'
+    + 'For the next trials, only <b>single</b> actions will be available.'
     + '</p></div>' + CONTINUE,
     choices: [" "],
   });
@@ -95,7 +104,7 @@ const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
 
   htmlString += showAvailableKeys(allowedKeys)
 
-  htmlString += '</p></div>' + 'You have to respond within <b>two seconds</b><br/>'  + CONTINUE;
+  htmlString += '</p></div>' + CONTINUE;
 
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
@@ -105,6 +114,20 @@ const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
   
   return instrTimeline
 };
+
+const createTestInstructions = function() {
+  instrTimeline = [{
+    type: jsPsychHtmlKeyboardResponse,
+	  stimulus: '<h3>Final Phase</h3>'
+    + 'In this last part of the experiment, you will see the images again, in mixed order.<br/>'
+    + 'There will be no feedback on whether you receive a point or not.<br/>'
+    + 'And you have all four actions available at all times.<br/>'
+    + 'Please respond as quickly and accurately as possible.'
+    + '</p></div>' + CONTINUE,
+	  choices: [" "]
+  }]
+  return instrTimeline
+}
 
 const createEndInstructions = function() {
   let instrTimeline = []

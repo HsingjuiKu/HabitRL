@@ -1,5 +1,6 @@
 // Basic variables
 const actions = ["A1", "A2", "A3", "A4"]
+const keys = ["f", "g", "h", "j"]
 
 // Function to create one full training block, including forced-choice trials and free-choice subblocks
 function createTrainingBlock(blockDef) {
@@ -24,32 +25,39 @@ function createTrainingBlock(blockDef) {
     forcedRewards[actionLabel] = jsPsych.randomization.shuffle(arr);
 
     for (let i = 0; i < blockDef.nForcedReps; i++) {
-      forcedTrials.push({
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, key) + showAvailableKeys(key),
-        choices: [key],
-        on_finish: d => {
-          d.block = blockDef.blockNumber;
-          d.n_force_rep = i;
-          d.phase = 'fc';
-          d.image = blockDef.img;
-          d.action = actionLabel;
-          d.key_action_mapping = blockDef.keyMapping;
-          d.reward_probs = blockDef.rewardProbs;
-          d.condition = blockDef.label;
-          d.reward = forcedRewards[actionLabel][i];
-        }
-      });
-      forcedTrials.push({
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: () => {
-          const r = jsPsych.data.get().last(1).values()[0].reward;
-          return `<p style='color:${r === 1 ? "green" : "gray"}; font-size: 48px;'>${r === 1 ? "+1" : "0"}</p>`;
+      forcedTrials.push(
+        { type: jsPsychHtmlKeyboardResponse, 
+          stimulus: () => generateStimulus(`static/images/fix_cross.jpg`, key),
+            choices: "NO_KEYS", 
+            trial_duration: 500 
         },
-        choices: "NO_KEYS",
-        trial_duration: 1000,
-      });
-      }
+        {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, key),
+          choices: [key],
+          on_finish: d => {
+            d.block = blockDef.blockNumber;
+            d.n_force_rep = i;
+            d.phase = 'fc';
+            d.image = blockDef.img;
+            d.action = actionLabel;
+            d.key_action_mapping = blockDef.keyMapping;
+            d.reward_probs = blockDef.rewardProbs;
+            d.condition = blockDef.label;
+            d.reward = forcedRewards[actionLabel][i];
+          }
+        },
+        {
+          type: jsPsychHtmlKeyboardResponse,
+          stimulus: () => {
+            const r = jsPsych.data.get().last(1).values()[0].reward;
+            return `<p style='color:${r === 1 ? "green" : "gray"}; font-size: 48px;'>${r === 1 ? "+1" : "0"}</p>`;
+          },
+          choices: "NO_KEYS",
+          trial_duration: 1000,
+        }
+      );
+    }
   });
   const forcedList = [].concat(...shuffledActions.map(a => Array(blockDef.nForcedReps).fill(a)));
 
@@ -58,7 +66,7 @@ function createTrainingBlock(blockDef) {
 
     
   });
-  //trainingTimeline.push(...forcedTrials);
+  trainingTimeline.push(...forcedTrials);
 
   // Free (subset) choice phase
   let trialCount = 0
@@ -74,15 +82,14 @@ function createTrainingBlock(blockDef) {
     trainingTimeline.push({
       timeline: [
         { type: jsPsychHtmlKeyboardResponse, 
-          stimulus: `<div style="text-align: center; font-size:64px">+
-            <div style="display: flex; justify-content: center; gap: 40px;">`, 
+          stimulus: () => generateStimulus(`static/images/fix_cross.jpg`, allowedKeys), 
             choices: "NO_KEYS", 
             trial_duration: 500 
         },
         {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, allowedKeys),
-          choices: allowedKeys,
+          choices: keys,
           trial_duration: 2000,
           on_finish: d => {
             d.block = blockDef.blockNumber;
@@ -99,15 +106,27 @@ function createTrainingBlock(blockDef) {
             d.action_counts = actionCounts;
             d.available_keys = allowedKeys;
             d.reward = Math.random() < rewardProbs[a] ? 1 : 0;
-            actionCounts[a]++;
+            if (allowedKeys.includes(key)) {
+              actionCounts[a]++;
+            }
             trialCount++;
           }
         },
         {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: () => {
-            const r = jsPsych.data.get().last(1).values()[0].reward;
-            return `<p style='color:${r === 1 ? "green" : "gray"}; font-size: 48px;'>${r === 1 ? "+1" : "0"}</p>`;
+            const a = jsPsych.data.get().last(1).values()[0].action;
+            const key = jsPsych.data.get().last(1).values()[0].response;
+            if (typeof a === 'undefined') {
+              return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
+            }
+            if (!allowedKeys.includes(key)) {
+              return `<p style='color:red; font-size: 48px;'>Button not available!</p>`;
+            }
+            else {
+              const r = jsPsych.data.get().last(1).values()[0].reward;
+              return `<p style='color:${r === 1 ? "green" : "gray"}; font-size: 48px;'>${r === 1 ? "+1" : "0"}</p>`;
+            }
           },
           choices: "NO_KEYS",
           trial_duration: 1000,
@@ -137,19 +156,13 @@ function createTestPhase(designVars, allTrainingBlocksDef) {
   const testTrials = jsPsych.randomization.shuffle(
     [].concat(...imgs.map(img => Array(nTestReps).fill(img)))
   );
-  const testTimeline = [
-	  {
-	    type: jsPsychHtmlKeyboardResponse,
-	    stimulus: `<h3>Test Block</h3><p>You may freely press any key. No feedback will be provided.</p><p>[Press SPACE to begin]</p>`,
-	    choices: [" "]
-	  }
-  ];
+  const testTimeline = createTestInstructions()
   let trialCount = 0;
   testTrials.forEach(img => {
 	  testTimeline.push(
 	    {
 	  	  type: jsPsychHtmlKeyboardResponse,
-	  	  stimulus: '<div style="font-size:64px">+</div>',
+	  	  stimulus: () => generateStimulus(`static/images/fix_cross.jpg`, ["f", "g", "h", "j"]),
 	  	  choices: "NO_KEYS",
 	  	  trial_duration: 500
 	    },
@@ -176,6 +189,28 @@ function createTestPhase(designVars, allTrainingBlocksDef) {
           trialCount++;
 	  	  }
 	    },
+      {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: () => {
+          const a = jsPsych.data.get().last(1).values()[0].action;
+          if (typeof a === 'undefined') {
+            return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
+          }
+          else {
+            return ''
+          }
+        },
+        choices: "NO_KEYS",
+        trial_duration: () => {
+          const a = jsPsych.data.get().last(1).values()[0].action;
+          if (typeof a === 'undefined') {
+            return 1000;
+          }
+          else {
+            return 1000;
+          }
+        },
+      }
 	  );
   });
   return testTimeline;
