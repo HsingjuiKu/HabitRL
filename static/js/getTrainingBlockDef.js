@@ -10,7 +10,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   // Latin square–based 6 sets of action–key mappings (for each condition)
   const actions = ["A1", "A2", "A3", "A4"]
   shuffledActions = jsPsych.randomization.shuffle(actions)
-  const actionKeyMappings = [
+  let actionKeyMappings = [
     { [shuffledActions[0]]: "f", [shuffledActions[1]]: "g", [shuffledActions[2]]: "h", [shuffledActions[3]]: "j" },
     { [shuffledActions[0]]: "g", [shuffledActions[1]]: "h", [shuffledActions[2]]: "j", [shuffledActions[3]]: "f" },
     { [shuffledActions[0]]: "h", [shuffledActions[1]]: "j", [shuffledActions[2]]: "f", [shuffledActions[3]]: "g" },
@@ -25,9 +25,13 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
 
   // Construct all training blocks
   function buildAllBlocks() {
+    const hFactorC1 = (hFactor - 1) / 2 + 1
     const blocks = [];
 
     for (let i = 0; i < nBlocks; i++) {
+      if (i % (nBlocks / 2) == 0) {  // Shuffle action-key mappings for each condition
+        actionKeyMappings = jsPsych.randomization.shuffle(actionKeyMappings)
+      }
       const isCond1 = i < nBlocks / 2; // First half Condition 1, last half Condition 2
       const condition = isCond1 ? "Condition 1" : "Condition 2";
       const keyMap = actionKeyMappings[i % (nBlocks / 2)]; // Select corresponding action–key mapping
@@ -36,14 +40,14 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       if (condition == "Condition 1"){
         if (subBlockOrder == "A12A34"){
           subblocks = [
-            {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}},
-            {subset: ['A3', 'A4'], targets: {'A3': nReps, 'A4': 0}}
+            {subset: ['A1', 'A2'], targets: {'A1': nReps * hFactorC1, 'A2': 0}},
+            {subset: ['A3', 'A4'], targets: {'A3': nReps * hFactorC1, 'A4': 0}}
           ];
         }
         else {
           subblocks = [
-            {subset: ['A3', 'A4'], targets: {'A3': nReps, 'A4': 0}},
-            {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}}
+            {subset: ['A3', 'A4'], targets: {'A3': nReps * hFactorC1, 'A4': 0}},
+            {subset: ['A1', 'A2'], targets: {'A1': nReps * hFactorC1, 'A2': 0}}
           ];
         }
       }
@@ -69,7 +73,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
         subblocks: subblocks,
         nForcedReps: nForcedReps,
         blockNumber: i,
-        img: imgs_numbers[i + 1]  // plus 1 because of practice block
+        img: imgs_numbers[i]
       });
     }
 

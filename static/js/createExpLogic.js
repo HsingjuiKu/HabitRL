@@ -60,12 +60,6 @@ function createTrainingBlock(blockDef) {
     }
   });
   const forcedList = [].concat(...shuffledActions.map(a => Array(blockDef.nForcedReps).fill(a)));
-
-  forcedList.forEach(actionLabel => {
-    const key = actionKeyMap[actionLabel];
-
-    
-  });
   trainingTimeline.push(...forcedTrials);
 
   // Free (subset) choice phase
@@ -73,7 +67,7 @@ function createTrainingBlock(blockDef) {
   blockDef.subblocks.forEach(sub => {
     const currentSubset = sub.subset;
     const allowedKeys = currentSubset.map(a => actionKeyMap[a]);
-    const actionCounts = { A1: 0, A2: 0, A3: 0, A4: 0 };
+    let actionCounts = { A1: 0, A2: 0, A3: 0, A4: 0 };
 
     // Participant information
     trainingTimeline.push(...createBlockInstructions2(blockDef.label, blockDef.number, allowedKeys))
@@ -103,12 +97,9 @@ function createTrainingBlock(blockDef) {
             d.reward_probs = blockDef.rewardProbs;
             d.condition = blockDef.label;
             d.subset = currentSubset;
-            d.action_counts = actionCounts;
             d.available_keys = allowedKeys;
             d.reward = Math.random() < rewardProbs[a] ? 1 : 0;
-            if (allowedKeys.includes(key)) {
-              actionCounts[a]++;
-            }
+            actionCounts[a]++;
             trialCount++;
           }
         },
@@ -182,7 +173,6 @@ function createTestPhase(designVars, allTrainingBlocksDef) {
           d.key_action_mapping = blockDef.keyMapping;
           d.reward_probs = blockDef.rewardProbs;
           d.condition = blockDef.label;
-          d.action_counts = actionCounts;
           d.available_keys = ["f", "g", "h", "j"];
 	  	    d.reward = null;
           actionCounts[a]++;

@@ -85,8 +85,8 @@ const createBlockInstructions1 = function(condition, blockCount) {
 
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<h3>Image ${blockCount} (${condition})</h3>`
-    + 'For the next trials, only <b>single</b> actions will be available.'
+    stimulus: `<h3>Image ${blockCount}</h3>`
+    + 'For the next trials, only single actions will be available.'
     + '</p></div>' + CONTINUE,
     choices: [" "],
   });
@@ -98,7 +98,7 @@ const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
   let instrTimeline = []
   let htmlString = `
     <div style="text-align: center;">
-      <h3>Image ${blockCount} (${condition})</h3>
+      <h3>Image ${blockCount}</h3>
       The following actions will be available:<br/><br/>
       <div style="display: flex; justify-content: center; gap: 40px;">`;
 
