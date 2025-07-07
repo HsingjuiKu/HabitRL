@@ -51,7 +51,7 @@ function createTrainingBlock(blockDef) {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: () => {
             const r = jsPsych.data.get().last(1).values()[0].reward;
-            return `<p style='color:${r === 1 ? "green" : "gray"}; font-size: 48px;'>${r === 1 ? "+1" : "0"}</p>`;
+            return generateStimulus(`static/images/feedback_${r}.jpg`, key);
           },
           choices: "NO_KEYS",
           trial_duration: 1000,
@@ -116,7 +116,7 @@ function createTrainingBlock(blockDef) {
             }
             else {
               const r = jsPsych.data.get().last(1).values()[0].reward;
-              return `<p style='color:${r === 1 ? "green" : "gray"}; font-size: 48px;'>${r === 1 ? "+1" : "0"}</p>`;
+              return generateStimulus(`static/images/feedback_${r}.jpg`, allowedKeys);
             }
           },
           choices: "NO_KEYS",
