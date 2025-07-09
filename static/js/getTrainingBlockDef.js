@@ -25,7 +25,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
 
   // Construct all training blocks
   function buildAllBlocks() {
-    const hFactorC1 = (hFactor - 1) / 2 + 1
+    const hFactorC1 = (hFactor - 1) / 2 + 1  // i.e., half of the factor of hFactor
     const blocks = [];
 
     for (let i = 0; i < nBlocks; i++) {
