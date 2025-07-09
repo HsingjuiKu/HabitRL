@@ -69,6 +69,16 @@ function createTrainingBlock(blockDef) {
     const allowedKeys = currentSubset.map(a => actionKeyMap[a]);
     let actionCounts = { A1: 0, A2: 0, A3: 0, A4: 0 };
 
+    // Attention checks
+    let idxCount = 0
+    const idx_array = Array.from({ length: Math.max(...Object.values(sub.targets)) - 1 }, (_, i) => i + 1)
+    const attention_check_idx = jsPsych.randomization.sampleWithoutReplacement(idx_array, 2);
+    const attention_check_imgs = jsPsych.randomization.shuffle(allowedKeys)
+    const attention_check_dict = {};
+    attention_check_idx.forEach((idx, i) => {
+      attention_check_dict[idx] = attention_check_imgs[i];
+    });
+
     // Participant information
     trainingTimeline.push(...createBlockInstructions2(blockDef.label, blockDef.number, allowedKeys))
 
@@ -82,14 +92,20 @@ function createTrainingBlock(blockDef) {
         },
         {
           type: jsPsychHtmlKeyboardResponse,
-          stimulus: () => generateStimulus(`static/images/${blockDef.img}.jpg`, allowedKeys),
-          choices: keys,
+          stimulus: () => {
+            if (attention_check_idx.includes(idxCount)) {
+              return generateStimulus(`static/images/${attention_check_dict[idxCount]}.jpg`, allowedKeys);
+            }
+            else {
+              return generateStimulus(`static/images/${blockDef.img}.jpg`, allowedKeys);
+            }
+          },
+          choices: allowedKeys,
           trial_duration: 2000,
           on_finish: d => {
             d.block = blockDef.blockNumber;
             d.trial = trialCount;
             d.phase = 'training';
-            d.image = blockDef.img;
             const key = d.response;
             const a = Object.entries(actionKeyMap).find(([k, v]) => v === key)?.[0];
             d.action = a;
@@ -98,9 +114,18 @@ function createTrainingBlock(blockDef) {
             d.condition = blockDef.label;
             d.subset = currentSubset;
             d.available_keys = allowedKeys;
-            d.reward = Math.random() < rewardProbs[a] ? 1 : 0;
+            if (attention_check_idx.includes(idxCount)) {
+              d.image = attention_check_dict[idxCount];
+              d.attention_check = true;
+            }
+            else {
+              d.image = blockDef.img;
+              d.attention_check = false;
+              d.reward = Math.random() < rewardProbs[a] ? 1 : 0;
+            }
             actionCounts[a]++;
             trialCount++;
+            idxCount++;
           }
         },
         {
@@ -108,22 +133,32 @@ function createTrainingBlock(blockDef) {
           stimulus: () => {
             const a = jsPsych.data.get().last(1).values()[0].action;
             const key = jsPsych.data.get().last(1).values()[0].response;
-            if (typeof a === 'undefined') {
-              return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
-            }
-            if (!allowedKeys.includes(key)) {
-              return `<p style='color:red; font-size: 48px;'>Button not available!</p>`;
+            if (attention_check_idx.includes(idxCount - 1)) {
+              if (key == attention_check_dict[idxCount - 1]) {
+                return generateStimulus(`static/images/feedback_1.jpg`, allowedKeys);
+              }
+              else {
+                return `<p style='color:red; font-size: 48px;'>Incorrect!</p>`;
+              }
             }
             else {
-              const r = jsPsych.data.get().last(1).values()[0].reward;
-              return generateStimulus(`static/images/feedback_${r}.jpg`, allowedKeys);
+              if (typeof a === 'undefined') {
+                return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
+              }
+              if (!allowedKeys.includes(key)) {
+                return `<p style='color:red; font-size: 48px;'>Button not available!</p>`;
+              }
+              else {
+                const r = jsPsych.data.get().last(1).values()[0].reward;
+                return generateStimulus(`static/images/feedback_${r}.jpg`, allowedKeys);
+              }
             }
           },
           choices: "NO_KEYS",
           trial_duration: 1000,
         }
       ],
-      loop_function: () => currentSubset.some(a => actionCounts[a] < sub.targets[a])
+      loop_function: () => currentSubset.some(a => actionCounts[a] < sub.targets[a] + 1)  // plus 1 because of attention checks
     });
   });
   return trainingTimeline;
