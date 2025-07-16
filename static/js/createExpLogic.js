@@ -123,7 +123,9 @@ function createTrainingBlock(blockDef) {
               d.attention_check = false;
               d.reward = Math.random() < rewardProbs[a] ? 1 : 0;
             }
-            actionCounts[a]++;
+            if (a in actionCounts && !attention_check_idx.includes(idxCount)) {
+              actionCounts[a]++;
+            }
             trialCount++;
             idxCount++;
           }
@@ -133,7 +135,7 @@ function createTrainingBlock(blockDef) {
           stimulus: () => {
             const a = jsPsych.data.get().last(1).values()[0].action;
             const key = jsPsych.data.get().last(1).values()[0].response;
-            if (attention_check_idx.includes(idxCount - 1)) {
+            if (attention_check_idx.includes(idxCount - 1)) {  // -1 because idxCount is already increased by 1 in previous element
               if (key == attention_check_dict[idxCount - 1]) {
                 return generateStimulus(`static/images/feedback_1.jpg`, allowedKeys);
               }
@@ -158,7 +160,14 @@ function createTrainingBlock(blockDef) {
           trial_duration: 1000,
         }
       ],
-      loop_function: () => currentSubset.some(a => actionCounts[a] < sub.targets[a] + 1)  // plus 1 because of attention checks
+      loop_function: d => {
+        below_max_target = currentSubset.some(a => actionCounts[a] < sub.targets[a]);
+        console.log(actionCounts)
+        console.log(sub.targets)
+        below_max_total_trials = Object.values(actionCounts).reduce((sum, count) => sum + count, 0) < Math.max(...Object.values(sub.targets)) * 4;  // making sure that people can't get stuck in a subblock
+        console.log(Object.values(actionCounts).reduce((sum, count) => sum + count, 0))
+        return below_max_target && below_max_total_trials;
+      }
     });
   });
   return trainingTimeline;
