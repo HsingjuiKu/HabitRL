@@ -20,6 +20,22 @@ test_data = data.loc[data['phase'] == 'test', :]
 d = train_data.loc[(train_data['id'] == 'unknown-20250715.csv') & (train_data['image'] == '9'), :]
 a = d.groupby(['id', 'image', 'action', 'condition']).size().reset_index(name='count')
 
+# 
+# Plot attention check accuracy
+attention_check_data = data[data['attention_check'] == True]
+attention_check_accuracy = attention_check_data.groupby(['id', 'condition']).apply(
+    lambda x: (x['response'] == x['image']).mean()
+).reset_index(name='accuracy')
+
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.barplot(data=attention_check_accuracy, x='condition', y='accuracy', hue='id', ax=ax)
+ax.set_title('Attention Check Accuracy by Condition')
+ax.set_xlabel('Condition')
+ax.set_ylabel('Accuracy (Proportion Correct)')
+ax.legend(title='ID', bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
+
 # Plot exploration
 action_counts_train = train_data.groupby(['id', 'action', 'condition']).size().reset_index(name='count')
 
