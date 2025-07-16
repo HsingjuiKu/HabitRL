@@ -1,0 +1,12 @@
+h3 {
+    font-size: 2em
+}
+
+p {
+    text-align: left;
+    font-size: 1.2em;
+    line-height: 1.6em;
+    max-width: 800px;
+    margin: 0 auto;
+    word-wrap: break-word;
+}
