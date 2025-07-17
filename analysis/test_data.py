@@ -20,7 +20,20 @@ test_data = data.loc[data['phase'] == 'test', :]
 d = train_data.loc[(train_data['id'] == 'unknown-20250715.csv') & (train_data['image'] == '9'), :]
 a = d.groupby(['id', 'image', 'action', 'condition']).size().reset_index(name='count')
 
-# 
+
+# Plot number of different actions per image and id in test_data
+unique_actions_per_image = test_data.groupby(['id', 'image'])['action'].nunique().reset_index(name='num_actions')
+
+fig, ax = plt.subplots(figsize=(12, 8))
+sns.stripplot(data=unique_actions_per_image, x='image', y='num_actions', hue='id', dodge=True, ax=ax)
+ax.set_title('Number of Different Actions per Image in Test Data')
+ax.set_xlabel('Image')
+ax.set_ylabel('Number of Different Actions')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+
 # Plot attention check accuracy
 attention_check_data = data[data['attention_check'] == True]
 attention_check_accuracy = attention_check_data.groupby(['id', 'condition']).apply(
