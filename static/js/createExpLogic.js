@@ -60,7 +60,7 @@ function createTrainingBlock(blockDef) {
     }
   });
   const forcedList = [].concat(...shuffledActions.map(a => Array(blockDef.nForcedReps).fill(a)));
-  trainingTimeline.push(...forcedTrials);
+  //trainingTimeline.push(...forcedTrials);
 
   // Free (subset) choice phase
   let trialCount = 0
@@ -102,6 +102,8 @@ function createTrainingBlock(blockDef) {
           },
           choices: allowedKeys,
           trial_duration: 2000,
+          
+          // Save data
           on_finish: d => {
             d.block = blockDef.blockNumber;
             d.trial = trialCount;
@@ -121,11 +123,20 @@ function createTrainingBlock(blockDef) {
             else {
               d.image = blockDef.img;
               d.attention_check = false;
-              d.reward = Math.random() < rewardProbs[a] ? 1 : 0;
+              if (['A1', 'A3'].includes(a)) {
+                d.reward = blockDef.rewards[a][actionCounts[a]];
+              }
+              else {
+                d.reward = Math.random() < rewardProbs[a] ? 1 : 0;
+              }
             }
             if (a in actionCounts && !attention_check_idx.includes(idxCount)) {
               actionCounts[a]++;
             }
+            d.a1_count = actionCounts['A1'];
+            d.a2_count = actionCounts['A2'];
+            d.a3_count = actionCounts['A3'];
+            d.a4_count = actionCounts['A4'];
             trialCount++;
             idxCount++;
           }
@@ -187,10 +198,9 @@ function createTrainingPhase(allTrainingBlocksDef) {
 function createTestPhase(designVars, allTrainingBlocksDef) {
   const nTestReps = designVars.n_test_reps;
   const imgs = allTrainingBlocksDef.map(def => def.img);
+  const shuffledImgs = jsPsych.randomization.shuffle(imgs);
+  const testTrials = [].concat(...Array(4).fill(shuffledImgs));
   const actionCounts = { A1: 0, A2: 0, A3: 0, A4: 0 };
-  const testTrials = jsPsych.randomization.shuffle(
-    [].concat(...imgs.map(img => Array(nTestReps).fill(img)))
-  );
   const testTimeline = createTestInstructions()
   let trialCount = 0;
   testTrials.forEach(img => {

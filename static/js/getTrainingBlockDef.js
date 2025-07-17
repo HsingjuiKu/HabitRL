@@ -36,8 +36,27 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       const condition = isCond1 ? "Condition 1" : "Condition 2";
       const keyMap = actionKeyMappings[i % (nBlocks / 2)]; // Select corresponding action–key mapping
       const subBlockOrder = i % 2 == 0 ? "A12A34" : "A34A12"  // Alternate order of sub-blocks
+
+      const rewards = {'A1': null, 'A3': null}
       
       if (condition == "Condition 1"){
+
+        // Pre-randomize rewards
+        const rewardsA1 = new Array(nReps * hFactorC1).fill(0);
+        const numOnesA1 = Math.round(nReps * hFactorC1 * rewardProbs['A1']);
+        for (let j = 0; j < numOnesA1; j++) {
+          rewardsA1[j] = 1;
+        }
+        rewards['A1'] = jsPsych.randomization.shuffle(rewardsA1);
+
+        const rewardsA3 = new Array(nReps * hFactorC1).fill(0);
+        const numOnesA3 = Math.round(nReps * hFactorC1 * rewardProbs['A3']);
+        for (let j = 0; j < numOnesA3; j++) {
+          rewardsA3[j] = 1;
+        }
+        rewards['A3'] = jsPsych.randomization.shuffle(rewardsA3);
+
+        // Determine number of required actions
         if (subBlockOrder == "A12A34"){
           subblocks = [
             {subset: ['A1', 'A2'], targets: {'A1': nReps * hFactorC1, 'A2': 0}},
@@ -52,6 +71,23 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
         }
       }
       else {
+
+        // Pre-randomize rewards
+        const rewardsA1 = new Array(nReps).fill(0);
+        const numOnesA1 = Math.round(nReps * rewardProbs['A1']);
+        for (let j = 0; j < numOnesA1; j++) {
+          rewardsA1[j] = 1;
+        }
+        rewards['A1'] = jsPsych.randomization.shuffle(rewardsA1);
+
+        const rewardsA3 = new Array(nReps * hFactor).fill(0);
+        const numOnesA3 = Math.round(nReps * hFactor * rewardProbs['A3']);
+        for (let j = 0; j < numOnesA3; j++) {
+          rewardsA3[j] = 1;
+        }
+        rewards['A3'] = jsPsych.randomization.shuffle(rewardsA3);
+
+        // Determine number of required actions
         if (subBlockOrder == "A12A34"){
           subblocks = [
             {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}},
@@ -65,7 +101,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
           ];
         }
       }
-
+      
       blocks.push({
         label: condition,
         rewardProbs: rewardProbs,
@@ -73,7 +109,8 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
         subblocks: subblocks,
         nForcedReps: nForcedReps,
         blockNumber: i,
-        img: imgs_numbers[i]
+        img: imgs_numbers[i],
+        rewards: rewards
       });
     }
 
