@@ -1,7 +1,7 @@
 {
     "reward_probabilities": {"A1": 0.8, "A2": 0.4, "A3": 0.5, "A4": 0.1},
-    "n_repetitions": 4,
+    "n_repetitions": 2,
     "h_factor": 1,
-    "n_blocks": 4,
+    "n_blocks": 1,
     "n_test_reps": 1
 }

@@ -31,11 +31,21 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     const imgs = {0: imgs_numbers[i * 2], 1: imgs_numbers[i * 2 + 1]}
     const isCond1 = i < nBlocks / 2; // First half Condition 1, last half Condition 2
     const condition = isCond1 ? 0 : 1;
-    const keyMap = actionKeyMappings[i]; // Select corresponding action–key mapping
     const subBlockOrder = i % 2 == 0 ? "A12A34" : "A34A12"  // Alternate order of sub-blocks
     const rewards = {  // initialize dict to pre-randomize rewards
       0: {'A1': null, 'A3': null},
       1: {'A1': null, 'A3': null}
+    }
+
+    // Determine action-key mapping
+    const keyMap = {
+      0: actionKeyMappings[i],
+      1: {  // Flip action-key-mapping for second image
+        'A1': actionKeyMappings[i]['A2'],
+        'A2': actionKeyMappings[i]['A1'],
+        'A3': actionKeyMappings[i]['A4'],
+        'A4': actionKeyMappings[i]['A3'],
+      }
     }
     
     if (condition == 0){

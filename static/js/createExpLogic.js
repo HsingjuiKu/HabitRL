@@ -25,7 +25,7 @@ function createTrainingPhase(BlockDefs) {
       };
       const currentSubset = sub.subset;
       const minNTrials = Object.values(sub.targets).reduce((sum, count) => sum + count, 0);  // per image
-      const allowedKeys = currentSubset.map(a => blockDef.keyMapping[a]);
+      const allowedKeys = currentSubset.map(a => blockDef.keyMapping[0][a]);
       const imgOrder = jsPsych.randomization.shuffle([
         ...Array(minNTrials).fill(0), 
         ...Array(minNTrials).fill(1)
@@ -68,13 +68,17 @@ function createTrainingPhase(BlockDefs) {
 
             // Save data
             on_finish: d => {
+              const imgIdx = imgOrder[subTrialIdx]
               d.block = blockIdx;
               d.trial = trialIdx;
               d.phase = 'training';
               const key = d.response;
-              const a = Object.entries(blockDef.keyMapping).find(([k, v]) => v === key)?.[0];
+              const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
               d.action = a;
-              d.key_action_mapping = blockDef.keyMapping;
+              d.a1_key = blockDef.keyMapping[imgIdx]['A1'];
+              d.a2_key = blockDef.keyMapping[imgIdx]['A2'];
+              d.a3_key = blockDef.keyMapping[imgIdx]['A3'];
+              d.a4_key = blockDef.keyMapping[imgIdx]['A4'];
               d.reward_probs = blockDef.rewardProbs;
               d.condition = blockDef.condition;
               d.subset = currentSubset;
@@ -84,7 +88,6 @@ function createTrainingPhase(BlockDefs) {
                 d.attention_check = true;
               }
               else {  // if regular trial
-                const imgIdx = imgOrder[subTrialIdx]
                 d.image = blockDef.imgs[imgIdx]
                 d.attention_check = false;
                 if (['A1', 'A3'].includes(a)) {
@@ -156,9 +159,10 @@ function createTrainingPhase(BlockDefs) {
 // Test phase: free-choice with no feedback, each image shown 4 times
 function createTestPhase(designVars, allTrainingBlocksDef) {
   const nTestReps = designVars.n_test_reps;
-  const imgs = allTrainingBlocksDef.map(def => def.img);
+  const nBlocks = designVars.n_blocks;
+  const imgs = Array.from({ length: nBlocks * 2 }, (_, i) => i + 1);
   const shuffledImgs = jsPsych.randomization.shuffle(imgs);
-  const testTrials = [].concat(...Array(4).fill(shuffledImgs));
+  const testTrials = [].concat(...Array(nTestReps).fill(shuffledImgs));
   const actionCounts = { A1: 0, A2: 0, A3: 0, A4: 0 };
   const testTimeline = createTestInstructions()
   let trialIdx = 0;
@@ -176,20 +180,28 @@ function createTestPhase(designVars, allTrainingBlocksDef) {
 	  	  choices: ["f", "g", "h", "j"],
 	  	  trial_duration: 2000,
 	  	  on_finish: d => {
-          blockDef = allTrainingBlocksDef.find(def => def.img === img);
+          const blockDef = allTrainingBlocksDef.find(def => Object.values(def.imgs).includes(img));
+          const imgIdx = Object.keys(blockDef.imgs).find(key => blockDef.imgs[key] === img);
           d.trial = trialIdx;
           d.phase = 'test';
 	  	    d.image = img;
           const key = d.response;
-          const a = Object.entries(blockDef.keyMapping).find(([k, v]) => v === key)?.[0];
+          const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
           d.action = a;
-          d.key_action_mapping = blockDef.keyMapping;
+          d.a1_key = blockDef.keyMapping[imgIdx]['A1'];
+          d.a2_key = blockDef.keyMapping[imgIdx]['A2'];
+          d.a3_key = blockDef.keyMapping[imgIdx]['A3'];
+          d.a4_key = blockDef.keyMapping[imgIdx]['A4'];
           d.reward_probs = blockDef.rewardProbs;
           d.condition = blockDef.condition;
           d.available_keys = ["f", "g", "h", "j"];
 	  	    d.reward = null;
           actionCounts[a]++;
           trialIdx++;
+          d.a1_count = actionCounts['A1'];
+          d.a2_count = actionCounts['A2'];
+          d.a3_count = actionCounts['A3'];
+          d.a4_count = actionCounts['A4'];
 	  	  }
 	    },
       {
