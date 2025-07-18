@@ -93,62 +93,42 @@ const createInstructions = function() {
   return instrTimeline
 }
 
-const createBlockInstructions1 = function(condition, blockCount) {
-  instrTimeline = []
-
-  if (blockCount > 1) {
-    instrTimeline.push(...[
-      {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<h3 style="font-size: 2em; ">Image ${blockCount}/12</h3>`
-        + '<p >'
-        + 'Before continuing with the next image, please take a short break.<br/><br/>'
-        + 'You can continue in 30 seconds.',
-        trial_duration: 5000,
-      },
-      {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus: `<h3 style="font-size: 2em; ">Image ${blockCount}/12</h3>`
-        + '<p>'
-        + 'Before continuing with the next image, please take a short break.'
-        + '</p></div>' + CONTINUEEXP,
-        choices: [" "],
-      },
-    ]);
-  };
-  instrTimeline.push(
+const createBlockInstructions1 = function(condition, blockIdx) {
+  instrTimeline = [
     {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h3 style="font-size: 2em; ">Image ${blockCount}/12</h3>`
+      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/8</h3>`
+      + '<p >'
+      + 'Before continuing with the next image, please take a short break.<br/><br/>'
+      + 'You can continue in 30 seconds.',
+      trial_duration: 5000,
+    },
+    {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/8</h3>`
       + '<p>'
-      + 'For the first trials, only single actions will be available.'
+      + 'Before continuing with the next image, please take a short break.'
       + '</p></div>' + CONTINUEEXP,
       choices: [" "],
     }
-  );
-
-  return instrTimeline
+  ];
+  return instrTimeline;
 };
 
-const createBlockInstructions2 = function(condition, blockCount, allowedKeys) {
-  let instrTimeline = []
-  let htmlString = `
-    <div style="text-align: center; font-size: 1.2em;">
-      <h3>Image ${blockCount}/12</h3>
-      The following actions will be available:<br/><br/>
-      <div style="display: flex; justify-content: center; gap: 40px;">`;
-
-  htmlString += showAvailableKeys(allowedKeys)
-
-  htmlString += '</p></div>' + CONTINUEEXP;
-
-  instrTimeline.push({
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: htmlString,
-    choices: [" "],
-  });
-  
-  return instrTimeline
+const createBlockInstructions2 = function(condition, blockIdx, allowedKeys) {
+  let instrTimeline = [
+    {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '<div style="text-align: center; font-size: 1.2em;">'
+        + `<h3>Block ${blockIdx + 1}/12</h3>`
+        + 'The following actions will be available:<br/><br/>'
+        + '<div style="display: flex; justify-content: center; gap: 40px;">'
+        + showAvailableKeys(allowedKeys)
+        + '</p></div>' + CONTINUEEXP,
+      choices: [" "],
+    }
+  ];
+  return instrTimeline;
 };
 
 const createTestInstructions = function() {
