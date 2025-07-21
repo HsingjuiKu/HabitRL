@@ -182,34 +182,69 @@ const createTestInstructions = function() {
   return instrTimeline
 }
 
+// const createEndInstructions = function() {
+//   let instrTimeline = []
+//   // Final trial showing thank-you message and saving data
+//   instrTimeline.push({
+//     type: jsPsychHtmlKeyboardResponse,
+//     stimulus: '<h3>Experiment Complete</h3>'
+//     + '<p style="text-align: center;">Thank you for your participation!<br/>'
+//     + 'Press SPACE to finish</p>',
+//     choices: [" "],
+//     on_start: () => {
+//       const id = jsPsych.data.get().values()[1].id || 'unknown';
+//       const d = new Date(), ymd = d.toISOString().slice(0,10).replace(/-/g, '');
+//       jsPsych.data.get().localSave('csv', `${id}-${ymd}.csv`);
+//     }
+//   });
+//
+//   // Exit fullscreen and show mouse cursor again
+//   instrTimeline.push({
+//     type: jsPsychFullscreen,
+//     fullscreen_mode: false,
+//     message: '<p  style="text-align: center;>You can now close this window.</p>',
+//     on_finish: function () {
+//       var bodyNode = document.getElementsByTagName("body");
+//       for (let i = 0; i < bodyNode.length; i++) {
+//         bodyNode[i].style.cursor = "default";
+//       }
+//     }
+//   })
+//
+//   return instrTimeline
+// };
+
 const createEndInstructions = function() {
   let instrTimeline = []
-  // Final trial showing thank-you message and saving data
+
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<h3>Experiment Complete</h3>'
-    + '<p style="text-align: center;">Thank you for your participation!<br/>'
-    + 'Press SPACE to finish</p>',
-    choices: [" "],
+    stimulus: '<h3>Experiment Complete</h3>' +
+        '<p>Thank you for your participation!</p>' +
+        '<p>Data is Saving, Please Hold on...</p>',
+    choices: [],
+    trial_duration: 8000,
     on_start: () => {
-      const id = jsPsych.data.get().values()[1].id || 'unknown';
-      const d = new Date(), ymd = d.toISOString().slice(0,10).replace(/-/g, '');
-      jsPsych.data.get().localSave('csv', `${id}-${ymd}.csv`);
+      const id      = jsPsych.data.get().values()[1].id || 'unknown';
+      const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
+      const fname   = `${id}-${dateStr}`;
+      save_data_csv(fname, jsPsych.data.get());
+    },
+    on_finish: () => {
+      const id      = jsPsych.data.get().values()[1].id || 'unknown';
+      const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
+      const fname   = `${id}-${dateStr}`;
+      setTimeout(() => upload_data_csv(fname), 2000);
     }
   });
 
-  // Exit fullscreen and show mouse cursor again
   instrTimeline.push({
     type: jsPsychFullscreen,
     fullscreen_mode: false,
-    message: '<p  style="text-align: center;>You can now close this window.</p>',
-    on_finish: function () {
-      var bodyNode = document.getElementsByTagName("body");
-      for (let i = 0; i < bodyNode.length; i++) {
-        bodyNode[i].style.cursor = "default";
-      }
+    on_finish: () => {
+      document.body.style.cursor = "default";
     }
-  })
+  });
 
   return instrTimeline
 };
