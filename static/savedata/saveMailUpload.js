@@ -7,8 +7,8 @@ You will only have to change the three string variables outside the functions. *
 // const mail_url = "https://experiments-ccn.berkeley.edu/demo-RLWM-JS/data/mailer.php";
 
 
-const save_url   = "https://experiments-ccn.berkeley.edu/HabitRL/static/savedata/save_data.php";
-const upload_url = "https://experiments-ccn.berkeley.edu/HabitRL/static/savedata/uploader.php";
+const save_url   = "https://experiments-ccn.berkeley.edu/var/www/html/HabitRL/static/savedata/save_data.php";
+const upload_url = "https://experiments-ccn.berkeley.edu/var/www/html/HabitRL/static/savedata/uploader.php";
 
 // name of foldeÿ where data will be saved
 const data_dir = "data";
