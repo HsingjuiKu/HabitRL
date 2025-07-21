@@ -9,7 +9,9 @@
   <script src="https://unpkg.com/@jspsych/plugin-fullscreen@2.1.0"></script>
   <script src="https://unpkg.com/@jspsych/plugin-preload@2.1.0"></script>
 
-  <script src="static/savedata/saveMailUpload.js"></script>
+  <!--import jquery via google's CDN-->
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'></script>
+  
 
   <!-- Custom scripts -->
   <script src="static/js/endExperimentNow.js"></script>
@@ -17,6 +19,8 @@
   <script src="static/js/generateStimulus.js"></script>
   <script src="static/js/createExpLogic.js"></script>
   <script src="static/js/createInstructions.js"></script>
+   <script src="static/savedata/saveMailUpload.js"></script>
+
   <!-- CSS styles for jsPsych and survey plugin -->
   <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@2.1.0/css/survey.css">
   <link rel="stylesheet" href="https://unpkg.com/jspsych@8.2.1/css/jspsych.css">
@@ -62,6 +66,7 @@
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
     timeline.push(...createInstructions());
+    timeline.push(...createEndInstructions());
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
     timeline.push(...createEndInstructions());

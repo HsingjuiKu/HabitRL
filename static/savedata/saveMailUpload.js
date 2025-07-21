@@ -7,12 +7,10 @@ You will only have to change the three string variables outside the functions. *
 // const mail_url = "https://experiments-ccn.berkeley.edu/demo-RLWM-JS/data/mailer.php";
 
 
-const save_url   = "static/savedata/save_data.php";
-const upload_url = "static/savedata/uploader.php";
-const mail_url   = "static/savedata/mailer.php";  // 如果不需要 mail 可忽略
-// const alert_url    = "touch_when_closing.php"; // 本地同目录下的 touch_when_closing.php
+const save_url   = "https://experiments-ccn.berkeley.edu/HabitRL/static/savedata/save_data.php";
+const upload_url = "https://experiments-ccn.berkeley.edu/HabitRL/static/savedata/uploader.php";
 
-// name of folder where data will be saved
+// name of foldeÿ where data will be saved
 const data_dir = "data";
 // const data_dir = "319426353072";
 
