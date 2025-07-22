@@ -66,7 +66,6 @@
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
     timeline.push(...createInstructions());
-    timeline.push(...createEndInstructions());
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
     timeline.push(...createEndInstructions());

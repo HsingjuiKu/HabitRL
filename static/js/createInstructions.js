@@ -210,12 +210,12 @@ const createEndInstructions = function() {
       const fname   = `${id}-${dateStr}`;
       save_data_csv(fname, jsPsych.data.get());
     },
-    on_finish: () => {
-      const id      = jsPsych.data.get().values()[1].id || 'unknown';
-      const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
-      const fname   = `${id}-${dateStr}`;
-      setTimeout(() => upload_data_csv(fname), 2000);
-    }
+    //on_finish: () => {
+    //  const id      = jsPsych.data.get().values()[1].id || 'unknown';
+    //  const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
+    //  const fname   = `${id}-${dateStr}`;
+    //  setTimeout(() => upload_data_csv(fname), 2000);
+    //}
   });
 
   instrTimeline.push({
