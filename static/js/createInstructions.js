@@ -201,7 +201,7 @@ const createTestInstructions = function() {
 //   return instrTimeline
 // };
 
-const createEndInstructions = function() {
+const createEndInstructions = function(id) {
   let instrTimeline = []
 
   instrTimeline.push({
