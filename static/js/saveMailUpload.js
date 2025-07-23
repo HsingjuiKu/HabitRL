@@ -10,7 +10,7 @@ You will only have to change the three string variables outside the functions. *
 const save_url   = "https://experiments-ccn.berkeley.edu/HabitRL/save_data.php";
 const upload_url = "https://experiments-ccn.berkeley.edu/HabitRL/uploader.php";
 
-// name of foldeÿ where data will be saved
+// name of folder where data will be saved
 const data_dir = "data";
 // const data_dir = "319426353072";
 

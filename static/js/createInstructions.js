@@ -6,7 +6,7 @@ or "html-keyboard-response" for keys. Check jsPsych to see more configurations. 
 const CONTINUE = '<p class="continue" style="text-align: center;"><br/>[Press SPACE to continue or X to go back]</p>'; // instruction page footer
 const CONTINUEEXP = '<p class="continue" style="text-align: center;"><br/>[Press SPACE to continue]</p>'; // instruction page footer
 
-const instrPage1 = '<h3>Instruction 1/6</h3>'
+const instrPage1 = '<h3>Instruction 1/7</h3>'
     + '<p>'
     + 'In this experiment, you will see a series of images on the screen.<br/><br/>'
     + 'You can respond to each image by pressing one of the following buttons on the keyboard:'
@@ -15,37 +15,44 @@ const instrPage1 = '<h3>Instruction 1/6</h3>'
     + showAvailableKeys(['f', 'g', 'h', 'j'])
     + '</div>' + CONTINUEEXP;
 
-const instrPage2 = '<h3>Instruction 2/6</h3>'
+const instrPage2 = '<h3>Instruction 2/7</h3>'
     + '<p>'
-    + 'Pressing a button in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> points<br/>'
+    + 'Pressing a button in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> points.<br/>'
     + 'Your goal is to <b>collect as many points as possible!</b><br/><br/>'
     + 'How often you receive <span style="color:red;">0</span> or <span style="color:green;">+1</span> points <b>depends on each button and each image</b>: '
     + 'some will give you points more often, others rarely. <b>Try to figure it out!</b><br/>'
     + '</p></div>' + CONTINUE;
 
-  const instrPage3 = '<h3>Instruction 3/6</h3>'
+  const instrPage3 = '<h3>Instruction 3/7</h3>'
     + '<p>'
     + 'When the image is shown, you have <b>two seconds</b> to respond - make sure to answer in that time, or the trial is <b>lost!</b><br/><br/>'
     + 'You will see a + sign between each trial. Keep your eyes on it to be ready to focus on the next image!<br/>'
     + '</p></div>' + CONTINUE;
 
-  const instrPage4 = '<h3>Instruction 4/6</h3>'
+  const instrPage4 = '<h3>Instruction 4/7</h3>'
     + '<p>'
     + 'For each image you will learn all four buttons on the keyboard.<br/><br/>'
-    + 'However, you will not always be allowed to press all four buttons. You will see which are available under the image.<br/><br/>'
+    + 'However, you will <b>not always be allowed to press all four buttons at all times</b>. You will see which are available under the image.<br/><br/>'
     + 'For example, in this trial, only F and H are available - make sure you choose between <b>those two only</b>.<br/>'
     + `<div style="display: flex; justify-content: center; gap: 40px; margin: 20px 0;">`
     + showAvailableKeys(['f', 'h'])
     + '</p></div>' + CONTINUE;
 
-  const instrPage5 = '<h3>Instruction 5/6</h3>'
+  const instrPage5 = '<h3>Instruction 5/7</h3>'
     + '<p>'
-    + 'There will be 12 blocks, each with just one image to learn about. You can take short breaks between each block.<br/><br/>'
-    + 'Each block will have just one image, but to make sure you are paying attention, we will also show you occasionally an instruction to <b>press a specific button</b>, like shown below.<br/><br/>'
-    + 'Make sure you <b>press the correct button</b>.<br/>'
+    + 'There will be <b>six blocks</b>, each with <b>two images</b> to learn about. You can take short breaks between each block.<br/><br/>'
+    + 'The buttons that will give more <span style="color:green;">+1</span> points will <b>never be the same for both images</b>. '
+    + 'So if F gives more <span style="color:green;">+1</span> points for one image, button H will give more <span style="color:green;">+1</span> points for the other image (if only F and H are available).<br/>'
     + '</p></div>' + CONTINUE;
 
-  const instrPage6 = '<h3 style="font-size: 2em; ">Instruction 6/6</h3>'
+  const instrPage6 = '<h3>Instruction 6/7</h3>'
+    + '<p>'
+    + 'To make sure you are paying attention, we will also show you occasionally an instruction to <b>press a specific button</b>, like shown below.<br/><br/>'
+    + 'Make sure you <b>press the correct button</b>.<br/>'
+    + generateStimulus(`static/images/f.jpg`, ['f', 'g'])
+    + '</p></div>' + CONTINUE;
+
+  const instrPage7 = '<h3 style="font-size: 2em; ">Instruction 7/7</h3>'
     + '<p>'
     + 'You will now start the main experiment.<br/><br/>'
     + 'Before you start, please <b>position your dominant hand with one finger on each button</b>, and keep it there for the block duration!<br/><br/>'
@@ -84,10 +91,10 @@ const createInstructions = function() {
         instrPage4,
         instrPage5,
         instrPage6,
-
+        instrPage7,
     ],
-    key_forward: ' ', // or the key you want to use
-    key_backward: 'x', // or the key you want to use
+    key_forward: ' ',
+    key_backward: 'x',
     show_clickable_nav: false,
   });
   return instrTimeline
@@ -210,12 +217,12 @@ const createEndInstructions = function() {
       const fname   = `${id}-${dateStr}`;
       save_data_csv(fname, jsPsych.data.get());
     },
-    //on_finish: () => {
-    //  const id      = jsPsych.data.get().values()[1].id || 'unknown';
-    //  const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
-    //  const fname   = `${id}-${dateStr}`;
-    //  setTimeout(() => upload_data_csv(fname), 2000);
-    //}
+    on_finish: () => {
+      const id      = jsPsych.data.get().values()[1].id || 'unknown';
+      const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
+      const fname   = `${id}-${dateStr}`;
+      setTimeout(() => upload_data_csv(fname), 2000);
+    }
   });
 
   instrTimeline.push({

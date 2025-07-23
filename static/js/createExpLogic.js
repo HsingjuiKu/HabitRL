@@ -33,8 +33,8 @@ function createTrainingPhase(BlockDefs) {
 
       // Attention checks
       const idx_array = Array.from({ length: minNTrials * 2 }, (_, i) => i + 1)
-      const attention_check_idx = jsPsych.randomization.sampleWithoutReplacement(idx_array, 0);  // set number of attention checks here
-      const attention_check_imgs = jsPsych.randomization.shuffle(allowedKeys)
+      const attention_check_idx = jsPsych.randomization.sampleWithoutReplacement(idx_array, 4);  // set number of attention checks here
+      const attention_check_imgs = Array(attention_check_idx.length / 2).fill().map(() => jsPsych.randomization.shuffle(allowedKeys)).flat()
       const attention_check_dict = {};
       attention_check_idx.forEach((idx, i) => {
         attention_check_dict[idx] = attention_check_imgs[i];
@@ -116,12 +116,13 @@ function createTrainingPhase(BlockDefs) {
               if (attention_check) {
                 const image = jsPsych.data.get().last(1).values()[0].image;
                 if (key == image) {
-                  return `<p style='color:green; font-size: 48px;'>Correct!</p>`;
+                  feedback = `<p style='color:green; font-size: 48px;'>Correct!</p>`;
                 }
                 else {
-                  return `<p style='color:red; font-size: 48px;'>Incorrect!</p>`;
+                  feedback = `<p style='color:red; font-size: 48px;'>Incorrect!</p>`;
                 }
-                delete attention_check_dict[subTrialIdx]; // drop attention check element after it has been presented
+                attention_check_idx.shift(); // drop attention check element after it has been presented
+                return feedback
               }
               else {
                 if (typeof a === 'undefined') {

@@ -16,7 +16,7 @@ if (!is_file("$data_dir/$file_name")) {
 }
 
 $folder_id = '329840044741';
-$access_token = 'XXKRqMHHSaqu9seQ8W2egTQRmpaC19I8';
+$access_token = 'Q8HhJDk3JnRhBQPeYnoNP7vgcx4AEjlW';
 
 $url = 'https://upload.box.com/api/2.0/files/content';
 $json = json_encode([
