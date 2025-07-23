@@ -104,15 +104,15 @@ const createBlockInstructions1 = function(condition, blockIdx) {
   instrTimeline = [
     {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/8</h3>`
-      + '<p >'
+      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/6</h3>`
+      + '<p>'
       + 'Before continuing with the next image, please take a short break.<br/><br/>'
       + 'You can continue in 30 seconds.',
-      trial_duration: 5000,
+      trial_duration: 30000,
     },
     {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/8</h3>`
+      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/6</h3>`
       + '<p>'
       + 'Before continuing with the next image, please take a short break.'
       + '</p></div>' + CONTINUEEXP,
@@ -127,7 +127,7 @@ const createBlockInstructions2 = function(condition, blockIdx, allowedKeys) {
     {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: '<div style="text-align: center; font-size: 1.2em;">'
-        + `<h3>Block ${blockIdx + 1}/12</h3>`
+        + `<h3>Block ${blockIdx + 1}/6</h3>`
         + 'The following actions will be available:<br/><br/>'
         + '<div style="display: flex; justify-content: center; gap: 40px;">'
         + showAvailableKeys(allowedKeys)
@@ -146,7 +146,7 @@ const createTestInstructions = function() {
       + '<p>'
       + 'There will be a final part to this experiment. Please take a break now.<br/><br/>'
       + 'You will be able to continue in <b>2 minutes</b>.',
-      trial_duration: 1000,
+      trial_duration: 120000,
     },
     {
       type: jsPsychHtmlKeyboardResponse,
@@ -230,7 +230,12 @@ const createEndInstructions = function(id) {
     fullscreen_mode: false,
     on_finish: () => {
       document.body.style.cursor = "default";
-    }
+    },
+  });
+
+  instrTimeline.push({
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: 'You can now close this window.',
   });
 
   return instrTimeline
