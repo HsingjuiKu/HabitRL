@@ -53,6 +53,9 @@
 
   async function runExp() {
 
+    // Get ID
+    const id = Math.floor(Math.random() * 90000) + 10000;
+
     // Load files
     const response_vars = await fetch('static/vars.json');
     const designVars = await response_vars.json();
