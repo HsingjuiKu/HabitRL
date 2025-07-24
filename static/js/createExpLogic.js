@@ -87,18 +87,25 @@ function createTrainingPhase(BlockDefs) {
                 d.image = attention_check_dict[subTrialIdx];
                 d.attention_check = true;
                 d.reward = key == d.image ? 1 : 0;
-              }
-              else {  // if regular trial
+              } else {  // if regular trial
                 d.image = blockDef.imgs[imgIdx]
                 d.attention_check = false;
-                if ((['A1', 'A3'].includes(a)) && (allowedKeys.includes(key))) {
-                  d.reward = blockDef.rewards[imgIdx][a][actionCounts[imgIdx][a]];  // get pre-randomized reward for current image and action index
-                }
-                else if (['A2', 'A4'].includes(a) && (allowedKeys.includes(key))) {
-                  d.reward = Math.random() < blockDef.rewardProbs[a] ? 1 : 0;
-                  imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
-                }
-                if (!allowedKeys.includes(key)) {
+                if (allowedKeys.includes(key)) {
+                  if (blockDef.rewardProbs) {
+                    if (['A1', 'A3'].includes(a)) {
+                      d.reward = blockDef.rewards[imgIdx][a][actionCounts[imgIdx][a]];  // get pre-randomized reward for current image and action index
+                    } else if (['A2', 'A4'].includes(a)) {
+                      d.reward = Math.random() < blockDef.rewardProbs[a] ? 1 : 0;
+                      imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
+                    }
+                  } else {
+                    reward = jsPsych.randomization.sampleNormal(blockDef.rewardValues[a], blockDef.rewardSD);
+                    d.reward = Math.round(reward * 10) / 10;
+                    if (['A2', 'A2'].includes(a)) {
+                      imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
+                    }
+                  }
+                } else {
                   imgOrder.push(imgIdx)  // if response too slow or wrong button was pressed, append that image to imgOrder again
                 }
                 if (actions.includes(a)) {
@@ -123,23 +130,22 @@ function createTrainingPhase(BlockDefs) {
                 const image = jsPsych.data.get().last(1).values()[0].image;
                 if (key == image) {
                   feedback = `<p style='color:green; font-size: 48px;'>Correct!</p>`;
-                }
-                else {
+                } else {
                   feedback = `<p style='color:red; font-size: 48px;'>Incorrect!</p>`;
                 }
                 attention_check_idx.shift(); // drop attention check element after it has been presented
                 return feedback
-              }
-              else {  // if regular trial
+              } else {  // if regular trial
                 if (typeof a === 'undefined') {
                   return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
-                }
-                else if (!allowedKeys.includes(key)) {
+                } else if (!allowedKeys.includes(key)) {
                   return `<p style='color:red; font-size: 48px;'>Button not available!</p>`;
-                }
-                else {
+                } else if (jsPsych.data.get().last(1).values()[0].rewardProbs) {
                   const r = jsPsych.data.get().last(1).values()[0].reward;
                   return generateStimulus(`static/images/feedback_${r}.jpg`, allowedKeys);
+                } else {
+                  const r = jsPsych.data.get().last(1).values()[0].reward;
+                  return `<p style='color:red; font-size: 48px;'>${r}</p>`;
                 }
               }
             },

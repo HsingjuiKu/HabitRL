@@ -2,6 +2,8 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
 
   // Unpack key design variables
   const rewardProbs = designVars["reward_probabilities"];
+  const rewardValues = designVars["reward_values"];
+  const rewardSD = designVars["reward_sd"];
   const nReps = designVars["n_repetitions"];
   const hFactor = designVars["h_factor"];
   const hFactorC1 = 1 // (hFactor - 1) / 2 + 1  // i.e., half of the factor of hFactor
@@ -48,76 +50,57 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       }
     }
     
+    // Determine number of repetitions
     if (condition == 0){
-
-      // Pre-randomize rewards
-      const rewardsA1 = new Array(nReps * hFactorC1).fill(0);
-      const numOnesA1 = Math.round(nReps * hFactorC1 * rewardProbs['A1']);
-      for (let j = 0; j < numOnesA1; j++) {
-        rewardsA1[j] = 1;
-      }
-      rewards[0]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
-      rewards[1]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
-
-      const rewardsA3 = new Array(nReps * hFactorC1).fill(0);
-      const numOnesA3 = Math.round(nReps * hFactorC1 * rewardProbs['A3']);
-      for (let j = 0; j < numOnesA3; j++) {
-        rewardsA3[j] = 1;
-      }
-      rewards[0]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
-      rewards[1]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
-
-      // Determine number of required actions
-      if (subBlockOrder == "A12A34"){
-        subblocks = [
-          {subset: ['A1', 'A2'], targets: {'A1': nReps * hFactorC1, 'A2': 0}},
-          {subset: ['A3', 'A4'], targets: {'A3': nReps * hFactorC1, 'A4': 0}}
-        ];
-      }
-      else {
-        subblocks = [
-          {subset: ['A3', 'A4'], targets: {'A3': nReps * hFactorC1, 'A4': 0}},
-          {subset: ['A1', 'A2'], targets: {'A1': nReps * hFactorC1, 'A2': 0}}
-        ];
-      }
+      nA1 = nReps * hFactorC1
+      nA3 = nReps * hFactorC1
+    } else {
+      nA1 = nReps
+      nA3 = nReps * hFactor
     }
-    else {
 
-      // Pre-randomize rewards
-      const rewardsA1 = new Array(nReps).fill(0);
-      const numOnesA1 = Math.round(nReps * rewardProbs['A1']);
-      for (let j = 0; j < numOnesA1; j++) {
-        rewardsA1[j] = 1;
-      }
-      rewards[0]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
-      rewards[1]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
+    // Pre-randomize rewards
+    if (rewardProbs) {
+        const rewardsA1 = new Array(nA1).fill(0);
+        const numOnesA1 = Math.round(nA1 * rewardProbs['A1']);
+        for (let j = 0; j < numOnesA1; j++) {
+          rewardsA1[j] = 1;
+        }
+        rewards[0]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
+        rewards[1]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
 
-      const rewardsA3 = new Array(nReps * hFactor).fill(0);
-      const numOnesA3 = Math.round(nReps * hFactor * rewardProbs['A3']);
-      for (let j = 0; j < numOnesA3; j++) {
-        rewardsA3[j] = 1;
-      }
-      rewards[0]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
-      rewards[1]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
-
-      // Determine number of required actions
-      if (subBlockOrder == "A12A34"){
+        const rewardsA3 = new Array(nA3).fill(0);
+        const numOnesA3 = Math.round(nA3 * rewardProbs['A3']);
+        for (let j = 0; j < numOnesA3; j++) {
+          rewardsA3[j] = 1;
+        }
+        rewards[0]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
+        rewards[1]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
+    } else {
+        rewards[0]['A1'] = Array.from({ length: nA1 }, () => jsPsych.randomization.sampleNormal(rewardValues['A1'], rewardSD));
+        rewards[1]['A1'] = Array.from({ length: nA1 }, () => jsPsych.randomization.sampleNormal(rewardValues['A1'], rewardSD));
+        rewards[0]['A3'] = Array.from({ length: nA3 }, () => jsPsych.randomization.sampleNormal(rewardValues['A3'], rewardSD));
+        rewards[1]['A3'] = Array.from({ length: nA3 }, () => jsPsych.randomization.sampleNormal(rewardValues['A3'], rewardSD));
+    }
+    
+    // Determine number of required actions
+    if (subBlockOrder == "A12A34"){
         subblocks = [
-          {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}},
-          {subset: ['A3', 'A4'], targets: {'A3': nReps * hFactor, 'A4': 0}}
+          {subset: ['A1', 'A2'], targets: {'A1': nA1, 'A2': 0}},
+          {subset: ['A3', 'A4'], targets: {'A3': nA3, 'A4': 0}}
         ];
-      }
-      else {
+    } else {
         subblocks = [
-          {subset: ['A3', 'A4'], targets: {'A3': nReps * hFactor, 'A4': 0}},
-          {subset: ['A1', 'A2'], targets: {'A1': nReps, 'A2': 0}}
+          {subset: ['A3', 'A4'], targets: {'A3': nA3, 'A4': 0}},
+          {subset: ['A1', 'A2'], targets: {'A1': nA1, 'A2': 0}}
         ];
-      }
     }
     
     blocks.push({
       condition: condition,
       rewardProbs: rewardProbs,
+      rewardValues: rewardValues,
+      rewardSD: rewardSD,
       keyMapping: keyMap,
       subblocks: subblocks,
       imgs: imgs,
