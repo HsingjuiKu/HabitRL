@@ -34,6 +34,7 @@ function createTrainingPhase(BlockDefs) {
       // Attention checks
       const idx_array = Array.from({ length: minNTrials * 2 }, (_, i) => i + 1)
       const attention_check_idx = jsPsych.randomization.sampleWithoutReplacement(idx_array, 4);  // set number of attention checks here
+      attention_check_idx.sort((a, b) => a - b);
       const attention_check_imgs = Array(attention_check_idx.length / 2).fill().map(() => jsPsych.randomization.shuffle(allowedKeys)).flat()
       const attention_check_dict = {};
       attention_check_idx.forEach((idx, i) => {
@@ -49,21 +50,20 @@ function createTrainingPhase(BlockDefs) {
           { type: jsPsychHtmlKeyboardResponse, 
             stimulus: () => generateStimulus(`static/images/fix_cross.jpg`, allowedKeys), 
               choices: "NO_KEYS", 
-              trial_duration: 500 
+              trial_duration: 500,
           },
           {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: () => {
               if (attention_check_idx.includes(subTrialIdx)) {
-                stim = generateStimulus(`static/images/${attention_check_dict[subTrialIdx]}.jpg`, allowedKeys);
-                return stim;
+                img = attention_check_dict[subTrialIdx]
               }
               else {
                 img = blockDef.imgs[imgOrder[subTrialIdx]]
-                return generateStimulus(`static/images/${img}.jpg`, allowedKeys);
               }
+              return generateStimulus(`static/images/${img}.jpg`, allowedKeys);
             },
-            choices: allowedKeys,
+            choices: keys,
             trial_duration: 2000,
 
             // Save data
@@ -86,18 +86,24 @@ function createTrainingPhase(BlockDefs) {
               if (attention_check_idx.includes(subTrialIdx)) {
                 d.image = attention_check_dict[subTrialIdx];
                 d.attention_check = true;
+                d.reward = key == d.image ? 1 : 0;
               }
               else {  // if regular trial
                 d.image = blockDef.imgs[imgIdx]
                 d.attention_check = false;
-                if (['A1', 'A3'].includes(a)) {
+                if ((['A1', 'A3'].includes(a)) && (allowedKeys.includes(key))) {
                   d.reward = blockDef.rewards[imgIdx][a][actionCounts[imgIdx][a]];  // get pre-randomized reward for current image and action index
                 }
-                else if (['A2', 'A4'].includes(a)) {
+                else if (['A2', 'A4'].includes(a) && (allowedKeys.includes(key))) {
                   d.reward = Math.random() < blockDef.rewardProbs[a] ? 1 : 0;
                   imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
                 }
-                actionCounts[imgIdx][a]++;
+                if (!allowedKeys.includes(key)) {
+                  imgOrder.push(imgIdx)  // if response too slow or wrong button was pressed, append that image to imgOrder again
+                }
+                if (actions.includes(a)) {
+                  actionCounts[imgIdx][a]++;
+                }
                 d.a1_count = actionCounts[imgIdx]['A1'];
                 d.a2_count = actionCounts[imgIdx]['A2'];
                 d.a3_count = actionCounts[imgIdx]['A3'];
@@ -124,11 +130,11 @@ function createTrainingPhase(BlockDefs) {
                 attention_check_idx.shift(); // drop attention check element after it has been presented
                 return feedback
               }
-              else {
+              else {  // if regular trial
                 if (typeof a === 'undefined') {
                   return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
                 }
-                if (!allowedKeys.includes(key)) {
+                else if (!allowedKeys.includes(key)) {
                   return `<p style='color:red; font-size: 48px;'>Button not available!</p>`;
                 }
                 else {
@@ -147,8 +153,6 @@ function createTrainingPhase(BlockDefs) {
             below_max_target.push(currentSubset.some(a => actionCounts[i][a] < sub.targets[a]))
           }
           all_below_max_target = below_max_target.some(Boolean);
-          console.log(actionCounts)
-          console.log(sub.targets)
           return all_below_max_target
         }
       });
