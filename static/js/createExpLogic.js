@@ -100,8 +100,9 @@ function createTrainingPhase(BlockDefs) {
                     }
                   } else {
                     reward = jsPsych.randomization.sampleNormal(blockDef.rewardValues[a], blockDef.rewardSD);
-                    d.reward = Math.round(reward * 10) / 10;
-                    if (['A2', 'A2'].includes(a)) {
+                    d.reward = Math.max(0, Math.round(reward * 10) / 10);
+                    
+                    if (['A2', 'A4'].includes(a)) {
                       imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
                     }
                   }
@@ -129,23 +130,27 @@ function createTrainingPhase(BlockDefs) {
               if (attention_check) {
                 const image = jsPsych.data.get().last(1).values()[0].image;
                 if (key == image) {
-                  feedback = `<p style='color:green; font-size: 48px;'>Correct!</p>`;
+                  feedback = generateStimulus(`static/images/empty.jpg`, allowedKeys, 'Correct!', 'green', 48);
                 } else {
-                  feedback = `<p style='color:red; font-size: 48px;'>Incorrect!</p>`;
+                  feedback = generateStimulus(`static/images/empty.jpg`, allowedKeys, 'Incorrect!', 'red', 48);
                 }
                 attention_check_idx.shift(); // drop attention check element after it has been presented
-                return feedback
+                return feedback;
               } else {  // if regular trial
                 if (typeof a === 'undefined') {
-                  return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
+                  stimulus = generateStimulus(`static/images/empty.jpg`, allowedKeys, 'Too slow!', 'red', 48);
+                  return stimulus;
                 } else if (!allowedKeys.includes(key)) {
-                  return `<p style='color:red; font-size: 48px;'>Button not available!</p>`;
+                  stimulus = generateStimulus(`static/images/empty.jpg`, allowedKeys, 'Button not available!', 'red', 48);
+                  return stimulus;
                 } else if (jsPsych.data.get().last(1).values()[0].rewardProbs) {
                   const r = jsPsych.data.get().last(1).values()[0].reward;
-                  return generateStimulus(`static/images/feedback_${r}.jpg`, allowedKeys);
+                  stimulus = generateStimulus(`static/images/feedback_${r}.jpg`, allowedKeys);
+                  return stimulus;
                 } else {
                   const r = jsPsych.data.get().last(1).values()[0].reward;
-                  return `<p style='color:red; font-size: 48px;'>${r}</p>`;
+                  stimulus = generateStimulus(`static/images/empty.jpg`, allowedKeys, `${r}`, 'black', 100);
+                  return stimulus;
                 }
               }
             },

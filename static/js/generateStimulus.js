@@ -1,17 +1,17 @@
-const generateStimulus = function generateStimulus(imgSrc, availableKeys) {
-  const allKeys = ["f", "g", "h", "j"];
-  const keyLabels = {
-    "f": "A1",
-    "g": "A2",
-    "h": "A3",
-    "j": "A4"
-  };
+const generateStimulus = function generateStimulus(imgSrc, availableKeys, value=null, color=null, fontSize=null) {
 
   // Construct the HTML string
   let stimulusHTML = `
-    <div style="text-align: center;">
-      <img src="${imgSrc}" style="width: 400px; height: 400px; margin-bottom: 30px;">
+    <div style="text-align: center; position: relative;">
+      <img src="${imgSrc}" style="width: 400px; height: 400px; margin-bottom: 30px;">`
+    
+  if (value) {  // Add feedback value if required
+    stimulusHTML += `<div style="color: ${color}; position: absolute; top: 41%; left: 50%; transform: translate(-50%, -50%); font-size: ${fontSize}px; line-height: 1.5; max-width: 350px; word-wrap: break-word;">${value}</div>`
+  }
+
+  stimulusHTML += `
       <div style="display: flex; justify-content: center; gap: 40px;">`;
+
   stimulusHTML += showAvailableKeys(availableKeys);
   return stimulusHTML;
 }

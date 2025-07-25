@@ -2,7 +2,7 @@
     "reward_probabilities": null,
     "reward_values": {"A1": 10, "A2": 4, "A3": 6, "A4": 0},
     "reward_sd": 2,
-    "n_repetitions": 10,
+    "n_repetitions": 1,
     "h_factor": 2,
     "n_blocks": 6,
     "n_test_reps": 4
