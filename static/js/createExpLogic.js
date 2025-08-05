@@ -19,6 +19,7 @@ function createTrainingPhase(BlockDefs) {
 
       // Definitions
       let subTrialIdx = 0
+      let stimCounts = {0: 0, 1: 0}
       let actionCounts = {
         0: { A1: 0, A2: 0, A3: 0, A4: 0 }, 
         1: { A1: 0, A2: 0, A3: 0, A4: 0 }
@@ -69,9 +70,10 @@ function createTrainingPhase(BlockDefs) {
             // Save data
             on_finish: d => {
               const imgIdx = imgOrder[subTrialIdx]
+              d.phase = 'training';
               d.block = blockIdx;
               d.trial = trialIdx;
-              d.phase = 'training';
+              d.sub_trial = subTrialIdx;
               const key = d.response;
               const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
               d.action = a;
@@ -90,15 +92,15 @@ function createTrainingPhase(BlockDefs) {
               } else {  // if regular trial
                 d.image = blockDef.imgs[imgIdx]
                 d.attention_check = false;
-                if (allowedKeys.includes(key)) {
-                  if (blockDef.rewardProbs) {
+                if (allowedKeys.includes(key)) {  // if regular+valid trial (no mistake)
+                  if (blockDef.rewardProbs) {  // original exp design (different reward probabilities)
                     if (['A1', 'A3'].includes(a)) {
                       d.reward = blockDef.rewards[imgIdx][a][actionCounts[imgIdx][a]];  // get pre-randomized reward for current image and action index
                     } else if (['A2', 'A4'].includes(a)) {
                       d.reward = Math.random() < blockDef.rewardProbs[a] ? 1 : 0;
                       imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
                     }
-                  } else {
+                  } else {  // new exp design (different reward values)
                     reward = jsPsych.randomization.sampleNormal(blockDef.rewardValues[a], blockDef.rewardSD);
                     d.reward = Math.max(0, Math.round(reward * 10) / 10);
                     
@@ -106,6 +108,8 @@ function createTrainingPhase(BlockDefs) {
                       imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
                     }
                   }
+                  stimCounts ++;
+                  d.s_counts = stimCounts
                 } else {
                   imgOrder.push(imgIdx)  // if response too slow or wrong button was pressed, append that image to imgOrder again
                 }
