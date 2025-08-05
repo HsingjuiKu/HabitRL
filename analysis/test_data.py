@@ -14,8 +14,52 @@ for idx, file_name in enumerate(file_names):
     df['id'] = file_name
     dfs.append(df)
 data = pd.concat(dfs, ignore_index=True)
-train_data = data.loc[data['phase'] == 'training', :]
+train_data = data.loc[
+    (data['phase'] == 'training') 
+    & (data['attention_check'] == False)
+    & (data['action'].notna()), :]
 test_data = data.loc[data['phase'] == 'test', :]
+
+
+# Quick fix to get stim counts
+train_data = train_data.copy()
+train_data['s_count'] = train_data.groupby(['id', 'subset', 'image']).cumcount() + 1
+
+# Plot learning curves
+prop_data = (
+    train_data[train_data['action'].isin(['A1', 'A2', 'A3', 'A4'])]
+    .groupby(['id', 's_count', 'action'])
+    .size()
+    .unstack(fill_value=0)
+    .reset_index()
+)
+prop_data['A1_over_A2'] = prop_data['A1'] / (prop_data['A1'] + prop_data['A2'])
+prop_data['A3_over_A4'] = prop_data['A3'] / (prop_data['A3'] + prop_data['A4'])
+prop_data = prop_data.loc[prop_data['s_count'] <= 15, :]
+plot_df = prop_data.melt(
+    id_vars=['id', 's_count'],
+    value_vars=['A1_over_A2', 'A3_over_A4'],
+    var_name='comparison',
+    value_name='proportion'
+)
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.lineplot(
+    data=plot_df.loc[plot_df['comparison'] == 'A1_over_A2'],
+    x='s_count',
+    y='proportion',
+    #hue='comparison',
+    hue='id',
+    markers=True,
+    dashes=False,
+    ci=None,
+    ax=ax
+)
+ax.set_title('Proportion of A1/(A1+A2) and A3/(A3+A4) as a Function of s_count')
+ax.set_xlabel('s_count')
+ax.set_ylabel('Proportion')
+plt.tight_layout()
+plt.show()
+
 
 # Calculate maximum time_elapsed for each participant
 max_time_per_id = data.groupby('id')['time_elapsed'].max().reset_index(name='max_time_elapsed')
