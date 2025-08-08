@@ -7,19 +7,25 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const hFactorC1 = 1 // (hFactor - 1) / 2 + 1  // i.e., half of the factor of hFactor
   const nBlocks = designVars["n_blocks"];
 
-  // Latin square–based 6 sets of action–key mappings (for each condition)
+  // Latin square–based sets of action–key mappings (for each condition)
   const actions = ["A1", "A2", "A3", "A4"]
   shuffledActions = jsPsych.randomization.shuffle(actions)
   let actionKeyMappings = [
     { [shuffledActions[0]]: "f", [shuffledActions[1]]: "g", [shuffledActions[2]]: "h", [shuffledActions[3]]: "j" },
     { [shuffledActions[0]]: "g", [shuffledActions[1]]: "h", [shuffledActions[2]]: "j", [shuffledActions[3]]: "f" },
-    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "j", [shuffledActions[2]]: "f", [shuffledActions[3]]: "h" },
-    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "f", [shuffledActions[2]]: "j", [shuffledActions[3]]: "g" },
-    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "g", [shuffledActions[2]]: "h", [shuffledActions[3]]: "j" },
-    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "h", [shuffledActions[2]]: "j", [shuffledActions[3]]: "f" },
-    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "j", [shuffledActions[2]]: "f", [shuffledActions[3]]: "h" },
-    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "f", [shuffledActions[2]]: "j", [shuffledActions[3]]: "g" },  // TODO
+    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "j", [shuffledActions[2]]: "f", [shuffledActions[3]]: "g" },
+    { [shuffledActions[0]]: "j", [shuffledActions[1]]: "f", [shuffledActions[2]]: "g", [shuffledActions[3]]: "h" },
+    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "f", [shuffledActions[2]]: "j", [shuffledActions[3]]: "h" },
+    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "g", [shuffledActions[2]]: "f", [shuffledActions[3]]: "j" },
+    { [shuffledActions[0]]: "j", [shuffledActions[1]]: "h", [shuffledActions[2]]: "g", [shuffledActions[3]]: "f" },
+    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "j", [shuffledActions[2]]: "h", [shuffledActions[3]]: "g" },
   ];
+  if (Math.random() < 0.5) {  // switching first and second half randomly to equally distribute across conditions
+    const half = Math.floor(actionKeyMappings.length / 2);
+    const firstHalf = actionKeyMappings.slice(0, half);
+    const secondHalf = actionKeyMappings.slice(half);
+    actionKeyMappings = secondHalf.concat(firstHalf);
+  }
   
   // Assign images
   let imgs_numbers = Array.from({ length: nBlocks * 2 }, (_, i) => i + 1);
