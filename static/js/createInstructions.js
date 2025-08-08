@@ -104,7 +104,7 @@ const createBlockInstructions1 = function(condition, blockIdx) {
   instrTimeline = [
     {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/6</h3>`
+      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/8</h3>`
       + '<p>'
       + 'Before continuing with the next image, please take a short break.<br/><br/>'
       + 'You can continue in 30 seconds.',
@@ -112,7 +112,7 @@ const createBlockInstructions1 = function(condition, blockIdx) {
     },
     {
       type: jsPsychHtmlKeyboardResponse,
-      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/6</h3>`
+      stimulus: `<h3 style="font-size: 2em; ">Block ${blockIdx + 1}/8</h3>`
       + '<p>'
       + 'Before continuing with the next image, please take a short break.'
       + '</p></div>' + CONTINUEEXP,
@@ -127,7 +127,7 @@ const createBlockInstructions2 = function(condition, blockIdx, allowedKeys) {
     {
       type: jsPsychHtmlKeyboardResponse,
       stimulus: '<div style="text-align: center; font-size: 1.2em;">'
-        + `<h3>Block ${blockIdx + 1}/6</h3>`
+        + `<h3>Block ${blockIdx + 1}/8</h3>`
         + 'The following actions will be available:<br/><br/>'
         + '<div style="display: flex; justify-content: center; gap: 40px;">'
         + showAvailableKeys(allowedKeys)
