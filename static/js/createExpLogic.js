@@ -19,6 +19,7 @@ function createTrainingPhase(BlockDefs) {
 
       // Definitions
       let subTrialIdx = 0
+      let stimCounts = {0: 0, 1: 0}
       let actionCounts = {
         0: { A1: 0, A2: 0, A3: 0, A4: 0 }, 
         1: { A1: 0, A2: 0, A3: 0, A4: 0 }
@@ -69,9 +70,10 @@ function createTrainingPhase(BlockDefs) {
             // Save data
             on_finish: d => {
               const imgIdx = imgOrder[subTrialIdx]
+              d.phase = 'training';
               d.block = blockIdx;
               d.trial = trialIdx;
-              d.phase = 'training';
+              d.sub_trial = subTrialIdx;
               const key = d.response;
               const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
               d.action = a;
@@ -104,6 +106,8 @@ function createTrainingPhase(BlockDefs) {
                 if (actions.includes(a)) {
                   actionCounts[imgIdx][a]++;
                 }
+                stimCounts[imgIdx]++;
+                d.s_count = stimCounts[imgIdx]
                 d.a1_count = actionCounts[imgIdx]['A1'];
                 d.a2_count = actionCounts[imgIdx]['A2'];
                 d.a3_count = actionCounts[imgIdx]['A3'];
