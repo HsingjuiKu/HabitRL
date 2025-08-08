@@ -54,7 +54,7 @@
   async function runExp() {
 
     // Get ID
-    const id = Math.floor(Math.random() * 90000) + 10000;
+    let subj_id = Number(jsPsych.data.getURLVariable("id"))
 
     // Load files
     const response_vars = await fetch('static/vars.json');
@@ -70,10 +70,10 @@
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
     timeline.push(...createInstructions());
-    timeline.push(...createEndInstructions(id));
+    timeline.push(...createEndInstructions(subj_id));
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
-    timeline.push(...createEndInstructions(id));
+    timeline.push(...createEndInstructions(subj_id));
 
     // Pass timeline to jsPsych
     jsPsych.run(timeline)
