@@ -54,7 +54,7 @@
   async function runExp() {
 
     // Get ID
-    let subj_id = Number(jsPsych.data.getURLVariable("id"))
+    let subj_id = jsPsych.data.getURLVariable("id")
     console.log(subj_id)
 
     // Load files
