@@ -208,7 +208,7 @@ const createEndInstructions = function(id) {
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<h3>Experiment Complete</h3>' +
         '<p>Thank you for your participation!</p>' +
-        '<p>Data is Saving, Please Hold on...</p>',
+        '<p>Data is saving, please hold on...</p>',
     choices: [],
     trial_duration: 8000,
     on_start: () => {
