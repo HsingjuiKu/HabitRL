@@ -40,7 +40,7 @@ const instrPage2 = '<h3>Instruction 2/7</h3>'
 
   const instrPage5 = '<h3>Instruction 5/7</h3>'
     + '<p>'
-    + 'There will be <b>six blocks</b>, each with <b>two images</b> to learn about. You can take short breaks between each block.<br/><br/>'
+    + 'There will be <b>eight blocks</b>, each with <b>two images</b> to learn about. You can take short breaks between each block.<br/><br/>'
     + 'The buttons that will give more <span style="color:green;">+1</span> points will <b>never be the same for both images</b>. '
     + 'So if F gives more <span style="color:green;">+1</span> points for one image, button H will give more <span style="color:green;">+1</span> points for the other image (if only F and H are available).<br/>'
     + '</p></div>' + CONTINUE;
