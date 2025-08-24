@@ -93,25 +93,27 @@ function createTrainingPhase(BlockDefs) {
               else {  // if regular trial
                 d.image = blockDef.imgs[imgIdx]
                 d.attention_check = false;
-                if ((['A1', 'A3'].includes(a)) && (allowedKeys.includes(key))) {
-                  d.reward = blockDef.rewards[imgIdx][a][actionCounts[imgIdx][a]];  // get pre-randomized reward for current image and action index
-                }
-                else if (['A2', 'A4'].includes(a) && (allowedKeys.includes(key))) {
-                  d.reward = Math.random() < blockDef.rewardProbs[a] ? 1 : 0;
-                  imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
-                }
-                if (!allowedKeys.includes(key)) {
-                  imgOrder.push(imgIdx)  // if response too slow or wrong button was pressed, append that image to imgOrder again
-                }
-                if (actions.includes(a)) {
+                if (allowedKeys.includes(key)) { // valid trial
+                  d.valid = true;
+                  if (['A1', 'A3'].includes(a)) {
+                    d.reward = blockDef.rewards[imgIdx][a][actionCounts[imgIdx][a]];  // get pre-randomized reward for current image and action index
+                  }
+                  else if (['A2', 'A4'].includes(a)) {
+                    d.reward = Math.random() < blockDef.rewardProbs[a] ? 1 : 0;
+                    imgOrder.push(imgIdx)  // if A2/A4 was pressed, append that image to imgOrder again
+                  }
                   actionCounts[imgIdx][a]++;
+                  stimCounts[imgIdx]++;
+                  d.s_count = stimCounts[imgIdx]
+                  d.a1_count = actionCounts[imgIdx]['A1'];
+                  d.a2_count = actionCounts[imgIdx]['A2'];
+                  d.a3_count = actionCounts[imgIdx]['A3'];
+                  d.a4_count = actionCounts[imgIdx]['A4'];
                 }
-                stimCounts[imgIdx]++;
-                d.s_count = stimCounts[imgIdx]
-                d.a1_count = actionCounts[imgIdx]['A1'];
-                d.a2_count = actionCounts[imgIdx]['A2'];
-                d.a3_count = actionCounts[imgIdx]['A3'];
-                d.a4_count = actionCounts[imgIdx]['A4'];
+                else if (!allowedKeys.includes(key)) {  // invalid trial
+                  d.valid = false;
+                  imgOrder.push(imgIdx);  // if response too slow or wrong button was pressed, append that image to imgOrder again
+                }
                 trialIdx++;
                 subTrialIdx++;
               }
