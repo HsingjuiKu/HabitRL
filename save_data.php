@@ -17,7 +17,7 @@ if (isset($_POST['exp_data']) == false) {
 $exp_data = $_POST['exp_data'];
 
 /* prevent XSS:  */
-$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+// $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
 if (isset($_POST['data_dir']) == true)
 {
