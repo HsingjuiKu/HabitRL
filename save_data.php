@@ -17,7 +17,7 @@ if (isset($_POST['exp_data']) == false) {
 $exp_data = $_POST['exp_data'];
 
 /* prevent XSS:  */
-// $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
 if (isset($_POST['data_dir']) == true)
 {
@@ -32,6 +32,6 @@ if (isset($_POST['file_name']) == true)
 // write the file to disk
 // NOTE: you must make the data directory by all users
 // For example, by running `chmod 772` to give a write access to EVERYONE
-file_put_contents($data_dir.'/'.$file_name, $exp_data . '\n', FILE_APPEND | LOCK_EX);
+file_put_contents($data_dir.'/'.$file_name, $exp_data);
 exit;
 ?>
