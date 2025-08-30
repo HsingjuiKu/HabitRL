@@ -55,7 +55,6 @@
 
     // Get ID and define file name
     const subj_id = jsPsych.data.getURLVariable("id")
-    window.id = subj_id;
     const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
     window.fileName = `${subj_id}-${dateStr}.csv`;
 
@@ -75,7 +74,7 @@
     timeline.push(...createInstructions());
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
-    timeline.push(...createEndInstructions());
+    timeline.push(...createEndInstructions(subj_id));
 
     // Pass timeline to jsPsych
     jsPsych.run(timeline)
