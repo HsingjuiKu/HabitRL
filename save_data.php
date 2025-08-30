@@ -32,6 +32,6 @@ if (isset($_POST['file_name']) == true)
 // write the file to disk
 // NOTE: you must make the data directory by all users
 // For example, by running `chmod 772` to give a write access to EVERYONE
-file_put_contents($data_dir.'/'.$file_name, $exp_data);
+file_put_contents($data_dir.'/'.$file_name, $exp_data, FILE_APPEND);
 exit;
 ?>
