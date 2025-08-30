@@ -108,7 +108,10 @@ const createBlockInstructions1 = function(condition, blockIdx) {
       + '<p>'
       + 'Before continuing with the next image, please take a short break.<br/><br/>'
       + 'You can continue in 30 seconds.',
-      trial_duration: 30000,
+      trial_duration: 3000,
+      on_start: () => {
+        save_data_csv();
+      }
     },
     {
       type: jsPsychHtmlKeyboardResponse,
@@ -146,7 +149,7 @@ const createTestInstructions = function() {
       + '<p>'
       + 'There will be a final part to this experiment. Please take a break now.<br/><br/>'
       + 'You will be able to continue in <b>2 minutes</b>.',
-      trial_duration: 120000,
+      trial_duration: 12,
     },
     {
       type: jsPsychHtmlKeyboardResponse,
@@ -201,7 +204,7 @@ const createTestInstructions = function() {
 //   return instrTimeline
 // };
 
-const createEndInstructions = function(id) {
+const createEndInstructions = function() {
   let instrTimeline = []
 
   instrTimeline.push({
@@ -210,21 +213,11 @@ const createEndInstructions = function(id) {
         '<p>Thank you for your participation!</p>' +
         '<p>Data is saving, please hold on...</p>',
     choices: [],
-    trial_duration: 8000,
+    trial_duration: 3000,
     on_start: () => {
-      //const id      = jsPsych.data.get().values()[1].id || unknown;
-      const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
-      const fname   = `${id}-${dateStr}`;
-      save_data_csv(fname, jsPsych.data.get());
-    },
-    on_finish: () => {
-      //const id      = jsPsych.data.get().values()[1].id || 'unknown';
-      const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
-      const fname   = `${id}-${dateStr}`;
-      setTimeout(() => upload_data_csv(fname), 2000);
+      save_data_csv();
     }
   });
-
   instrTimeline.push({
     type: jsPsychFullscreen,
     fullscreen_mode: false,
@@ -232,8 +225,7 @@ const createEndInstructions = function(id) {
       document.body.style.cursor = "default";
     },
   });
-
-  const ptq_survey = `https://ucbpsych.qualtrics.com/jfe/form/SV_2ss0E5VtgTG2oZM?id=${id}`
+  const ptq_survey = `https://ucbpsych.qualtrics.com/jfe/form/SV_2ss0E5VtgTG2oZM?id=${window.id}`
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<p>Thank you for contributing to the advancement of cognitive science!<br><br>` +

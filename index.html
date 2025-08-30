@@ -20,7 +20,7 @@
   <script src="static/js/generateStimulus.js"></script>
   <script src="static/js/createExpLogic.js"></script>
   <script src="static/js/createInstructions.js"></script>
-   <script src="static/js/saveMailUpload.js"></script>
+   <script src="static/js/saveData.js"></script>
 
   <!-- CSS styles for jsPsych and survey plugin -->
   <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@2.1.0/css/survey.css">
@@ -53,8 +53,11 @@
 
   async function runExp() {
 
-    // Get ID
-    let subj_id = jsPsych.data.getURLVariable("id")
+    // Get ID and define file name
+    const subj_id = jsPsych.data.getURLVariable("id")
+    window.id = subj_id;
+    const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
+    window.fileName = `${subj_id}-${dateStr}.csv`;
 
     // Load files
     const response_vars = await fetch('static/vars.json');
@@ -72,7 +75,7 @@
     timeline.push(...createInstructions());
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
-    timeline.push(...createEndInstructions(subj_id));
+    timeline.push(...createEndInstructions());
 
     // Pass timeline to jsPsych
     jsPsych.run(timeline)
