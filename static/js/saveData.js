@@ -5,14 +5,13 @@ const save_data_csv = function() {
     const data = jsPsych.data.get();
     const n_rows = data.count();
     const newData = data.last(n_rows - rows_saved);
-    //if (rows_saved > 3) { // remove header
-    //    var lines = newData.csv().split('\n');
-    //    lines.shift();
-    //    newDataString = lines.join('\n');
-    //} else {
-    //    newDataString = newData.csv();
-    //}
-    newDataString = newData.csv();
+    if (rows_saved > 3) { // remove header
+        var lines = newData.csv().split('\n');
+        lines.shift();
+        newDataString = lines.join('\n');
+    } else {
+        newDataString = newData.csv();
+    }
     
     // Backend
     jQuery.ajax({

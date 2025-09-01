@@ -193,9 +193,10 @@ function createTestPhase(designVars, allTrainingBlocksDef) {
 	  	  on_finish: d => {
           const blockDef = allTrainingBlocksDef.find(def => Object.values(def.imgs).includes(img));
           const imgIdx = Object.keys(blockDef.imgs).find(key => blockDef.imgs[key] === img);
-          d.trial = trialIdx;
           d.phase = 'test';
-	  	    d.image = img;
+          d.block = null;
+          d.trial = trialIdx;
+          d.sub_trial = null;
           const key = d.response;
           const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
           d.action = a;
@@ -205,8 +206,17 @@ function createTestPhase(designVars, allTrainingBlocksDef) {
           d.a4_key = blockDef.keyMapping[imgIdx]['A4'];
           d.reward_probs = blockDef.rewardProbs;
           d.condition = blockDef.condition;
+          d.subset = null;
           d.available_keys = ["f", "g", "h", "j"];
+	  	    d.image = img;
+          d.attention_check = null;
+          if (key in ["f", "g", "h", "j"]) {
+            d.valid = true;
+          } else {
+            d.valid = false;
+          }
 	  	    d.reward = null;
+          d.s_count = null;
           actionCounts[a]++;
           trialIdx++;
           d.a1_count = actionCounts['A1'];
