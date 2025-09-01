@@ -1,10 +1,17 @@
-let rows_saved = 3  // init at 3 to avoid issue caused by different variables in the first three events
+let rows_saved = 3  // init at 3 to avoid issue caused by different variables (column names) in the first three events
 
 const save_data_csv = function() {
     // Get data
-    let data = jsPsych.data.get();
+    const data = jsPsych.data.get();
     const n_rows = data.count();
-    let newData = data.last(n_rows - rows_saved);
+    const newData = data.last(n_rows - rows_saved);
+    if (rows_saved > 3) { // remove header
+        var lines = newData.csv().split('\n');
+        lines.shift();
+        newDataString = lines.join('\n');
+    } else {
+        newDataString = newData.csv();
+    }
     
     // Backend
     jQuery.ajax({
@@ -14,7 +21,7 @@ const save_data_csv = function() {
         data: {
             data_dir: "data",
             file_name: window.fileName,
-            exp_data: newData.csv()
+            exp_data: newDataString
         }
     });
 

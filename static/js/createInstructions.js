@@ -150,6 +150,9 @@ const createTestInstructions = function() {
       + 'There will be a final part to this experiment. Please take a break now.<br/><br/>'
       + 'You will be able to continue in <b>2 minutes</b>.',
       trial_duration: 12,
+      on_start: () => {
+        save_data_csv();
+      }
     },
     {
       type: jsPsychHtmlKeyboardResponse,
@@ -171,38 +174,6 @@ const createTestInstructions = function() {
     }]
   return instrTimeline
 }
-
-// const createEndInstructions = function() {
-//   let instrTimeline = []
-//   // Final trial showing thank-you message and saving data
-//   instrTimeline.push({
-//     type: jsPsychHtmlKeyboardResponse,
-//     stimulus: '<h3>Experiment Complete</h3>'
-//     + '<p style="text-align: center;">Thank you for your participation!<br/>'
-//     + 'Press SPACE to finish</p>',
-//     choices: [" "],
-//     on_start: () => {
-//       const id = jsPsych.data.get().values()[1].id || 'unknown';
-//       const d = new Date(), ymd = d.toISOString().slice(0,10).replace(/-/g, '');
-//       jsPsych.data.get().localSave('csv', `${id}-${ymd}.csv`);
-//     }
-//   });
-//
-//   // Exit fullscreen and show mouse cursor again
-//   instrTimeline.push({
-//     type: jsPsychFullscreen,
-//     fullscreen_mode: false,
-//     message: '<p  style="text-align: center;>You can now close this window.</p>',
-//     on_finish: function () {
-//       var bodyNode = document.getElementsByTagName("body");
-//       for (let i = 0; i < bodyNode.length; i++) {
-//         bodyNode[i].style.cursor = "default";
-//       }
-//     }
-//   })
-//
-//   return instrTimeline
-// };
 
 const createEndInstructions = function(id) {
   let instrTimeline = []
