@@ -108,7 +108,7 @@ const createBlockInstructions1 = function(condition, blockIdx) {
       + '<p>'
       + 'Before continuing with the next image, please take a short break.<br/><br/>'
       + 'You can continue in 30 seconds.',
-      trial_duration: 3000,
+      trial_duration: 30000,
       on_start: () => {
         save_data_csv();
       }
@@ -149,7 +149,7 @@ const createTestInstructions = function() {
       + '<p>'
       + 'There will be a final part to this experiment. Please take a break now.<br/><br/>'
       + 'You will be able to continue in <b>2 minutes</b>.',
-      trial_duration: 12,
+      trial_duration: 120000,
       on_start: () => {
         save_data_csv();
       }
