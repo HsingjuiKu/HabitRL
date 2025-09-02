@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 
 # Load data
-data_dir = 'data/pilot_3'
+data_dir = 'data/pilot_4'
 file_names = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
 dfs = []
 for idx, file_name in enumerate(file_names):
@@ -14,6 +14,10 @@ for idx, file_name in enumerate(file_names):
     df['id'] = file_name
     dfs.append(df)
 data = pd.concat(dfs, ignore_index=True)
+
+# Manage data
+for col_name in ['rt', 'block', 'trial', 'sub_trial', 'condition', 'reward', 's_count', 'a1_count', 'a2_count', 'a3_count', 'a4_count']:
+    data[col_name] = pd.to_numeric(data[col_name], errors='coerce').astype(float)
 train_data = data.loc[
     (data['phase'] == 'training') 
     & (data['attention_check'] == False)
@@ -26,10 +30,31 @@ data['id'] = data['id'].map(id_map)
 train_data['id'] = train_data['id'].map(id_map)
 test_data['id'] = test_data['id'].map(id_map)
 
+# Exclude inattentive participants
+train_data['correct'] = train_data['action'].isin(['A1', 'A3']).values
+subset = train_data[train_data['s_count'] > 0]
+prop_correct_per_id = subset.groupby('id')['correct'].mean().reset_index(name='prop_correct')
 
-# Quick fix to get stim counts
-#train_data = train_data.copy()
-#train_data['s_count'] = train_data.groupby(['id', 'subset', 'image']).cumcount() + 1
+fig, ax = plt.subplots(figsize=(10, 6))
+sns.barplot(data=prop_correct_per_id, x='id', y='prop_correct', palette='viridis', ax=ax)
+ax.set_xlabel('Participant ID')
+ax.set_ylabel('')
+ax.set_title('')
+ax.set_ylim(0, 1)
+
+for p in ax.patches:
+    height = p.get_height()
+    ax.annotate(f'{height:.2f}', (p.get_x() + p.get_width() / 2., height),
+                ha='center', va='bottom', fontsize=9)
+
+plt.tight_layout()
+plt.show()
+
+
+exclude_ids = [1, 5, 6, 9, 10]
+data = data[~data['id'].isin(exclude_ids)].copy()
+train_data = train_data[~train_data['id'].isin(exclude_ids)].copy()
+test_data = test_data[~test_data['id'].isin(exclude_ids)].copy()
 
 # Plot learning curves
 prop_data = (
@@ -48,23 +73,36 @@ plot_df = prop_data.melt(
     var_name='comparison',
     value_name='proportion'
 )
-fig, ax = plt.subplots(figsize=(12, 6))
+fig, axs = plt.subplots(2, 1, figsize=(12, 8))
 sns.lineplot(
     data=plot_df.loc[plot_df['comparison'] == 'A1_over_A2'],
     x='s_count',
     y='proportion',
-    #hue='comparison',
     hue='id',
     markers=True,
     dashes=False,
     ci=None,
-    ax=ax
+    ax=axs[0],
+    palette=sns.color_palette("tab10", n_colors=plot_df['id'].nunique())
 )
-ax.set_title('Proportion of A1/(A1+A2) and A3/(A3+A4) as a Function of s_count')
-ax.set_xlabel('s_count')
-ax.set_ylabel('Proportion')
+axs[0].set_xlabel('s_count')
+axs[0].set_ylabel('Proportion')
+
+sns.lineplot(
+    data=plot_df.loc[plot_df['comparison'] == 'A3_over_A4'],
+    x='s_count',
+    y='proportion',
+    hue='id',
+    markers=True,
+    dashes=False,
+    ci=None,
+    ax=axs[1],
+    palette=sns.color_palette("tab10", n_colors=plot_df['id'].nunique())
+)
 plt.tight_layout()
 plt.show()
+
+
 
 
 # Calculate maximum time_elapsed for each participant
@@ -117,26 +155,30 @@ plt.show()
 
 # Plot main effect
 unique_ids = test_data['id'].unique()
-unique_actions = ['A1', 'A2', 'A3', 'A4']  # Based on the plot
+unique_actions = ['A1', 'A2', 'A3', 'A4']
 unique_conditions = test_data['condition'].unique()
-all_combinations = pd.MultiIndex.from_product([unique_ids, unique_actions, unique_conditions], 
+all_combinations = pd.MultiIndex.from_product([unique_ids, unique_actions, unique_conditions],
                                              names=['id', 'action', 'condition'])
 action_counts = test_data.groupby(['id', 'action', 'condition']).size()
 action_counts = action_counts.reindex(all_combinations, fill_value=0).reset_index(name='count')
-#action_counts['proportion'] = action_counts['count'] / 24
 
 fig, axes = plt.subplots(1, 2, figsize=(16, 6))
-
+order = ['A1', 'A2', 'A3', 'A4']
 conditions = test_data['condition'].unique()
+
 for i, condition in enumerate(conditions):
     condition_data = action_counts[action_counts['condition'] == condition]
-    sns.pointplot(data=condition_data, x='action', y='count', hue='id', dodge=True, ax=axes[i], order=['A1', 'A2', 'A3', 'A4'])
-    axes[i].set_title(f'Condition {condition}')
+    # Boxplot shows distribution across participants; overlay individual points per id
+    sns.boxplot(data=condition_data, x='action', y='count', order=order, ax=axes[i], color='lightgray', showcaps=True)
+    sns.stripplot(data=condition_data, x='action', y='count', order=order, hue='id', dodge=True, ax=axes[i], jitter=True, size=6, palette=sns.color_palette("tab10", n_colors=plot_df['id'].nunique()))
+    axes[i].set_title(f'N(A3) = {15 if condition == 0 else 30}')
     axes[i].set_xlabel('Action')
-    axes[i].set_ylabel('Relative frequency')
+    axes[i].set_ylabel('Frequency')
     axes[i].legend(title='ID', bbox_to_anchor=(1.05, 1), loc='upper left')
 
 plt.tight_layout()
 plt.show()
+
+
 
 a = 1
