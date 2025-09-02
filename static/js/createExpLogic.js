@@ -210,7 +210,7 @@ function createTestPhase(designVars, allTrainingBlocksDef) {
           d.available_keys = ["f", "g", "h", "j"];
 	  	    d.image = img;
           d.attention_check = null;
-          if (key in ["f", "g", "h", "j"]) {
+          if (["f", "g", "h", "j"].includes(key)) {
             d.valid = true;
           } else {
             d.valid = false;
