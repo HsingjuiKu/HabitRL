@@ -36,7 +36,7 @@ subset = train_data[train_data['s_count'] > 0]
 prop_correct_per_id = subset.groupby('id')['correct'].mean().reset_index(name='prop_correct')
 
 fig, ax = plt.subplots(figsize=(10, 6))
-sns.barplot(data=prop_correct_per_id, x='id', y='prop_correct', palette='viridis', ax=ax)
+sns.barplot(data=prop_correct_per_id, x='id', y='prop_correct', palette=sns.color_palette("tab10", n_colors=train_data['id'].nunique()), ax=ax)
 ax.set_xlabel('Participant ID')
 ax.set_ylabel('')
 ax.set_title('')
@@ -66,48 +66,13 @@ prop_data = (
 )
 prop_data['A1_over_A2'] = prop_data['A1'] / (prop_data['A1'] + prop_data['A2'])
 prop_data['A3_over_A4'] = prop_data['A3'] / (prop_data['A3'] + prop_data['A4'])
-prop_data = prop_data.loc[prop_data['s_count'] <= 15, :]
-plot_df = prop_data.melt(
-    id_vars=['id', 's_count'],
-    value_vars=['A1_over_A2', 'A3_over_A4'],
-    var_name='comparison',
-    value_name='proportion'
-)
-fig, axs = plt.subplots(2, 1, figsize=(12, 8))
-sns.lineplot(
-    data=plot_df.loc[plot_df['comparison'] == 'A1_over_A2'],
-    x='s_count',
-    y='proportion',
-    hue='id',
-    markers=True,
-    dashes=False,
-    ci=None,
-    ax=axs[0],
-    palette=sns.color_palette("tab10", n_colors=plot_df['id'].nunique())
-)
-axs[0].set_xlabel('s_count')
-axs[0].set_ylabel('Proportion')
-
-sns.lineplot(
-    data=plot_df.loc[plot_df['comparison'] == 'A3_over_A4'],
-    x='s_count',
-    y='proportion',
-    hue='id',
-    markers=True,
-    dashes=False,
-    ci=None,
-    ax=axs[1],
-    palette=sns.color_palette("tab10", n_colors=plot_df['id'].nunique())
-)
+prop_data['correct'] = (prop_data['A1_over_A2'] + prop_data['A3_over_A4']) / 2
+prop_data = prop_data.loc[prop_data['s_count'] <= 20, :]
+fig, ax = plt.subplots(figsize=(12, 4))
+sns.lineplot(data=prop_data, x='s_count', y='correct', hue='id', markers=True, 
+             dashes=False, ci=None, ax=ax, palette=sns.color_palette("tab10", n_colors=prop_data['id'].nunique()))
 plt.tight_layout()
 plt.show()
-
-
-
-
-# Calculate maximum time_elapsed for each participant
-max_time_per_id = data.groupby('id')['time_elapsed'].max().reset_index(name='max_time_elapsed')
-max_time_per_id['max_time_elapsed'] /= 60000
 
 # Plot number of different actions per image and id in test_data
 unique_actions_per_image = test_data.groupby(['id', 'image'])['action'].nunique().reset_index(name='num_actions')
@@ -128,7 +93,7 @@ attention_check_accuracy = attention_check_data.groupby(['id', 'condition']).app
 ).reset_index(name='accuracy')
 
 fig, ax = plt.subplots(figsize=(10, 6))
-sns.barplot(data=attention_check_accuracy, x='condition', y='accuracy', hue='id', ax=ax)
+sns.barplot(data=attention_check_accuracy, x='condition', y='accuracy', hue='id', ax=ax, palette=sns.color_palette("tab10", n_colors=prop_data['id'].nunique()))
 ax.set_title('Attention Check Accuracy by Condition')
 ax.set_xlabel('Condition')
 ax.set_ylabel('Accuracy (Proportion Correct)')
@@ -170,7 +135,7 @@ for i, condition in enumerate(conditions):
     condition_data = action_counts[action_counts['condition'] == condition]
     # Boxplot shows distribution across participants; overlay individual points per id
     sns.boxplot(data=condition_data, x='action', y='count', order=order, ax=axes[i], color='lightgray', showcaps=True)
-    sns.stripplot(data=condition_data, x='action', y='count', order=order, hue='id', dodge=True, ax=axes[i], jitter=True, size=6, palette=sns.color_palette("tab10", n_colors=plot_df['id'].nunique()))
+    sns.stripplot(data=condition_data, x='action', y='count', order=order, hue='id', dodge=True, ax=axes[i], jitter=True, size=6, palette=sns.color_palette("tab10", n_colors=test_data['id'].nunique()))
     axes[i].set_title(f'N(A3) = {15 if condition == 0 else 30}')
     axes[i].set_xlabel('Action')
     axes[i].set_ylabel('Frequency')
