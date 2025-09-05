@@ -9,7 +9,7 @@ const CONTINUEEXP = '<p class="continue" style="text-align: center;"><br/>[Press
 const instrPage1 = '<h3>Instruction 1/7</h3>'
     + '<p>'
     + 'In this experiment, you will see a series of images on the screen.<br/><br/>'
-    + 'You can respond to each image by pressing one of the following buttons on the keyboard:'
+    + 'You can respond to each image by pressing one of the following keys on the keyboard:'
     + '</p>'
     + `<div style="display: flex; justify-content: center; gap: 40px; margin: 20px 0;">`
     + showAvailableKeys(['f', 'g', 'h', 'j'])
@@ -17,9 +17,9 @@ const instrPage1 = '<h3>Instruction 1/7</h3>'
 
 const instrPage2 = '<h3>Instruction 2/7</h3>'
     + '<p>'
-    + 'Pressing a button in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> points.<br/>'
+    + 'Pressing a key in response to an image can give you <span style="color:red;">0</span> or <span style="color:green;">+1</span> points.<br/>'
     + 'Your goal is to <b>collect as many points as possible!</b><br/><br/>'
-    + 'How often you receive <span style="color:red;">0</span> or <span style="color:green;">+1</span> points <b>depends on each button and each image</b>: '
+    + 'How often you receive <span style="color:red;">0</span> or <span style="color:green;">+1</span> points <b>depends on each key and each image</b>: '
     + 'some will give you points more often, others rarely. <b>Try to figure it out!</b><br/>'
     + '</p></div>' + CONTINUE;
 
@@ -31,8 +31,8 @@ const instrPage2 = '<h3>Instruction 2/7</h3>'
 
   const instrPage4 = '<h3>Instruction 4/7</h3>'
     + '<p>'
-    + 'For each image you will learn all four buttons on the keyboard.<br/><br/>'
-    + 'However, you will <b>not always be allowed to press all four buttons at all times</b>. You will see which are available under the image.<br/><br/>'
+    + 'For each image you will learn all four keys on the keyboard.<br/><br/>'
+    + 'However, you will <b>not always be allowed to press all four keys at all times</b>. You will see which are available under the image.<br/><br/>'
     + 'For example, in this trial, only F and H are available - make sure you choose between <b>those two only</b>.<br/>'
     + `<div style="display: flex; justify-content: center; gap: 40px; margin: 20px 0;">`
     + showAvailableKeys(['f', 'h'])
@@ -41,21 +41,21 @@ const instrPage2 = '<h3>Instruction 2/7</h3>'
   const instrPage5 = '<h3>Instruction 5/7</h3>'
     + '<p>'
     + 'There will be <b>eight blocks</b>, each with <b>two images</b> to learn about. You can take short breaks between each block.<br/><br/>'
-    + 'The buttons that will give more <span style="color:green;">+1</span> points will <b>never be the same for both images</b>. '
-    + 'So if F gives more <span style="color:green;">+1</span> points for one image, button H will give more <span style="color:green;">+1</span> points for the other image (if only F and H are available).<br/>'
+    + 'The keys that will give more <span style="color:green;">+1</span> points will <b>never be the same for both images</b>. '
+    + 'So, for example, when only F and H are available, if pressing F gives more <span style="color:green;">+1</span> points for one image, pressing H will give more <span style="color:green;">+1</span> points for the other image.<br/>'
     + '</p></div>' + CONTINUE;
 
   const instrPage6 = '<h3>Instruction 6/7</h3>'
     + '<p>'
-    + 'To make sure you are paying attention, we will also show you occasionally an instruction to <b>press a specific button</b>, like shown below.<br/><br/>'
-    + 'Make sure you <b>press the correct button</b>.<br/>'
+    + 'To make sure you are paying attention, we will also show you occasionally an instruction to <b>press a specific key</b>, like shown below.<br/><br/>'
+    + 'Make sure you <b>press the correct key</b>.<br/>'
     + generateStimulus(`static/images/f.jpg`, ['f', 'g'])
     + '</p></div>' + CONTINUE;
 
   const instrPage7 = '<h3 style="font-size: 2em; ">Instruction 7/7</h3>'
     + '<p>'
     + 'You will now start the main experiment.<br/><br/>'
-    + 'Before you start, please <b>position your dominant hand with one finger on each button</b>, and keep it there for the block duration!<br/><br/>'
+    + 'Before you start, please <b>position your dominant hand with one finger on each key</b>, and keep it there for the block duration!<br/><br/>'
     + '</p></div>' + '<p class="continue" style="text-align: center;"><br/>[Press SPACE to start the experiment or X to go back]</p>';
 
 const createInstructions = function() {
