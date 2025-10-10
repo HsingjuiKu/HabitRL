@@ -86,6 +86,20 @@ test_action_counts['proportion'] = test_action_counts['a_count'] / test_action_c
 test_action_counts = test_action_counts.merge(train_action_counts[['id', 'image', 'action', 'condition']], on=['id', 'image', 'action'], how='left')
 test_action_counts['phase'] = 'test'
 
+# Overall train-test proportion correlation per id & image
+# Overall train-test proportion correlation per id & image
+overall_corr_data = train_action_counts[['id', 'image', 'action', 'proportion_total']].merge(
+    test_action_counts[['id', 'image', 'action', 'proportion']], on=['id', 'image', 'action']
+).rename(columns={'proportion_total': 'train_prop', 'proportion': 'test_prop'})
+
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.regplot(x='train_prop', y='test_prop', data=overall_corr_data, ax=ax, scatter_kws={'alpha':0.5})
+overall_corr = overall_corr_data['train_prop'].corr(overall_corr_data['test_prop'])
+ax.set_title(f'Overall Train vs Test Proportions (r={overall_corr:.2f})')
+ax.set_xlabel('Train Proportion')
+ax.set_ylabel('Test Proportion')
+plt.show()
+
 # Prepare data for a_count scatterplots
 train_a_counts = train_action_counts.pivot_table(values='a_count', index=['id', 'image', 'condition'], columns='action', fill_value=0).reset_index()
 test_a_counts = test_action_counts.pivot_table(values='a_count', index=['id', 'image', 'condition'], columns='action', fill_value=0).reset_index()
