@@ -95,6 +95,15 @@ function createTrainingPhase(BlockDefs) {
                 d.attention_check = false;
                 if (allowedKeys.includes(key)) { // valid trial
                   d.valid = true;
+                  d.aRewards = actions.reduce((acc, act) => {
+                    acc[act] = Math.random() < blockDef.rewardProbs[act] ? 1 : 0;
+                    return acc;
+                  }, {});
+                  d.keyRewards = {};
+                  Object.entries(d.aRewards).forEach(([act, reward]) => {
+                    const key = blockDef.keyMapping[imgIdx][act];
+                    d.keyRewards[key] = reward;
+                  });
                   if (['A1', 'A3'].includes(a)) {
                     d.reward = blockDef.rewards[imgIdx][a][actionCounts[imgIdx][a]];  // get pre-randomized reward for current image and action index
                   }
@@ -144,13 +153,14 @@ function createTrainingPhase(BlockDefs) {
                   return `<p style='color:red; font-size: 48px;'>Button not available!</p>`;
                 }
                 else {
-                  const r = jsPsych.data.get().last(1).values()[0].reward;
-                  return generateStimulus(`static/images/feedback_${r}.jpg`, allowedKeys);
+                  //const r = jsPsych.data.get().last(1).values()[0].reward;
+                  const rewards = jsPsych.data.get().last(1).values()[0].keyRewards;
+                  return generateStimulus(`static/images/fix_cross.jpg`, allowedKeys, rewards, key);
                 }
               }
             },
             choices: "NO_KEYS",
-            trial_duration: 1000,
+            trial_duration: 2000,
           }
         ],
         loop_function: () => {
