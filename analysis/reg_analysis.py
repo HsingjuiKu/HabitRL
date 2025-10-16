@@ -87,7 +87,6 @@ test_action_counts = test_action_counts.merge(train_action_counts[['id', 'image'
 test_action_counts['phase'] = 'test'
 
 # Overall train-test proportion correlation per id & image
-# Overall train-test proportion correlation per id & image
 overall_corr_data = train_action_counts[['id', 'image', 'action', 'proportion_total']].merge(
     test_action_counts[['id', 'image', 'action', 'proportion']], on=['id', 'image', 'action']
 ).rename(columns={'proportion_total': 'train_prop', 'proportion': 'test_prop'})
@@ -195,8 +194,6 @@ train_proportions = train_data.groupby(['id', 'condition', 'image']).apply(
 test_proportions = test_data.groupby(['id', 'condition', 'image']).apply(
     lambda x: (x['action'].isin(['A1', 'A3'])).mean()
 ).reset_index(name='proportion')
-
-# Every action
 
 
 pass

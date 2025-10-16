@@ -23,7 +23,7 @@ const showAvailableKeys = function showAvailableKeys(availableKeys, rewards=null
     htmlString += `
       <div style="
         text-align: center;
-        font-size: 100px;
+        font-size: 70px;
         font-weight: bold;
         color: ${fontColor};
         opacity: ${opacity};

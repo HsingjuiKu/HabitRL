@@ -183,7 +183,7 @@ axes[0].set_xticks([0, 1])
 axes[0].set_xticklabels(['N(A3) = 15', 'N(A3) = 30'])
 axes[0].get_legend().remove()
 
-# Plot A1 over A2
+# Plot A1 over A3
 a1_a3_pivot = a1_a3.pivot_table(index=['id', 'condition'], columns='action', values='proportion', fill_value=0).reset_index()
 a1_a3_pivot['A1_minus_A3'] = a1_a3_pivot['A1'] - a1_a3_pivot['A3']
 

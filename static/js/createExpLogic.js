@@ -39,16 +39,17 @@ function createTrainingPhase(BlockDefs) {
 
     // Participant information
     //trainingTimeline.push(...createBlockInstructions2(blockDef.condition, blockIdx, keys))
+    allowedKeys = jsPsych.randomization.sampleWithoutReplacement(keys, 2);
 
     // Training trails
     trainingTimeline.push({
       timeline: [
         { type: jsPsychHtmlKeyboardResponse, 
           stimulus: () => {
-            return generateStimulus(`static/images/fix_cross.jpg`, keys);
+            return generateStimulus(`static/images/fix_cross.jpg`, allowedKeys);
           }, 
           choices: "NO_KEYS", 
-          trial_duration: 500,
+          trial_duration: 1000,
         },
         {
           type: jsPsychHtmlKeyboardResponse,
@@ -59,7 +60,7 @@ function createTrainingPhase(BlockDefs) {
             else {
               img = blockDef.imgs[imgOrder[trialIdx]]
             }
-            return generateStimulus(`static/images/${img}.jpg`, keys);
+            return generateStimulus(`static/images/${img}.jpg`, allowedKeys);
           },
           choices: keys,
           trial_duration: 2000,
@@ -92,7 +93,9 @@ function createTrainingPhase(BlockDefs) {
               if (keys.includes(key)) { // valid trial
                 d.valid = true;
                 d.aRewards = actions.reduce((acc, act) => {
-                    acc[act] = jsPsych.randomization.sampleNormal(blockDef.rewardValues[act], blockDef.rewardSD);
+                    r = jsPsych.randomization.sampleNormal(blockDef.rewardValues[act], blockDef.rewardSD);
+                    r = Math.round(r * 10) / 10;
+                    acc[act] = r;
                   return acc;
                 }, {});
                 d.keyRewards = {};
@@ -145,7 +148,7 @@ function createTrainingPhase(BlockDefs) {
               }
               else {
                 const rewards = jsPsych.data.get().last(1).values()[0].keyRewards;
-                return generateStimulus(`static/images/fix_cross.jpg`, keys, rewards, key);
+                return generateStimulus(`static/images/fix_cross.jpg`, allowedKeys, rewards, key);
               }
             }
           },
@@ -154,6 +157,7 @@ function createTrainingPhase(BlockDefs) {
         }
       ],
       loop_function: () => {
+        allowedKeys = jsPsych.randomization.sampleWithoutReplacement(keys, 2);
         return Object.keys(blockDef.nActionTargets).every(
           key => actionCounts[imgOrder[trialIdx]][key] >= blockDef.nActionTargets[key]
         ) ? false : true;
