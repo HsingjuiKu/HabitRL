@@ -1,11 +1,4 @@
 const generateStimulus = function generateStimulus(imgSrc, availableKeys, rewards=null, selectedKey=null) {
-  const allKeys = ["f", "g", "h", "j"];
-  const keyLabels = {
-    "f": "A1",
-    "g": "A2",
-    "h": "A3",
-    "j": "A4"
-  };
 
   // Construct the HTML string
   let stimulusHTML = `
@@ -20,7 +13,7 @@ const showAvailableKeys = function showAvailableKeys(availableKeys, rewards=null
   
   // Rewards
   htmlString = `<div style="display: flex; justify-content: center; gap: 40px;">`
-  for (let key of ["f", "g", "h", "j"]) {
+  for (let key of ["f", "g", "h"]) {
     const isActive = availableKeys.includes(key);
     const opacityFactor = isActive ? 1 : 0.3;
     const opacity = rewards ? 1 * opacityFactor : 0;
@@ -45,7 +38,7 @@ const showAvailableKeys = function showAvailableKeys(availableKeys, rewards=null
   htmlString += `</div><div style="height: 40px;"></div></div>`;
 
   
-  for (let key of ["f", "g", "h", "j"]) {
+  for (let key of ["f", "g", "h"]) {
     const isActive = availableKeys.includes(key);
     const opacity = isActive ? 1 : 0.3;
     const borderColor = isActive ? '#000' : '#999';

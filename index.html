@@ -53,6 +53,9 @@
 
   async function runExp() {
 
+    const actions = ["A1", "A2", "A3"]
+    const keys = ["f", "g", "h"] 
+
     // Get ID and define file name
     const subj_id = jsPsych.data.getURLVariable("id")
     const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
@@ -71,7 +74,7 @@
     // Create timeline
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
-    timeline.push(...createInstructions());
+    //timeline.push(...createInstructions());
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
     timeline.push(...createEndInstructions(subj_id));
