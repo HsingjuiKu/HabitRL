@@ -9,6 +9,8 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const hFactor = designVars["h_factor"];
   const hFactorC1 = 1 // (hFactor - 1) / 2 + 1  // i.e., half of the factor of hFactor
   const nBlocks = designVars["n_blocks"];
+  const nAttChecks = designVars["n_att_checks"];
+  const nNoFeedbackTrials = designVars["n_no_feedback_trials"]
 
   // Latin square–based sets of action–key mappings (for each condition)
   shuffledActions = jsPsych.randomization.shuffle(actions)
@@ -65,7 +67,9 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       rewardSD: rewardSD,
       keyMapping: keyMap,
       nActionTargets: nActionTargets,
-      imgs: imgs
+      imgs: imgs,
+      nAttChecks: nAttChecks,
+      nNoFeedbackTrials: nNoFeedbackTrials,
     });
   }
 

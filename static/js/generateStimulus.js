@@ -18,14 +18,12 @@ const showAvailableKeys = function showAvailableKeys(availableKeys, rewards=null
     const opacityFactor = isActive ? 1 : 0.3;
     const opacity = rewards ? 1 * opacityFactor : 0;
     const r = rewards ? rewards[key] : 'X'
-    const fontColor = r == 1 ? 'green' : 'black';
 
     htmlString += `
       <div style="
         text-align: center;
         font-size: 70px;
         font-weight: bold;
-        color: ${fontColor};
         opacity: ${opacity};
         border: 2px solid #fff;
         border-radius: 8px;
