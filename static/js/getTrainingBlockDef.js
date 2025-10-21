@@ -2,10 +2,14 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
 
   // Unpack key design variables
   const rewardProbs = designVars["reward_probabilities"];
+  const rewardValues = designVars["reward_values"];
+  const rewardSD = designVars["reward_sd"];
   const nReps = designVars["n_repetitions"];
   const hFactor = designVars["h_factor"];
   const hFactorC1 = 1 // (hFactor - 1) / 2 + 1  // i.e., half of the factor of hFactor
   const nBlocks = designVars["n_blocks"];
+  const nAttChecks = designVars["n_att_checks"];
+  const nNoFeedbackTrials = designVars["n_no_feedback_trials"]
 
   // Latin square–based sets of action–key mappings (for each condition)
   const actions = ["A1", "A2", "A3", "A4"]
@@ -38,10 +42,6 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     const isCond1 = i < nBlocks / 2; // First half Condition 1, last half Condition 2
     const condition = isCond1 ? 0 : 1;
     const subBlockOrder = i % 2 == 0 ? "A12A34" : "A34A12"  // Alternate order of sub-blocks
-    const rewards = {  // initialize dict to pre-randomize rewards
-      0: {'A1': null, 'A3': null},
-      1: {'A1': null, 'A3': null}
-    }
 
     // Determine action-key mapping
     const keyMap = {
@@ -55,24 +55,6 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     }
     
     if (condition == 0){
-
-      // Pre-randomize rewards
-      const rewardsA1 = new Array(nReps * hFactorC1).fill(0);
-      const numOnesA1 = Math.round(nReps * hFactorC1 * rewardProbs['A1']);
-      for (let j = 0; j < numOnesA1; j++) {
-        rewardsA1[j] = 1;
-      }
-      rewards[0]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
-      rewards[1]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
-
-      const rewardsA3 = new Array(nReps * hFactorC1).fill(0);
-      const numOnesA3 = Math.round(nReps * hFactorC1 * rewardProbs['A3']);
-      for (let j = 0; j < numOnesA3; j++) {
-        rewardsA3[j] = 1;
-      }
-      rewards[0]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
-      rewards[1]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
-
       // Determine number of required actions
       if (subBlockOrder == "A12A34"){
         subblocks = [
@@ -88,24 +70,6 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       }
     }
     else {
-
-      // Pre-randomize rewards
-      const rewardsA1 = new Array(nReps).fill(0);
-      const numOnesA1 = Math.round(nReps * rewardProbs['A1']);
-      for (let j = 0; j < numOnesA1; j++) {
-        rewardsA1[j] = 1;
-      }
-      rewards[0]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
-      rewards[1]['A1'] = jsPsych.randomization.shuffle(rewardsA1);
-
-      const rewardsA3 = new Array(nReps * hFactor).fill(0);
-      const numOnesA3 = Math.round(nReps * hFactor * rewardProbs['A3']);
-      for (let j = 0; j < numOnesA3; j++) {
-        rewardsA3[j] = 1;
-      }
-      rewards[0]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
-      rewards[1]['A3'] = jsPsych.randomization.shuffle(rewardsA3);
-
       // Determine number of required actions
       if (subBlockOrder == "A12A34"){
         subblocks = [
@@ -124,10 +88,13 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     blocks.push({
       condition: condition,
       rewardProbs: rewardProbs,
+      rewardValues: rewardValues,
+      rewardSD: rewardSD,
       keyMapping: keyMap,
       subblocks: subblocks,
       imgs: imgs,
-      rewards: rewards
+      nAttChecks: nAttChecks,
+      nNoFeedbackTrials: nNoFeedbackTrials,
     });
   }
 

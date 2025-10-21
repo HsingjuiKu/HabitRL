@@ -1,11 +1,4 @@
 const generateStimulus = function generateStimulus(imgSrc, availableKeys) {
-  const allKeys = ["f", "g", "h", "j"];
-  const keyLabels = {
-    "f": "A1",
-    "g": "A2",
-    "h": "A3",
-    "j": "A4"
-  };
 
   // Construct the HTML string
   let stimulusHTML = `
