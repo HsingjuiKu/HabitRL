@@ -5,6 +5,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const rewardProbs = designVars["reward_probabilities"];
   const rewardValues = designVars["reward_values"];
   const rewardSD = designVars["reward_sd"];
+  const setSize = designVars["set_size"];
   const nReps = designVars["n_repetitions"];
   const hFactor = designVars["h_factor"];
   const hFactorC1 = 1 // (hFactor - 1) / 2 + 1  // i.e., half of the factor of hFactor
@@ -39,32 +40,27 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   // Construct all training blocks
   const blocks = [];
   for (let i = 0; i < nBlocks; i++) {
-    const imgs = {0: imgs_numbers[i * 2], 1: imgs_numbers[i * 2 + 1]}
-    const isCond1 = i < nBlocks / 2; // First half Condition 1, last half Condition 2
-    const condition = isCond1 ? 0 : 1;
+    const imgs = {};
+    for (let j = 0; j < setSize; j++) {
+      imgs[j] = imgs_numbers[i * setSize + j];
+    }
+    const condition = i < nBlocks / 2 ? nReps : nReps * hFactor; // First half Condition 1, last half Condition 2
 
     // Determine action-key mapping
-    const keyMap = {
-      0: actionKeyMappings[i],
-      1: {  // Flip action-key-mapping for second image
-        'A1': actionKeyMappings[i]['A2'],
-        'A2': actionKeyMappings[i]['A3'],
-        'A3': actionKeyMappings[i]['A1'],
-      }
+    const keyMap = {}
+    for (let j = 0; j < setSize; j++) {
+      keyMap[j] = actionKeyMappings[(i + j) % actionKeyMappings.length];
     }
     
     // Determine number of required actions
-    if (condition == 0){
-      nActionTargets = {'A1': nReps, 'A2': nReps * hFactorC1, 'A3': 0};
-    } else {
-      nActionTargets = {'A1': nReps, 'A2': nReps * hFactor, 'A3': 0};
-    }
+    nActionTargets = {'A1': nReps, 'A2': condition, 'A3': 0};
     
     blocks.push({
       condition: condition,
       rewardProbs: rewardProbs,
       rewardValues: rewardValues,
       rewardSD: rewardSD,
+      setSize: setSize,
       keyMapping: keyMap,
       nActionTargets: nActionTargets,
       imgs: imgs,

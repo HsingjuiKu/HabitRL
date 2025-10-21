@@ -14,26 +14,35 @@ function createTrainingPhase(BlockDefs) {
 
     // Definitions
     let trialIdx = 0
-    let imgCounts = {0: 0, 1: 0} // for functionality, does include invalid trials
-    let stimCounts = {0: 0, 1: 0}; // for data saving, does not include invalid trails
-    let actionCounts = {
-      0: {A1: 0, A2: 0, A3: 0}, 
-      1: {A1: 0, A2: 0, A3: 0},
-    };
-    let subsets = {
-      0: jsPsych.randomization.shuffle([
-        ...Array(blockDef.nActionTargets['A1']).fill(1),
-        ...Array(blockDef.nActionTargets['A2']).fill(2)
-      ]),
-      1: jsPsych.randomization.shuffle([
-        ...Array(blockDef.nActionTargets['A1']).fill(1),
-        ...Array(blockDef.nActionTargets['A2']).fill(2)]),
+    let imgCounts = {};  // functional, counts all trials
+    let stimCounts = {};  // for data saving, only counts valid trials
+    let actionCounts = {};
+    let subsets = {};  // which actions should be available
+    let imgOrder = []
+    const minNTrials = Object.values(blockDef.nActionTargets).reduce((sum, count) => sum + count, 0);  // trials per image
+    for (let i = 0; i < blockDef.setSize; i++) {
+      imgCounts[i] = 0;
+      stimCounts[i] = 0;
+      actionCounts[i] = {A1: 0, A2: 0, A3: 0};
+      subsets[i] = jsPsych.randomization.shuffle([
+        ...Array(blockDef.nActionTargets['A1']).fill(['A1', 'A3']),
+        ...Array(blockDef.nActionTargets['A2']).fill(['A2', 'A3'])
+      ])
+      imgOrder = [
+        ...imgOrder,
+        ...Array(minNTrials - 5).fill(i)  // -5 because of blocking below
+      ]
     }
-    const minNTrials = Object.values(blockDef.nActionTargets).reduce((sum, count) => sum + count, 0);  // per image
-    const imgOrder = jsPsych.randomization.shuffle([
-      ...Array(minNTrials).fill(0), 
-      ...Array(minNTrials).fill(1)
-    ]);
+    imgOrder = jsPsych.randomization.shuffle(imgOrder)
+
+    // Block images in the beginning to speed up learning
+    initOrder = jsPsych.randomization.shuffle(Array.from({ length: blockDef.setSize }, (_, i) => i))
+    for (let i = 0; i < blockDef.setSize; i++) {
+      imgOrder = [
+        ...Array(5).fill(initOrder[i]),
+        ...imgOrder,
+      ]
+    }
 
     // Attention checks
     const idx_array = Array.from({ length: minNTrials * 2 }, (_, i) => i + 1)
@@ -56,7 +65,7 @@ function createTrainingPhase(BlockDefs) {
           type: jsPsychHtmlKeyboardResponse, 
           stimulus: () => {
             const imgIdx = imgOrder[trialIdx]
-            const availableActions = subsets[imgIdx][imgCounts[imgIdx]] === 1 ? ['A1', 'A3'] : ['A2', 'A3']
+            const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             return generateStimulus(`static/images/fix_cross.jpg`, availableKeys);
           }, 
@@ -75,7 +84,7 @@ function createTrainingPhase(BlockDefs) {
               img = blockDef.imgs[imgOrder[trialIdx]]
             }
             const imgIdx = imgOrder[trialIdx]
-            const availableActions = subsets[imgIdx][imgCounts[imgIdx]] === 1 ? ['A1', 'A3'] : ['A2', 'A3']
+            const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             return generateStimulus(`static/images/${img}.jpg`, availableKeys);
           },
@@ -85,7 +94,7 @@ function createTrainingPhase(BlockDefs) {
           // Save data
           on_finish: d => {
             const imgIdx = imgOrder[trialIdx]
-            const availableActions = subsets[imgIdx][imgCounts[imgIdx]] === 1 ? ['A1', 'A3'] : ['A2', 'A3']
+            const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             const key = d.response;
             const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
@@ -137,6 +146,7 @@ function createTrainingPhase(BlockDefs) {
               else if (!availableKeys.includes(key)) {  // invalid trial
                 d.valid = false;
                 imgOrder.push(imgIdx);  // if response too slow or wrong button was pressed, append that image to imgOrder again
+                subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
               }
             }
           }
@@ -169,13 +179,13 @@ function createTrainingPhase(BlockDefs) {
               }
               else {
                 const imgIdx = imgOrder[trialIdx]
-                const availableActions = subsets[imgIdx][imgCounts[imgIdx]] === 1 ? ['A1', 'A3'] : ['A2', 'A3']
+                const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
                 const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
 
                 showRewards = true;
                 //if (trialIdx > 0 && ['A1', 'A2'].includes(a)) {
                 const actionCounts = jsPsych.data.get().last(1).values()[0].action_counts
-                if (actionCounts[imgIdx][a] > 5 && ['A1', 'A2'].includes(a)) {
+                if (actionCounts[imgIdx][a] > 10 && ['A1', 'A2'].includes(a)) {
                   showRewards = false;
                 }
                 if (showRewards) {
@@ -189,7 +199,7 @@ function createTrainingPhase(BlockDefs) {
             }
           },
           choices: "NO_KEYS",
-          trial_duration: 2000,
+          trial_duration: 2500,
         }
       ],
       loop_function: () => {
