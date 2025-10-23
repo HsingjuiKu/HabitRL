@@ -108,7 +108,7 @@ const createBlockInstructions1 = function(condition, blockIdx) {
       + '<p>'
       + 'Before continuing with the next image, please take a short break.<br/><br/>'
       + 'You can continue in 30 seconds.',
-      trial_duration: 30000,
+      trial_duration: 300,
       on_start: () => {
         save_data_csv();
       }

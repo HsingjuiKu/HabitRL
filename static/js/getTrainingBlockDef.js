@@ -13,6 +13,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const nAttChecks = designVars["n_att_checks"];
   const nNoFeedbackTrials = designVars["n_no_feedback_trials"];
   const completeReward = designVars["complete_reward"];
+  const includeIntro = designVars["include_intro"];
 
   // Latin square–based sets of action–key mappings (for each condition)
   shuffledActions = jsPsych.randomization.shuffle(actions)
@@ -67,6 +68,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       nAttChecks: nAttChecks,
       nNoFeedbackTrials: nNoFeedbackTrials,
       completeReward: completeReward,
+      includeIntro: includeIntro,
     });
   }
 

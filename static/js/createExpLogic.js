@@ -25,25 +25,16 @@ function createTrainingPhase(BlockDefs) {
       stimCounts[i] = 0;
       actionCounts[i] = {A1: 0, A2: 0, A3: 0};
       subsets[i] = jsPsych.randomization.shuffle([
-        ...Array(blockDef.nActionTargets['A1'] * .5).fill(['A1', 'A3']),
-        ...Array(blockDef.nActionTargets['A1'] * .5).fill(['A1', 'A2']),
+        ...Array(blockDef.nActionTargets['A1'] * 0).fill(['A1', 'A3']),
+        ...Array(blockDef.nActionTargets['A1'] * 1).fill(['A1', 'A2']),
         ...Array(blockDef.nActionTargets['A2']).fill(['A2', 'A3'])
       ])
       imgOrder = [
         ...imgOrder,
-        ...Array(minNTrials - 5).fill(i)  // -5 because of blocking below
+        ...Array(minNTrials).fill(i)
       ]
     }
     imgOrder = jsPsych.randomization.shuffle(imgOrder)
-
-    // Block images in the beginning to speed up learning
-    initOrder = jsPsych.randomization.shuffle(Array.from({ length: blockDef.setSize }, (_, i) => i))
-    for (let i = 0; i < blockDef.setSize; i++) {
-      imgOrder = [
-        ...Array(5).fill(initOrder[i]),
-        ...imgOrder,
-      ]
-    }
 
     // Attention checks
     const idx_array = Array.from({ length: minNTrials * 2 }, (_, i) => i + 1)
@@ -57,6 +48,83 @@ function createTrainingPhase(BlockDefs) {
 
     // Participant information
     //trainingTimeline.push(...createBlockInstructions2(blockDef.condition, blockIdx, keys))
+
+    // Intro trials
+    if (blockDef.includeIntro > 0) {
+      const initOrder = jsPsych.randomization.shuffle(Array.from({ length: blockDef.setSize }, (_, i) => i));
+
+      // Generate rewards
+      aRewards = {};
+      keyRewards = {};
+      for (let i = 0; i < blockDef.setSize; i++) {
+        if (blockDef.rewardValues) {
+          aRewards[i] = actions.reduce((acc, act) => {
+            acc[act] = Array.from({ length: blockDef.includeIntro }, () => {
+              let r = jsPsych.randomization.sampleNormal(blockDef.rewardValues[act], blockDef.rewardSD);
+              return Math.round(r * 10) / 10;
+            });
+            return acc;
+          }, {});
+        } else {
+          aRewards[i] = actions.reduce((acc, act) => {
+            const nOnes = Math.round(blockDef.rewardProbs[act] * blockDef.includeIntro);
+            const arr = Array(nOnes).fill(1).concat(Array(blockDef.includeIntro - nOnes).fill(0));
+            acc[act] = jsPsych.randomization.shuffle(arr);
+            return acc;
+          }, {});
+        }
+        keyRewards[i] = {};
+        Object.entries(aRewards[i]).forEach(([act, reward]) => {
+          const key = blockDef.keyMapping[i][act];
+          keyRewards[i][key] = reward;
+        });
+      }
+
+      // Present rewards
+      for (let i = 0; i < blockDef.setSize; i++) {
+        trainingTimeline.push({
+          timeline: [
+            // Stimulus
+            {
+              type: jsPsychHtmlKeyboardResponse,
+              stimulus: () => {
+                img = blockDef.imgs[initOrder[i]]
+                return generateStimulus(`static/images/${img}.jpg`, keys);
+              },
+              choices: [" "],
+            },
+          ]
+        })
+        for (let j = 0; j < blockDef.includeIntro; j++) {
+          trainingTimeline.push({
+            timeline: [
+            // Feedback (+ Stimulus)
+            {
+              type: jsPsychHtmlKeyboardResponse,
+              stimulus: () => {
+                rewards = {};
+                Object.keys(keyRewards[initOrder[i]]).forEach(key => {
+                  rewards[key] = keyRewards[initOrder[i]][key][j];
+                });
+                img = blockDef.imgs[initOrder[i]];
+                return generateStimulus(`static/images/${img}.jpg`, keys, rewards, null, true);
+              },
+              choices: " ",
+            },
+            // Stimulus
+            {
+              type: jsPsychHtmlKeyboardResponse,
+              stimulus: () => {
+                img = blockDef.imgs[initOrder[i]]
+                return generateStimulus(`static/images/${img}.jpg`, keys);
+              },
+              trial_duration: 200,
+            },
+          ],
+          })
+        }
+      }
+    }
 
     // Training trails
     trainingTimeline.push({
@@ -115,24 +183,36 @@ function createTrainingPhase(BlockDefs) {
               d.attention_check = true;
               d.reward = key == d.image ? 1 : 0;
             }
-            else {  // if regular trial
+
+            // If regular trial
+            else {  
               d.image = blockDef.imgs[imgIdx]
               d.attention_check = false;
               if (availableKeys.includes(key)) { // valid trial
                 d.valid = true;
-                d.aRewards = actions.reduce((acc, act) => {
+
+                // Determine rewards
+                if (blockDef.rewardValues) {
+                  d.aRewards = actions.reduce((acc, act) => {
                     r = jsPsych.randomization.sampleNormal(blockDef.rewardValues[act], blockDef.rewardSD);
                     r = Math.round(r * 10) / 10;
                     acc[act] = r;
-                  return acc;
-                }, {});
+                    return acc;
+                  }, {});
+                } else {
+                  d.aRewards = actions.reduce((acc, act) => {
+                    r = Math.random() < blockDef.rewardProbs[act] ? 1 : 0;
+                    acc[act] = r;
+                    return acc;
+                  }, {});
+                }
                 d.keyRewards = {};
                 Object.entries(d.aRewards).forEach(([act, reward]) => {
                   const key = blockDef.keyMapping[imgIdx][act];
                   d.keyRewards[key] = reward;
                 });
                 d.reward = d.keyRewards[key];
-                if (a == 'A3') {
+                if (a == 'A3'  || (a == 'A2' && availableActions.includes('A1'))) {
                   imgOrder.push(imgIdx)  // if A3 was pressed, append that image to imgOrder again
                   subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
                 }
@@ -187,7 +267,11 @@ function createTrainingPhase(BlockDefs) {
                 //if (trialIdx > 0 && ['A1', 'A2'].includes(a)) {
                 const actionCounts = jsPsych.data.get().last(1).values()[0].action_counts
 
-                if (actionCounts[imgIdx][a] > 10 && ['A2'].includes(a) && availableActions.includes('A3')) {
+                if (
+                  actionCounts[imgIdx][a] > (blockDef.nActionTargets['A2'] - blockDef.nNoFeedbackTrials) 
+                  && ['A2'].includes(a)
+                  && availableActions.includes('A3')
+                ) {
                   showRewards = false;
                 }
                 if (showRewards) {
@@ -211,7 +295,7 @@ function createTrainingPhase(BlockDefs) {
         trialIdx++;
 
         // Block end condition
-        let complete = [false, false]
+        let complete = Array(blockDef.setSize).fill(false);
         for (const img in actionCounts) {
           for (const action in blockDef.nActionTargets) {
             if (actionCounts[img][action] < blockDef.nActionTargets[action]) {
@@ -224,6 +308,8 @@ function createTrainingPhase(BlockDefs) {
         }
         if (complete.includes(false)) {
           return true;
+        } else {
+          return false;
         }
       }
     });
