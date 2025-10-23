@@ -11,7 +11,8 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const hFactorC1 = 1 // (hFactor - 1) / 2 + 1  // i.e., half of the factor of hFactor
   const nBlocks = designVars["n_blocks"];
   const nAttChecks = designVars["n_att_checks"];
-  const nNoFeedbackTrials = designVars["n_no_feedback_trials"]
+  const nNoFeedbackTrials = designVars["n_no_feedback_trials"];
+  const completeReward = designVars["complete_reward"];
 
   // Latin square–based sets of action–key mappings (for each condition)
   shuffledActions = jsPsych.randomization.shuffle(actions)
@@ -19,11 +20,10 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     { [shuffledActions[0]]: "f", [shuffledActions[1]]: "g", [shuffledActions[2]]: "h" },
     { [shuffledActions[0]]: "g", [shuffledActions[1]]: "h", [shuffledActions[2]]: "f" },
     { [shuffledActions[0]]: "h", [shuffledActions[1]]: "f", [shuffledActions[2]]: "g" },
-    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "g", [shuffledActions[2]]: "h" },
-    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "h", [shuffledActions[2]]: "f" },
-    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "f", [shuffledActions[2]]: "g" },
-    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "g", [shuffledActions[2]]: "h" },
-    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "h", [shuffledActions[2]]: "f" },
+
+    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "h", [shuffledActions[2]]: "g" },
+    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "g", [shuffledActions[2]]: "f" },
+    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "f", [shuffledActions[2]]: "h" },
   ];
   
   if (Math.random() < 0.5) {  // switching first and second half randomly to equally distribute across conditions
@@ -34,7 +34,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   }
   
   // Assign images
-  let imgs_numbers = Array.from({ length: nBlocks * 2 }, (_, i) => i + 1);
+  let imgs_numbers = Array.from({ length: nBlocks * setSize }, (_, i) => i + 1);
   imgs_numbers = jsPsych.randomization.shuffle(imgs_numbers)
 
   // Construct all training blocks
@@ -49,7 +49,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     // Determine action-key mapping
     const keyMap = {}
     for (let j = 0; j < setSize; j++) {
-      keyMap[j] = actionKeyMappings[(i + j) % actionKeyMappings.length];
+      keyMap[j] = actionKeyMappings[3 * (i%2) + j];
     }
     
     // Determine number of required actions
@@ -66,6 +66,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       imgs: imgs,
       nAttChecks: nAttChecks,
       nNoFeedbackTrials: nNoFeedbackTrials,
+      completeReward: completeReward,
     });
   }
 

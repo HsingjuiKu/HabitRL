@@ -25,7 +25,8 @@ function createTrainingPhase(BlockDefs) {
       stimCounts[i] = 0;
       actionCounts[i] = {A1: 0, A2: 0, A3: 0};
       subsets[i] = jsPsych.randomization.shuffle([
-        ...Array(blockDef.nActionTargets['A1']).fill(['A1', 'A3']),
+        ...Array(blockDef.nActionTargets['A1'] * .5).fill(['A1', 'A3']),
+        ...Array(blockDef.nActionTargets['A1'] * .5).fill(['A1', 'A2']),
         ...Array(blockDef.nActionTargets['A2']).fill(['A2', 'A3'])
       ])
       imgOrder = [
@@ -185,7 +186,8 @@ function createTrainingPhase(BlockDefs) {
                 showRewards = true;
                 //if (trialIdx > 0 && ['A1', 'A2'].includes(a)) {
                 const actionCounts = jsPsych.data.get().last(1).values()[0].action_counts
-                if (actionCounts[imgIdx][a] > 10 && ['A1', 'A2'].includes(a)) {
+
+                if (actionCounts[imgIdx][a] > 10 && ['A2'].includes(a) && availableActions.includes('A3')) {
                   showRewards = false;
                 }
                 if (showRewards) {
@@ -194,7 +196,7 @@ function createTrainingPhase(BlockDefs) {
                   rewards = null
                 }
                 
-                return generateStimulus(`static/images/fix_cross.jpg`, availableKeys, rewards, key);
+                return generateStimulus(`static/images/fix_cross.jpg`, availableKeys, rewards, key, blockDef.completeReward);
               }
             }
           },
