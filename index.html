@@ -19,7 +19,8 @@
   <script src="static/js/endExperimentNow.js"></script>
   <script src="static/js/getTrainingBlockDef.js"></script>
   <script src="static/js/generateStimulus.js"></script>
-  <script src="static/js/createExpLogic.js"></script>
+  <script src="static/js/trainingPhase.js"></script>
+  <script src="static/js/testPhase.js"></script>
   <script src="static/js/createInstructions.js"></script>
    <script src="static/js/saveData.js"></script>
 
@@ -52,11 +53,11 @@
     }
   });
 
-  async function runExp() {
+  // Global variables
+  const actions = ["A1", "A2", "A3"];
+  const keys = ["f", "g", "h"];
 
-    const actions = ["A1", "A2", "A3"];
-    const keys = ["f", "g", "h"];
-    const doChecks = false;
+  async function runExp() {
 
     // Get ID and define file name
     const subj_id = jsPsych.data.getURLVariable("id")
@@ -76,8 +77,10 @@
     // Create timeline
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
-    //timeline.push(...createInstructions());
+    //timeline.push(...createFullScreenInstructions());
+    timeline.push(...createInstructions());
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
+    timeline.push(...createTestInstructions());
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
     timeline.push(...createEndInstructions(subj_id));
 

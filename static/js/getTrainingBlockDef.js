@@ -45,7 +45,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     for (let j = 0; j < setSize; j++) {
       imgs[j] = imgs_numbers[i * setSize + j];
     }
-    const condition = i < nBlocks / 2 ? nReps : nReps * hFactor; // First half Condition 1, last half Condition 2
+    const condition = i < nBlocks / 2 ? nReps * hFactor : nReps; // First half Condition 1, last half Condition 2
 
     // Determine action-key mapping
     const keyMap = {}
@@ -69,9 +69,11 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       nNoFeedbackTrials: nNoFeedbackTrials,
       completeReward: completeReward,
       includeIntro: includeIntro,
+      nBlocks: nBlocks,
     });
   }
 
   // Randomize block order
-  return jsPsych.randomization.shuffle(blocks);
+  //return jsPsych.randomization.shuffle(blocks);
+  return blocks
 }
