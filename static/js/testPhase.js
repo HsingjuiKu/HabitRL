@@ -6,7 +6,7 @@ function createTestPhase(vars, allTrainingBlocksDef) {
     const shuffledImgs = jsPsych.randomization.shuffle(imgs);
     const imgOrderTest = [].concat(...Array(nTestReps).fill(shuffledImgs));
     const actionCounts = { A1: 0, A2: 0, A3: 0 };
-    const testTimeline = [] //createTestInstructions()
+    const testTimeline = []
     let trialIdx = 0;
     testTimeline.push({
         timeline: [
@@ -30,11 +30,11 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                     const img = imgOrderTest[trialIdx];
                     const blockDef = allTrainingBlocksDef.find(def => Object.values(def.imgs).includes(img));
                     const imgIdx = Object.keys(blockDef.imgs).find(k => blockDef.imgs[k] === img);
+                    const key = d.response;
+                    const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
                     d.phase = 'test';
                     d.block = null;
                     d.trial = trialIdx;
-                    const key = d.response;
-                    const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
                     d.action = a;
                     d.a1_key = blockDef.keyMapping[imgIdx]['A1'];
                     d.a2_key = blockDef.keyMapping[imgIdx]['A2'];
@@ -44,7 +44,7 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                     d.reward_sd = blockDef.rewardSD;
                     d.condition = blockDef.condition;
                     d.available_keys = keys;
-    	  	            d.image = img;
+    	  	        d.image = img;
                     d.attention_check = null;
                     if (keys.includes(key)) {
                         d.valid = true;
@@ -53,12 +53,15 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                         imgOrderTest.push(img)
                         console.log(imgOrderTest)
                     }
-    	  	            d.reward = null;
+                    d.aRewards = null;
+                    d.keyRewards = null;
+    	  	        d.reward = null;
                     d.s_count = null;
                     actionCounts[a]++;
                     d.a1_count = actionCounts['A1'];
                     d.a2_count = actionCounts['A2'];
                     d.a3_count = actionCounts['A3'];
+                    d.action_counts = actionCounts;
     	  	    }
     	    },
             // Feedback

@@ -1,5 +1,5 @@
 function createTrainingPhase(BlockDefs) {
-
+  
   const trainingTimeline = [];
   BlockDefs.forEach((blockDef, blockIdx) => {
 
@@ -14,26 +14,16 @@ function createTrainingPhase(BlockDefs) {
     let stimCounts = {};  // for data saving, only counts valid trials
     let actionCounts = {};
     let subsets = {};  // which actions should be available
-    let imgOrder = []
-    const minNTrials = Object.values(blockDef.nActionTargets).reduce((sum, count) => sum + count, 0);  // trials per image
+    let imgOrder = shuffleImgOrder(blockDef);
     for (let i = 0; i < blockDef.setSize; i++) {
       imgCounts[i] = 0;
       stimCounts[i] = 0;
       actionCounts[i] = {A1: 0, A2: 0, A3: 0};
-      subsets[i] = jsPsych.randomization.shuffle([
-        ...Array(blockDef.nActionTargets['A1'] * .5).fill(['A1', 'A3']),
-        ...Array(blockDef.nActionTargets['A1'] * .5).fill(['A1', 'A2']),
-        ...Array(blockDef.nActionTargets['A2']).fill(['A2', 'A3'])
-      ])
-      imgOrder = [
-        ...imgOrder,
-        ...Array(minNTrials).fill(i)
-      ]
+      subsets[i] = shuffleSubsets(blockDef)
     }
-    imgOrder = jsPsych.randomization.shuffle(imgOrder)
 
     // Attention checks
-    const idx_array = Array.from({ length: minNTrials * 2 }, (_, i) => i + 1)
+    const idx_array = Array.from({ length: imgOrder.length * blockDef.setSize }, (_, i) => i)
     const attention_check_idx = jsPsych.randomization.sampleWithoutReplacement(idx_array, blockDef.nAttChecks);  // set number of attention checks here
     attention_check_idx.sort((a, b) => a - b);
     const attention_check_imgs = Array(attention_check_idx.length / 2).fill().map(() => jsPsych.randomization.shuffle(keys)).flat()
@@ -172,18 +162,18 @@ function createTrainingPhase(BlockDefs) {
             d.reward_values = blockDef.rewardValues;
             d.reward_sd = blockDef.rewardSD;
             d.condition = blockDef.condition;
+            d.available_keys = availableKeys;
             if (attention_check_idx.includes(trialIdx)) {
               d.image = attention_check_dict[trialIdx];
               d.attention_check = true;
               d.reward = key == d.image ? 1 : 0;
-            }
-
-            // If regular trial
-            else {  
+            } else {  
               d.image = blockDef.imgs[imgIdx]
               d.attention_check = false;
               if (availableKeys.includes(key)) { // valid trial
                 d.valid = true;
+                actionCounts[imgIdx][a]++;
+                stimCounts[imgIdx]++;
 
                 // Determine rewards
                 if (blockDef.rewardValues) {
@@ -207,21 +197,20 @@ function createTrainingPhase(BlockDefs) {
                 });
                 d.reward = d.keyRewards[key];
                 if (a == 'A3'  || (a == 'A2' && availableActions.includes('A1'))) {
-                  imgOrder.push(imgIdx)  // if A3 was pressed, append that image to imgOrder again
-                  subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
+                  imgOrder = repeatTrial(imgOrder, trialIdx, imgCounts, subsets)
+                  //imgOrder.push(imgIdx)  // if A3 was pressed, append that image to imgOrder again
+                  //subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
                 }
-                actionCounts[imgIdx][a]++;
-                stimCounts[imgIdx]++;
                 d.s_count = stimCounts[imgIdx];
                 d.a1_count = actionCounts[imgIdx]['A1'];
                 d.a2_count = actionCounts[imgIdx]['A2'];
                 d.a3_count = actionCounts[imgIdx]['A3'];
                 d.action_counts = actionCounts;
-              }
-              else if (!availableKeys.includes(key)) {  // invalid trial
+              } else if (!availableKeys.includes(key)) {  // invalid trial
                 d.valid = false;
-                imgOrder.push(imgIdx);  // if response too slow or wrong button was pressed, append that image to imgOrder again
-                subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
+                imgOrder = repeatTrial(imgOrder, trialIdx, imgCounts, subsets)
+                //imgOrder.push(imgIdx)  // if A3 was pressed, append that image to imgOrder again
+                //subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
               }
             }
           }
@@ -248,8 +237,7 @@ function createTrainingPhase(BlockDefs) {
               }
               attention_check_idx.shift(); // drop attention check element after it has been presented
               return feedback
-            }
-            else {  // if regular trial
+            } else {  // if regular trial
               if (typeof a === 'undefined') {
                 return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
               } else if (!availableKeys.includes(key)) {

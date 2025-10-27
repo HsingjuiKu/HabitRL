@@ -70,6 +70,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       completeReward: completeReward,
       includeIntro: includeIntro,
       nBlocks: nBlocks,
+      nReps: nReps,
     });
   }
 
