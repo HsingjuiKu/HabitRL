@@ -25,8 +25,8 @@ function shuffleImgOrder(blockDef) {
 function repeatTrial(imgOrder, trialIdx, imgCounts, subsets) {
     const imgIdx = imgOrder[trialIdx];
     const d = jsPsych.randomization.sampleWithoutReplacement(
-        Array.from({length: 10}, (_, k) => k + 10)
-    );
+        Array.from({length: 10}, (_, k) => k + 10), 1
+    )[0];
     const Idx = (trialIdx + d) < imgOrder.length ? d : imgOrder.length;
     const imgOrderNew = [
         ...imgOrder.slice(0, Idx),
@@ -35,8 +35,8 @@ function repeatTrial(imgOrder, trialIdx, imgCounts, subsets) {
     ];
     const subsetsNew = [
         ...subsets.slice(0, Idx),
-        subsets[imgIdx][imgCounts[imgIdx]],
+        subsets[imgCounts[imgIdx]],
         ...subsets.slice(Idx, subsets.length)
     ];
-    return imgOrderNew;
+    return [imgOrderNew, subsetsNew];
 }

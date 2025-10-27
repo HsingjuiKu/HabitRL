@@ -4,8 +4,8 @@ function createTrainingPhase(BlockDefs) {
   BlockDefs.forEach((blockDef, blockIdx) => {
 
     // Participant information
-    if (blockIdx > 0 && blockIdx < (blockDef.nBlocks - 1)) {
-      trainingTimeline.push(...createBlockInstructions1(blockDef.condition, blockIdx, blockDef.nBlocks));
+    if (blockIdx > 0 && blockIdx < (blockDef.nBlocks)) {
+      trainingTimeline.push(...createBlockInstructions1(blockIdx, blockDef.nBlocks));
     }
 
     // Definitions
@@ -26,11 +26,6 @@ function createTrainingPhase(BlockDefs) {
     const idx_array = Array.from({ length: imgOrder.length * blockDef.setSize }, (_, i) => i)
     const attention_check_idx = jsPsych.randomization.sampleWithoutReplacement(idx_array, blockDef.nAttChecks);  // set number of attention checks here
     attention_check_idx.sort((a, b) => a - b);
-    const attention_check_imgs = Array(attention_check_idx.length / 2).fill().map(() => jsPsych.randomization.shuffle(keys)).flat()
-    const attention_check_dict = {};
-    attention_check_idx.forEach((idx, i) => {
-      attention_check_dict[idx] = attention_check_imgs[i];
-    });
 
     // Intro trials
     if (blockDef.includeIntro > 0) {
@@ -130,15 +125,16 @@ function createTrainingPhase(BlockDefs) {
         {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: () => {
+            const imgIdx = imgOrder[trialIdx]
+            const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
+            const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             if (attention_check_idx.includes(trialIdx)) {
-              img = attention_check_dict[trialIdx]
+              img = jsPsych.randomization.sampleWithoutReplacement(availableKeys, 1)[0];
+              window.attention_img = img;
             }
             else {
               img = blockDef.imgs[imgOrder[trialIdx]]
             }
-            const imgIdx = imgOrder[trialIdx]
-            const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
-            const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             return generateStimulus(`static/images/${img}.jpg`, availableKeys);
           },
           choices: keys,
@@ -164,7 +160,7 @@ function createTrainingPhase(BlockDefs) {
             d.condition = blockDef.condition;
             d.available_keys = availableKeys;
             if (attention_check_idx.includes(trialIdx)) {
-              d.image = attention_check_dict[trialIdx];
+              d.image = window.attention_img;
               d.attention_check = true;
               d.reward = key == d.image ? 1 : 0;
             } else {  
@@ -197,9 +193,7 @@ function createTrainingPhase(BlockDefs) {
                 });
                 d.reward = d.keyRewards[key];
                 if (a == 'A3'  || (a == 'A2' && availableActions.includes('A1'))) {
-                  imgOrder = repeatTrial(imgOrder, trialIdx, imgCounts, subsets)
-                  //imgOrder.push(imgIdx)  // if A3 was pressed, append that image to imgOrder again
-                  //subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
+                  [imgOrder, subsets[imgIdx]] = repeatTrial(imgOrder, trialIdx, imgCounts, subsets[imgIdx])  // if A3 was pressed, append that image to imgOrder again
                 }
                 d.s_count = stimCounts[imgIdx];
                 d.a1_count = actionCounts[imgIdx]['A1'];
@@ -208,9 +202,7 @@ function createTrainingPhase(BlockDefs) {
                 d.action_counts = actionCounts;
               } else if (!availableKeys.includes(key)) {  // invalid trial
                 d.valid = false;
-                imgOrder = repeatTrial(imgOrder, trialIdx, imgCounts, subsets)
-                //imgOrder.push(imgIdx)  // if A3 was pressed, append that image to imgOrder again
-                //subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
+                [imgOrder, subsets[imgIdx]] = repeatTrial(imgOrder, trialIdx, imgCounts, subsets[imgIdx])  // if invalid trial, append that image to imgOrder again
               }
             }
           }
@@ -225,6 +217,7 @@ function createTrainingPhase(BlockDefs) {
             const imgIdx = imgOrder[trialIdx]
             const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
+            console.log(availableKeys)
             const actionCounts = jsPsych.data.get().last(1).values()[0].action_counts;
             const attention_check = jsPsych.data.get().last(1).values()[0].attention_check;
             if (attention_check) {
@@ -238,6 +231,8 @@ function createTrainingPhase(BlockDefs) {
               attention_check_idx.shift(); // drop attention check element after it has been presented
               return feedback
             } else {  // if regular trial
+              imgCounts[imgIdx]++;
+              trialIdx++;  
               if (typeof a === 'undefined') {
                 return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
               } else if (!availableKeys.includes(key)) {
@@ -258,7 +253,6 @@ function createTrainingPhase(BlockDefs) {
                 } else {
                   rewards = null
                 }
-                
                 return generateStimulus(`static/images/empty.jpg`, availableKeys, rewards, key, blockDef.completeReward);
               }
             }
@@ -268,11 +262,6 @@ function createTrainingPhase(BlockDefs) {
         }
       ],
       loop_function: () => {
-        // Counters
-        const imgIdx = imgOrder[trialIdx]
-        imgCounts[imgIdx]++;
-        trialIdx++;
-
         // Block end condition
         let complete = Array(blockDef.setSize).fill(false);
         for (const img in actionCounts) {

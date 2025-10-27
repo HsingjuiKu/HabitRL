@@ -61,7 +61,10 @@
   async function runExp() {
 
     // Get ID and define file name
-    const subj_id = jsPsych.data.getURLVariable("id")
+    let subj_id = jsPsych.data.getURLVariable("id") == undefined 
+    if (jsPsych.data.getURLVariable("id") == undefined) {
+      subj_id = `anon_${Date.now()}`;
+    }
     const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
     window.fileName = `${subj_id}-${dateStr}.csv`;
 
@@ -69,7 +72,8 @@
     const response_vars = await fetch('static/vars.json');
     const designVars = await response_vars.json();
     const response_img = await fetch('static/images/images.json');
-    const imgs = await response_img.json();
+    let imgs = await response_img.json();
+    imgs = imgs.filter(img => img !== 'instr_img');
     const img_paths = imgs.map(img => `static/images/${img}`)
 
     // Create training block definition (assign conditions, stimuli, key-action mapping)
@@ -79,7 +83,7 @@
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
     //timeline.push(...createFullScreenInstructions());
-    timeline.push(...createInstructions());
+    //timeline.push(...createInstructions());
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestInstructions());
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));

@@ -172,7 +172,7 @@ const createTestInstructions = function() {
       + '<p>'
       + 'In this last part of the experiment, we are <b>testing what you learned!</b><br/><br/>'
       + 'You will see all the images again, in mixed order, and will make choices like before. You will not see your points, but we are still tracking them!<br/><br/>'
-      + '<b>All four buttons</b> will be available at all times - press the button that you feel goes with the image. Even if you think you do not remember, <b>go with your instinct!</b><br/>'
+      + '<b>All three keys</b> will be available at all times - press the key that you feel goes with the image. Even if you think you do not remember, <b>go with your instinct!</b><br/>'
       + '</p></div>' + CONTINUEEXP,
       choices: [" "]
     }]
