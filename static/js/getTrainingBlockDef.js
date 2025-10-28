@@ -1,5 +1,4 @@
 const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
-  const actions = ["A1", "A2", "A3"]
 
   // Unpack key design variables
   const rewardProbs = designVars["reward_probabilities"];
@@ -8,31 +7,11 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const setSize = designVars["set_size"];
   const nReps = designVars["n_repetitions"];
   const hFactor = designVars["h_factor"];
-  const hFactorC1 = 1 // (hFactor - 1) / 2 + 1  // i.e., half of the factor of hFactor
   const nBlocks = designVars["n_blocks"];
   const nAttChecks = designVars["n_att_checks"];
   const nNoFeedbackTrials = designVars["n_no_feedback_trials"];
   const completeReward = designVars["complete_reward"];
   const includeIntro = designVars["include_intro"];
-
-  // Latin square–based sets of action–key mappings (for each condition)
-  shuffledActions = jsPsych.randomization.shuffle(actions)
-  let actionKeyMappings = [
-    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "g", [shuffledActions[2]]: "h" },
-    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "h", [shuffledActions[2]]: "f" },
-    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "f", [shuffledActions[2]]: "g" },
-
-    { [shuffledActions[0]]: "f", [shuffledActions[1]]: "h", [shuffledActions[2]]: "g" },
-    { [shuffledActions[0]]: "h", [shuffledActions[1]]: "g", [shuffledActions[2]]: "f" },
-    { [shuffledActions[0]]: "g", [shuffledActions[1]]: "f", [shuffledActions[2]]: "h" },
-  ];
-  
-  if (Math.random() < 0.5) {  // switching first and second half randomly to equally distribute across conditions
-    const half = Math.floor(actionKeyMappings.length / 2);
-    const firstHalf = actionKeyMappings.slice(0, half);
-    const secondHalf = actionKeyMappings.slice(half);
-    actionKeyMappings = secondHalf.concat(firstHalf);
-  }
   
   // Assign images
   let imgs_numbers = Array.from({ length: nBlocks * setSize }, (_, i) => i + 1);
@@ -41,25 +20,47 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   // Construct all training blocks
   const blocks = [];
   for (let i = 0; i < nBlocks; i++) {
+
+    // Assign images
     const imgs = {};
     for (let j = 0; j < setSize; j++) {
       imgs[j] = imgs_numbers[i * setSize + j];
     }
-    const condition = i < nBlocks / 2 ? nReps * hFactor : nReps; // First half Condition 1, last half Condition 2
+
+    // Assign condition (shuffle later)
+    const condition = i < nBlocks / 2 ? nReps * hFactor : nReps;
 
     // Determine action-key mapping
+    sA = jsPsych.randomization.shuffle(actions)
+    let actionKeyMappings = jsPsych.randomization.shuffle([
+      { [sA[0]]: "f", [sA[1]]: "g", [sA[2]]: "h" },
+      { [sA[0]]: "g", [sA[1]]: "h", [sA[2]]: "f" },
+      { [sA[0]]: "h", [sA[1]]: "f", [sA[2]]: "g" },
+    ]);
     const keyMap = {}
     for (let j = 0; j < setSize; j++) {
-      keyMap[j] = actionKeyMappings[3 * (i%2) + j];
+      keyMap[j] = actionKeyMappings[j];
     }
-    
+
+    // Determine reward values
+    let rewardValuesBlock
+    if (Array.isArray(rewardValues['A2'])) {
+      rewardValuesBlock = {
+        'A1': rewardValues['A1'],
+        'A2': rewardValues['A2'][i % rewardValues['A2'].length],
+        'A3': rewardValues['A3'],
+      }
+    } else {
+      rewardValuesBlock = rewardValues
+    }
+
     // Determine number of required actions
     nActionTargets = {'A1': nReps, 'A2': condition, 'A3': 0};
     
     blocks.push({
       condition: condition,
       rewardProbs: rewardProbs,
-      rewardValues: rewardValues,
+      rewardValues: rewardValuesBlock,
       rewardSD: rewardSD,
       setSize: setSize,
       keyMapping: keyMap,
@@ -75,6 +76,5 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   }
 
   // Randomize block order
-  //return jsPsych.randomization.shuffle(blocks);
-  return blocks
+  return jsPsych.randomization.shuffle(blocks);
 }

@@ -3,8 +3,8 @@ function shuffleSubsets(blockDef) {
     const nChunks = blockDef.nReps / 2;
     for (let i = 0; i < nChunks; i++) {
         subsets.push(...jsPsych.randomization.shuffle([
-            ...Array(blockDef.nActionTargets['A1'] / nChunks * .5).fill(['A1', 'A3']),
-            ...Array(blockDef.nActionTargets['A1'] / nChunks * .5).fill(['A1', 'A2']),
+            ...Array(blockDef.nActionTargets['A1'] / nChunks * 0).fill(['A1', 'A3']),
+            ...Array(blockDef.nActionTargets['A1'] / nChunks * 1).fill(['A1', 'A2']),
             ...Array(blockDef.nActionTargets['A2'] / nChunks).fill(['A2', 'A3'])
         ]));
     }
@@ -22,21 +22,22 @@ function shuffleImgOrder(blockDef) {
     return imgOrder;
 }
 
-function repeatTrial(imgOrder, trialIdx, imgCounts, subsets) {
+function changeTrial(imgOrder, trialIdx, imgCounts, subsets) {
     const imgIdx = imgOrder[trialIdx];
-    const d = jsPsych.randomization.sampleWithoutReplacement(
-        Array.from({length: 10}, (_, k) => k + 10), 1
-    )[0];
-    const Idx = (trialIdx + d) < imgOrder.length ? d : imgOrder.length;
-    const imgOrderNew = [
-        ...imgOrder.slice(0, Idx),
-        imgIdx,
-        ...imgOrder.slice(Idx, imgOrder.length)
-    ];
-    const subsetsNew = [
-        ...subsets.slice(0, Idx),
-        subsets[imgCounts[imgIdx]],
-        ...subsets.slice(Idx, subsets.length)
-    ];
-    return [imgOrderNew, subsetsNew];
+    const subsetIdx = imgCounts[imgIdx];
+    const nextIdx = subsets[imgIdx].slice(trialIdx).findIndex(  // check for the next [A2, A3] trial
+        el => el.includes('A2') && el.includes('A3')
+    );
+    const matchSubsetIdx = nextIdx !== -1 ? subsetIdx + 1 + nextIdx : undefined;
+
+    // If a [A2, A3] trial exists, replace it with [A1, A3]
+    if (matchSubsetIdx) {
+        subsets[imgIdx][matchSubsetIdx] = ['A1', 'A3'];
+    } else {  // if not, simply append two new [A1, A3] trials (keeping A1/A2 executions equal)
+        imgOrder.splice(trialIdx + 1, 0, imgIdx);
+        subsets[imgIdx].splice(subsetIdx + 1, 0, ['A1', 'A3']);
+        imgOrder.push(imgIdx);
+        subsets[imgIdx].push(['A1', 'A3']);
+    }
+    return [imgOrder, subsets];
 }

@@ -31,11 +31,11 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                     const blockDef = allTrainingBlocksDef.find(def => Object.values(def.imgs).includes(img));
                     const imgIdx = Object.keys(blockDef.imgs).find(k => blockDef.imgs[k] === img);
                     const key = d.response;
-                    const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
+                    const action = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
                     d.phase = 'test';
                     d.block = null;
                     d.trial = trialIdx;
-                    d.action = a;
+                    d.action = action;
                     d.a1_key = blockDef.keyMapping[imgIdx]['A1'];
                     d.a2_key = blockDef.keyMapping[imgIdx]['A2'];
                     d.a3_key = blockDef.keyMapping[imgIdx]['A3'];
@@ -57,7 +57,7 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                     d.keyRewards = null;
     	  	        d.reward = null;
                     d.s_count = null;
-                    actionCounts[a]++;
+                    actionCounts[action]++;
                     d.a1_count = actionCounts['A1'];
                     d.a2_count = actionCounts['A2'];
                     d.a3_count = actionCounts['A3'];
@@ -78,8 +78,8 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                 },
                 choices: "NO_KEYS",
                 trial_duration: () => {
-                    const a = jsPsych.data.get().last(1).values()[0].action;
-                    if (typeof a === 'undefined') {
+                    const action = jsPsych.data.get().last(1).values()[0].action;
+                    if (typeof action === 'undefined') {
                       return 1000;
                     }
                     else {

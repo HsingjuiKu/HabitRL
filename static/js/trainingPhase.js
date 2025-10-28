@@ -19,7 +19,7 @@ function createTrainingPhase(BlockDefs) {
       imgCounts[i] = 0;
       stimCounts[i] = 0;
       actionCounts[i] = {A1: 0, A2: 0, A3: 0};
-      subsets[i] = shuffleSubsets(blockDef)
+      subsets[i] = shuffleSubsets(blockDef);
     }
 
     // Attention checks
@@ -112,8 +112,14 @@ function createTrainingPhase(BlockDefs) {
         { 
           type: jsPsychHtmlKeyboardResponse, 
           stimulus: () => {
-            const imgIdx = imgOrder[trialIdx]
-            const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
+            const imgIdx = imgOrder[trialIdx];
+            if (imgIdx == undefined) {
+              x = 1
+            }
+            const availableActions = subsets[imgIdx][imgCounts[imgIdx]];
+            if (availableActions == undefined) {
+              x = 1
+            }
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             return generateStimulus(`static/images/fix_cross.jpg`, availableKeys);
           }, 
@@ -125,8 +131,8 @@ function createTrainingPhase(BlockDefs) {
         {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: () => {
-            const imgIdx = imgOrder[trialIdx]
-            const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
+            const imgIdx = imgOrder[trialIdx];
+            const availableActions = subsets[imgIdx][imgCounts[imgIdx]];
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             if (attention_check_idx.includes(trialIdx)) {
               img = jsPsych.randomization.sampleWithoutReplacement(availableKeys, 1)[0];
@@ -142,15 +148,15 @@ function createTrainingPhase(BlockDefs) {
 
           // Save data
           on_finish: d => {
-            const imgIdx = imgOrder[trialIdx]
-            const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
+            const imgIdx = imgOrder[trialIdx];
+            const availableActions = subsets[imgIdx][imgCounts[imgIdx]];
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             const key = d.response;
-            const a = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
+            const action = Object.entries(blockDef.keyMapping[imgIdx]).find(([k, v]) => v === key)?.[0];
             d.phase = 'training';
             d.block = blockIdx;
             d.trial = trialIdx;
-            d.action = a;
+            d.action = action;
             d.a1_key = blockDef.keyMapping[imgIdx]['A1'];
             d.a2_key = blockDef.keyMapping[imgIdx]['A2'];
             d.a3_key = blockDef.keyMapping[imgIdx]['A3'];
@@ -168,7 +174,7 @@ function createTrainingPhase(BlockDefs) {
               d.attention_check = false;
               if (availableKeys.includes(key)) { // valid trial
                 d.valid = true;
-                actionCounts[imgIdx][a]++;
+                actionCounts[imgIdx][action]++;
                 stimCounts[imgIdx]++;
 
                 // Determine rewards
@@ -192,8 +198,11 @@ function createTrainingPhase(BlockDefs) {
                   d.keyRewards[key] = reward;
                 });
                 d.reward = d.keyRewards[key];
-                if (a == 'A3'  || (a == 'A2' && availableActions.includes('A1'))) {
-                  [imgOrder, subsets[imgIdx]] = repeatTrial(imgOrder, trialIdx, imgCounts, subsets[imgIdx])  // if A3 was pressed, append that image to imgOrder again
+                if (action == 'A3') {
+                  imgOrder.push(imgIdx)  // if A3 was pressed, repeat trial later
+                  subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
+                } else if (action == 'A2' && availableActions.includes('A1')) {
+                  [imgOrder, subsets] = changeTrial(imgOrder, trialIdx, imgCounts, subsets)  // control for "errors" during A1-A2 comparisons
                 }
                 d.s_count = stimCounts[imgIdx];
                 d.a1_count = actionCounts[imgIdx]['A1'];
@@ -202,9 +211,16 @@ function createTrainingPhase(BlockDefs) {
                 d.action_counts = actionCounts;
               } else if (!availableKeys.includes(key)) {  // invalid trial
                 d.valid = false;
-                [imgOrder, subsets[imgIdx]] = repeatTrial(imgOrder, trialIdx, imgCounts, subsets[imgIdx])  // if invalid trial, append that image to imgOrder again
+                imgOrder.push(imgIdx)  // if invalid trial, repeat later
+                subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
               }
             }
+            //console.log(trialIdx, '--------')
+            //console.log(imgIdx)
+            //console.log(action)
+            //console.log(JSON.parse(JSON.stringify(actionCounts)))
+            //console.log(JSON.parse(JSON.stringify(subsets)))
+            //console.log(JSON.parse(JSON.stringify(imgOrder)))
           }
         },
 
@@ -212,12 +228,11 @@ function createTrainingPhase(BlockDefs) {
         {
           type: jsPsychHtmlKeyboardResponse,
           stimulus: () => {
-            const a = jsPsych.data.get().last(1).values()[0].action;
+            const action = jsPsych.data.get().last(1).values()[0].action;
             const key = jsPsych.data.get().last(1).values()[0].response;
             const imgIdx = imgOrder[trialIdx]
             const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
-            console.log(availableKeys)
             const actionCounts = jsPsych.data.get().last(1).values()[0].action_counts;
             const attention_check = jsPsych.data.get().last(1).values()[0].attention_check;
             if (attention_check) {
@@ -233,7 +248,7 @@ function createTrainingPhase(BlockDefs) {
             } else {  // if regular trial
               imgCounts[imgIdx]++;
               trialIdx++;  
-              if (typeof a === 'undefined') {
+              if (typeof action === 'undefined') {
                 return `<p style='color:red; font-size: 48px;'>Too slow!</p>`;
               } else if (!availableKeys.includes(key)) {
                 return `<p style='color:red; font-size: 48px;'>Button not available!</p>`;
@@ -242,8 +257,8 @@ function createTrainingPhase(BlockDefs) {
                 showRewards = true;
                 if (
                   blockDef.condition == 1
-                  && actionCounts[imgIdx][a] > (blockDef.nActionTargets['A2'] - blockDef.nNoFeedbackTrials) 
-                  && ['A2'].includes(a)
+                  && actionCounts[imgIdx][action] > (blockDef.nActionTargets['A2'] - blockDef.nNoFeedbackTrials) 
+                  && ['A2'].includes(action)
                   && availableActions.includes('A3')
                 ) {
                   showRewards = false;
@@ -274,7 +289,7 @@ function createTrainingPhase(BlockDefs) {
             }
           }
         }
-        if (complete.includes(false)) {
+        if (complete.includes(false) || (trialIdx < imgOrder.length)) {
           return true;
         } else {
           return false;
