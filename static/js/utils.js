@@ -3,8 +3,8 @@ function shuffleSubsets(blockDef) {
     const nChunks = blockDef.nReps / 2;
     for (let i = 0; i < nChunks; i++) {
         subsets.push(...jsPsych.randomization.shuffle([
-            ...Array(blockDef.nActionTargets['A1'] / nChunks * 0).fill(['A1', 'A3']),
-            ...Array(blockDef.nActionTargets['A1'] / nChunks * 1).fill(['A1', 'A2']),
+            ...Array(blockDef.nActionTargets['A1'] / nChunks * .5).fill(['A1', 'A3']),
+            ...Array(blockDef.nActionTargets['A1'] / nChunks * .5).fill(['A1', 'A2']),
             ...Array(blockDef.nActionTargets['A2'] / nChunks).fill(['A2', 'A3'])
         ]));
     }

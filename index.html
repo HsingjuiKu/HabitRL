@@ -61,7 +61,7 @@
   async function runExp() {
 
     // Get ID and define file name
-    let subj_id = jsPsych.data.getURLVariable("id") == undefined 
+    let subj_id = jsPsych.data.getURLVariable("id")
     if (jsPsych.data.getURLVariable("id") == undefined) {
       subj_id = `anon_${Date.now()}`;
     }
@@ -73,7 +73,6 @@
     const designVars = await response_vars.json();
     const response_img = await fetch('static/images/images.json');
     let imgs = await response_img.json();
-    //imgs = imgs.filter(img => img !== 'instr_img');
     const img_paths = imgs.map(img => `static/images/${img}`)
 
     // Create training block definition (assign conditions, stimuli, key-action mapping)
