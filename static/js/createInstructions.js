@@ -41,16 +41,18 @@ const instrPage4 = '<h3>Instruction 4/7</h3>'
 
 const instrPage5 = '<h3>Instruction 5/7</h3>'
     + '<p>'
-    + 'There will be <b>six blocks</b>, each with <b>three images</b> to learn about. You can take short breaks between each block.<br/><br/>'
+    + 'There will be <b>eight blocks</b>, each with <b>three images</b> to learn about. You can take short breaks between each block.<br/><br/>'
     + 'The keys that will give more or less points will <b>never be the same for the three images</b> in a block. '
-    + 'So, for example, if F gives the most points for one image, it will not give the most points for the other images.'
+    + 'So, for example, if F gives the most points for one image (and G the second most etc.), F will not give the most points for the other images (and G not the second most etc.).'
     + '</p></div>' + CONTINUE;
 
 const instrPage6 = '<h3>Instruction 6/7</h3>'
     + '<p>'
     + 'To make sure you are paying attention, we will also show you occasionally an instruction to <b>press a specific key</b>, like shown below.<br/><br/>'
     + 'Make sure you <b>press the correct key</b>.<br/>'
-    + generateStimulus(`static/images/f.jpg`, ['f', 'h'])
+    + `<div style="text-align: center;">`
+    + `<img src="static/images/f.jpg" style="width: 300px; height: 300px; margin-bottom: 10px;">`
+    + `</div>`
     + '</p></div>' + CONTINUE;
 
 const instrPage7 = '<h3 style="font-size: 2em; ">Instruction 7/7</h3>'

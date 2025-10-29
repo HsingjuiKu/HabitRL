@@ -25,7 +25,7 @@ function shuffleImgOrder(blockDef) {
 function changeTrial(imgOrder, trialIdx, imgCounts, subsets) {
     const imgIdx = imgOrder[trialIdx];
     const subsetIdx = imgCounts[imgIdx];
-    const nextIdx = subsets[imgIdx].slice(trialIdx).findIndex(  // check for the next [A2, A3] trial
+    const nextIdx = subsets[imgIdx].slice(subsetIdx + 1).findIndex(  // check for the next [A2, A3] trial
         el => el.includes('A2') && el.includes('A3')
     );
     const matchSubsetIdx = nextIdx !== -1 ? subsetIdx + 1 + nextIdx : undefined;

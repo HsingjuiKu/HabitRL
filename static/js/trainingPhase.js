@@ -23,9 +23,17 @@ function createTrainingPhase(BlockDefs) {
     }
 
     // Attention checks
-    const idx_array = Array.from({ length: imgOrder.length * blockDef.setSize }, (_, i) => i)
-    const attention_check_idx = jsPsych.randomization.sampleWithoutReplacement(idx_array, blockDef.nAttChecks);  // set number of attention checks here
-    attention_check_idx.sort((a, b) => a - b);
+    nBurnIn = 5;  // +-10 ensures not on first few trials
+    const idx_array = Array.from({ length: imgOrder.length - nBurnIn }, (_, i) => i + nBurnIn);
+    batchSize = Math.floor(idx_array.length / blockDef.nAttChecks);
+    let attention_check_idx = [];
+    for (i = 0; i < blockDef.nAttChecks; i++) {
+      attention_check_idx.push(
+        jsPsych.randomization.shuffle(
+          idx_array.slice(batchSize * i, batchSize * (i+1))
+        )[0]
+      );
+    }
 
     // Intro trials
     if (blockDef.includeIntro > 0) {
@@ -215,12 +223,12 @@ function createTrainingPhase(BlockDefs) {
                 subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
               }
             }
-            //console.log(trialIdx, '--------')
-            //console.log(imgIdx)
-            //console.log(action)
-            //console.log(JSON.parse(JSON.stringify(actionCounts)))
-            //console.log(JSON.parse(JSON.stringify(subsets)))
-            //console.log(JSON.parse(JSON.stringify(imgOrder)))
+            console.log(trialIdx, '--------')
+            console.log(imgIdx)
+            console.log(action)
+            console.log(JSON.parse(JSON.stringify(actionCounts)))
+            console.log(JSON.parse(JSON.stringify(subsets)))
+            console.log(JSON.parse(JSON.stringify(imgOrder)))
           }
         },
 
