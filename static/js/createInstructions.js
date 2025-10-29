@@ -202,7 +202,7 @@ const createEndInstructions = function(id) {
       document.body.style.cursor = "default";
     },
   });
-  const ptq_survey = `https://ucbpsych.qualtrics.com/jfe/form/SV_2ss0E5VtgTG2oZM?id=${id}`
+  const ptq_survey = `https://ucbpsych.qualtrics.com/jfe/form/SV_0OjKiAHNAvhIFDM?id=${id}`
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<p>Thank you for contributing to the advancement of cognitive science!<br><br>` +
