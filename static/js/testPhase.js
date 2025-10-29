@@ -50,8 +50,7 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                         d.valid = true;
                     } else {
                         d.valid = false;
-                        imgOrderTest.push(img)
-                        console.log(imgOrderTest)
+                        imgOrderTest.push(img);
                     }
                     d.aRewards = null;
                     d.keyRewards = null;

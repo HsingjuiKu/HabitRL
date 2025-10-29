@@ -23,7 +23,7 @@ function createTrainingPhase(BlockDefs) {
     }
 
     // Attention checks
-    nBurnIn = 5;  // +-10 ensures not on first few trials
+    nBurnIn = 5;  // +-5 ensures not on first few trials
     const idx_array = Array.from({ length: imgOrder.length - nBurnIn }, (_, i) => i + nBurnIn);
     batchSize = Math.floor(idx_array.length / blockDef.nAttChecks);
     let attention_check_idx = [];
@@ -122,11 +122,13 @@ function createTrainingPhase(BlockDefs) {
           stimulus: () => {
             const imgIdx = imgOrder[trialIdx];
             if (imgIdx == undefined) {
-              x = 1
+              jsPsych.abortCurrentTimeline();
+              return '';
             }
             const availableActions = subsets[imgIdx][imgCounts[imgIdx]];
             if (availableActions == undefined) {
-              x = 1
+              jsPsych.abortCurrentTimeline();
+              return '';
             }
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             return generateStimulus(`static/images/fix_cross.jpg`, availableKeys);
@@ -223,12 +225,12 @@ function createTrainingPhase(BlockDefs) {
                 subsets[imgIdx].push(subsets[imgIdx][imgCounts[imgIdx]])
               }
             }
-            console.log(trialIdx, '--------')
-            console.log(imgIdx)
-            console.log(action)
-            console.log(JSON.parse(JSON.stringify(actionCounts)))
-            console.log(JSON.parse(JSON.stringify(subsets)))
-            console.log(JSON.parse(JSON.stringify(imgOrder)))
+            //console.log(trialIdx, '--------')
+            //console.log(imgIdx)
+            //console.log(action)
+            //console.log(JSON.parse(JSON.stringify(actionCounts)))
+            //console.log(JSON.parse(JSON.stringify(subsets)))
+            //console.log(JSON.parse(JSON.stringify(imgOrder)))
           }
         },
 
