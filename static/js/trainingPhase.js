@@ -218,7 +218,7 @@ function createTrainingPhase(BlockDefs) {
                 d.a1_count = actionCounts[imgIdx]['A1'];
                 d.a2_count = actionCounts[imgIdx]['A2'];
                 d.a3_count = actionCounts[imgIdx]['A3'];
-                d.action_counts = actionCounts;
+                d.action_counts = JSON.parse(JSON.stringify(actionCounts));
               } else if (!availableKeys.includes(key)) {  // invalid trial
                 d.valid = false;
                 imgOrder.push(imgIdx)  // if invalid trial, repeat later

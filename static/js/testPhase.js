@@ -22,6 +22,10 @@ function createTestPhase(vars, allTrainingBlocksDef) {
     	  	    type: jsPsychHtmlKeyboardResponse,
     	  	    stimulus: () => {
                     const img = imgOrderTest[trialIdx];
+                    if (img == undefined) {
+                        jsPsych.abortCurrentTimeline();
+                        return '';
+                    }
                     return generateStimulus(`static/images/${img}.jpg`, keys)
                 },
     	  	    choices: keys,
@@ -48,6 +52,7 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                     d.attention_check = null;
                     if (keys.includes(key)) {
                         d.valid = true;
+                        actionCounts[action]++;
                     } else {
                         d.valid = false;
                         imgOrderTest.push(img);
@@ -56,11 +61,10 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                     d.keyRewards = null;
     	  	        d.reward = null;
                     d.s_count = null;
-                    actionCounts[action]++;
                     d.a1_count = actionCounts['A1'];
                     d.a2_count = actionCounts['A2'];
                     d.a3_count = actionCounts['A3'];
-                    d.action_counts = actionCounts;
+                    d.action_counts = JSON.parse(JSON.stringify(actionCounts));
     	  	    }
     	    },
             // Feedback
