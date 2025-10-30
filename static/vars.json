@@ -1,6 +1,6 @@
 {
     "reward_probabilities": null,
-    "reward_values": {"A1": 11, "A2": 6, "A3": 1},
+    "reward_values": {"A1": 11, "A2": [9, 7, 5, 3], "A3": 1},
     "reward_sd": 0.3,
     "set_size": 3,
     "n_repetitions": 10,
