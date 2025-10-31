@@ -22,22 +22,50 @@ function shuffleImgOrder(blockDef) {
     return imgOrder;
 }
 
+function repeatTrial(imgOrder, trialIdx, imgCounts, subsets) {
+    // Add trial to imgOrder
+    const imgId = imgOrder[trialIdx];
+    const idxRange = Array.from({length: imgOrder.length - (trialIdx + 5) + 1}, (_, i) => trialIdx + 5 + i);
+    const newIdx = idxRange[Math.floor(Math.random() * idxRange.length)];
+    imgOrder.splice(newIdx, 0, imgId);
+
+    // Add corresponding trial to subsets
+    const subsetIdx = imgCounts[imgId];
+    const subset = subsets[imgId][subsetIdx];
+    const nJumped = imgOrder.slice(trialIdx + 1, newIdx).filter(id => id === imgId).length;
+    const newSubsetIdx = subsetIdx + nJumped + 1;
+    subsets[imgId].splice(newSubsetIdx, 0, subset);
+
+    return [imgOrder, subsets];
+}
+
 function changeTrial(imgOrder, trialIdx, imgCounts, subsets) {
-    const imgIdx = imgOrder[trialIdx];
-    const subsetIdx = imgCounts[imgIdx];
-    const nextIdx = subsets[imgIdx].slice(subsetIdx + 1).findIndex(  // check for the next [A2, A3] trial
-        el => el.includes('A2') && el.includes('A3')
-    );
-    const matchSubsetIdx = nextIdx !== -1 ? subsetIdx + 1 + nextIdx : undefined;
+    const imgId = imgOrder[trialIdx];
+    const subsetIdx = imgCounts[imgId];
+    let matchSubsetIndices = subsets[imgId].map((el, idx) => 
+        el.includes('A2') && el.includes('A3') ? idx : -1
+    ).filter(idx => idx !== -1);
+    matchSubsetIndices = matchSubsetIndices.filter(idx => idx > subsetIdx);
+    let matchSubsetIdx = null
+    if (matchSubsetIndices.length > 0) {
+        matchSubsetIdx = matchSubsetIndices[Math.floor(Math.random() * matchSubsetIndices.length)];
+    }
 
     // If a [A2, A3] trial exists, replace it with [A1, A3]
-    if (matchSubsetIdx) {
-        subsets[imgIdx][matchSubsetIdx] = ['A1', 'A3'];
-    } else {  // if not, simply append two new [A1, A3] trials (keeping A1/A2 executions equal)
-        imgOrder.splice(trialIdx + 1, 0, imgIdx);
-        subsets[imgIdx].splice(subsetIdx + 1, 0, ['A1', 'A3']);
-        imgOrder.push(imgIdx);
-        subsets[imgIdx].push(['A1', 'A3']);
+    if (matchSubsetIdx !== null) {
+        subsets[imgId][matchSubsetIdx] = ['A1', 'A3'];
+    } else {  // if not, append two new [A1, A3] trials (keeping A1/A2 executions equal)
+        const idxRange = Array.from({length: imgOrder.length - (trialIdx + 5) + 1}, (_, i) => trialIdx + 5 + i);
+        for (let i=0; i<2; i++) {
+            // Add trial to imgOrder
+            const newIdx = idxRange[Math.floor(Math.random() * idxRange.length)];
+            imgOrder.splice(newIdx, 0, imgId);
+
+            // Add corresponding trial to subsets
+            const nJumped = imgOrder.slice(trialIdx + 1, newIdx).filter(id => id === imgId).length;
+            const newSubsetIdx = subsetIdx + nJumped + 1;
+            subsets[imgId].splice(newSubsetIdx, 0, ['A1', 'A3']);
+        }
     }
     return [imgOrder, subsets];
 }
