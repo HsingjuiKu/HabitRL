@@ -190,17 +190,23 @@ function createTrainingPhase(BlockDefs) {
             d.reward_values = blockDef.rewardValues;
             d.reward_sd = blockDef.rewardSD;
             d.condition = blockDef.condition;
+            d.a2_value = blockDef.rewardValues['A2'];
             //[imgOrder, subsets] = changeTrial(imgOrder, trialIdx, imgCounts, subsets);
             if (attention_check_idx.includes(trialIdx)) {
               const attention_check_subset = attention_check_subsets[attention_check_cnt];
               const attention_check_keys = attention_check_subset.map(a => blockDef.keyMapping[imgIdx][a]);
               d.available_keys = attention_check_keys;
+              d.available_actions = attention_check_subset;
               d.image = window.attention_img;
               d.attention_check = true;
               d.reward = key == d.image ? 1 : 0;
               attention_check_cnt++;
             } else { 
               d.available_keys = availableKeys;
+              d.available_actions = availableActions;
+              d.best_action = availableActions.sort()[0];
+              d.worst_action = availableActions.sort()[1];
+              d.best_action_chosen = d.best_action == action;
               d.image = blockDef.imgs[imgIdx]
               d.attention_check = false;
               if (availableKeys.includes(key)) { // valid trial
@@ -234,11 +240,14 @@ function createTrainingPhase(BlockDefs) {
                 } else if (action == 'A2' && availableActions.includes('A1')) {
                   [imgOrder, subsets] = changeTrial(imgOrder, trialIdx, imgCounts, subsets);  // control for "errors" during A1-A2 comparisons
                 }
+
+                // Counts
                 d.s_count = stimCounts[imgIdx];
                 d.a1_count = actionCounts[imgIdx]['A1'];
                 d.a2_count = actionCounts[imgIdx]['A2'];
                 d.a3_count = actionCounts[imgIdx]['A3'];
                 d.action_counts = JSON.parse(JSON.stringify(actionCounts));
+                
               } else if (!availableKeys.includes(key)) {  // invalid trial
                 d.valid = false;
                 [imgOrder, subsets] = repeatTrial(imgOrder, trialIdx, imgCounts, subsets);
