@@ -191,7 +191,6 @@ function createTrainingPhase(BlockDefs) {
             d.reward_sd = blockDef.rewardSD;
             d.condition = blockDef.condition;
             d.a2_value = blockDef.rewardValues['A2'];
-            //[imgOrder, subsets] = changeTrial(imgOrder, trialIdx, imgCounts, subsets);
             if (attention_check_idx.includes(trialIdx)) {
               const attention_check_subset = attention_check_subsets[attention_check_cnt];
               const attention_check_keys = attention_check_subset.map(a => blockDef.keyMapping[imgIdx][a]);
@@ -253,12 +252,6 @@ function createTrainingPhase(BlockDefs) {
                 [imgOrder, subsets] = repeatTrial(imgOrder, trialIdx, imgCounts, subsets);
               }
             }
-            console.log(trialIdx, '--------')
-            console.log(imgIdx)
-            console.log(action)
-            console.log(JSON.parse(JSON.stringify(actionCounts)))
-            console.log(JSON.parse(JSON.stringify(subsets)))
-            console.log(JSON.parse(JSON.stringify(imgOrder)))
           }
         },
 
@@ -270,9 +263,6 @@ function createTrainingPhase(BlockDefs) {
             const key = jsPsych.data.get().last(1).values()[0].response;
             const imgIdx = imgOrder[trialIdx]
             const availableActions = subsets[imgIdx][imgCounts[imgIdx]]
-            if (availableActions == undefined) {
-              x = 2
-            }
             const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
             const actionCounts = jsPsych.data.get().last(1).values()[0].action_counts;
             const attention_check = jsPsych.data.get().last(1).values()[0].attention_check;
