@@ -26,7 +26,10 @@ function repeatTrial(imgOrder, trialIdx, imgCounts, subsets) {
     // Add trial to imgOrder
     const imgId = imgOrder[trialIdx];
     const idxRange = Array.from({length: imgOrder.length - (trialIdx + 5) + 1}, (_, i) => trialIdx + 5 + i);
-    const newIdx = idxRange[Math.floor(Math.random() * idxRange.length)];
+    let newIdx = idxRange[Math.floor(Math.random() * idxRange.length)];
+    if (newIdx == undefined) {  // if there are not enough trials
+        newIdx = imgOrder.length;  // append to end
+    }
     imgOrder.splice(newIdx, 0, imgId);
 
     // Add corresponding trial to subsets
@@ -55,10 +58,13 @@ function changeTrial(imgOrder, trialIdx, imgCounts, subsets) {
     if (matchSubsetIdx !== null) {
         subsets[imgId][matchSubsetIdx] = ['A1', 'A3'];
     } else {  // if not, append two new [A1, A3] trials (keeping A1/A2 executions equal)
-        const idxRange = Array.from({length: imgOrder.length - (trialIdx + 5) + 1}, (_, i) => trialIdx + 5 + i);
         for (let i=0; i<2; i++) {
             // Add trial to imgOrder
-            const newIdx = idxRange[Math.floor(Math.random() * idxRange.length)];
+            const idxRange = Array.from({length: imgOrder.length - (trialIdx + 2) + 1}, (_, i) => trialIdx + 2 + i);
+            let newIdx = idxRange[Math.floor(Math.random() * idxRange.length)];
+            if (newIdx == undefined) {  // if there are not enough trials
+                newIdx = imgOrder.length;  // append to end
+            }
             imgOrder.splice(newIdx, 0, imgId);
 
             // Add corresponding trial to subsets
