@@ -318,6 +318,8 @@ function createTrainingPhase(BlockDefs) {
         }
       ],
       loop_function: () => {
+        let finished = false;
+
         // Block end condition
         let complete = Array(blockDef.setSize).fill(false);
         for (const img in actionCounts) {
@@ -332,14 +334,38 @@ function createTrainingPhase(BlockDefs) {
         }
         if (complete.includes(false) || (trialIdx < imgOrder.length)) {
           if (trialIdx <= maxTrials) {  // max trials exit condition
-            return true;
+            finished = false;
+          } else {
+            finished = true;
+          }
+        } else {
+          finished = true;
+        }
+
+        // Early completion attention check
+        if (finished) {
+          at_data = jsPsych.data.get().values().filter(d => d.attention_check === true);
+          avgReward = at_data.length > 0
+            ? at_data.reduce((sum, d) => sum + (d.reward ? 1 : 0), 0) / at_data.length
+            : 0;
+          if (avgReward < minACValues[blockIdx]) {
+            const earlyCompletionLink = `https://app.prolific.com/submissions/complete?cc=C1731C0Y`;
+            const percentComplete = Math.round(((blockIdx + 1) / (blockDef.nBlocks + 1)) * 100);
+            document.body.style.cursor = "default";
+            jsPsych.abortExperiment(
+              '<h3>Experiment Complete</h3>' +
+              '<p>Thank you for your participation!</p>' +
+              '<p>Based on attention checks, we are ending the experiment early. ' +
+              `You will still receive a partial payment (${percentComplete}% of blocks completed). ` +
+              'For this, we ask you to return your submission, and we will pay you via a bonus payment.</p>' +
+              `<p>Click <a href=${earlyCompletionLink}>here</a> to return to Prolific</p>.`
+            );
           } else {
             return false;
           }
         } else {
-          return false;
+          return true;
         }
-        
       }
     });
   });

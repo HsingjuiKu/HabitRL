@@ -75,3 +75,14 @@ function changeTrial(imgOrder, trialIdx, imgCounts, subsets) {
     }
     return [imgOrder, subsets];
 }
+
+function calcMinAC(blockDef) {
+    let minACValues = []
+    for (let i = 1; i <= blockDef.nBlocks; i++) {
+        let min_total = blockDef.ACThreshold * blockDef.nBlocks;
+        let min_so_far = min_total - (blockDef.nBlocks - i) * 1.0;
+        let min_cum_mean = min_so_far / i;
+        minACValues.push(min_cum_mean);
+    }
+    return minACValues;
+}

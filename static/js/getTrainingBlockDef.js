@@ -12,6 +12,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const nNoFeedbackTrials = designVars["n_no_feedback_trials"];
   const completeReward = designVars["complete_reward"];
   const includeIntro = designVars["include_intro"];
+  const ACThreshold = designVars["AC_threshold"];
   
   // Assign images
   let imgs_numbers = Array.from({ length: nBlocks * setSize }, (_, i) => i + 1);
@@ -72,6 +73,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       includeIntro: includeIntro,
       nBlocks: nBlocks,
       nReps: nReps,
+      ACThreshold: ACThreshold
     });
   }
 
