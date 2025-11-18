@@ -11,5 +11,5 @@
     "n_no_feedback_trials": 0,
     "complete_reward": true,
     "include_intro": 0,
-    "AC_threshold": 0.85
+    "AC_threshold": 0.8
 }

@@ -49,7 +49,8 @@ const instrPage5 = '<h3>Instruction 5/7</h3>'
 const instrPage6 = '<h3>Instruction 6/7</h3>'
     + '<p>'
     + 'To make sure you are paying attention, we will also show you occasionally an instruction to <b>press a specific key</b>, like shown below.<br/><br/>'
-    + 'Make sure you <b>press the correct key</b>.<br/>'
+    + 'Make sure you <b>press the correct key</b>. If you make too many errors (more than 4 out of 24 checks), the experiment will end and you will receive partial payment. '
+    + 'We will <b>not</b> reject your submission based on this.<br/>'
     + `<div style="text-align: center;">`
     + `<img src="static/images/f.jpg" style="width: 300px; height: 300px; margin-bottom: 10px;">`
     + `</div>`

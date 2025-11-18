@@ -63,8 +63,9 @@
     designVars = await responseVars.json();
     allTrainingBlocksDef = getTrainingBlockDef(designVars);
     minACValues = calcMinAC(allTrainingBlocksDef[0]);
+
+    runExp();
   }
-  initGlobalVars();
 
   async function runExp() {
 
@@ -95,7 +96,7 @@
     jsPsych.run(timeline)
   };
 
-  runExp()
+  initGlobalVars();
 
 </script>
 </body>
