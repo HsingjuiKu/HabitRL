@@ -19,7 +19,7 @@ const instrPage2 = '<h3>Instruction 2/7</h3>'
     + '<p>'
     + 'Pressing a key in response to an image can give you 0 or 1 point. '
     + 'How many points your receive <b>depends on each key and each image</b>: '
-    + 'some will give you points often, others less often. <b>Try to figure it out!</b><br/><br/>'
+    + 'some will give you points more often, others less often. <b>Try to figure it out!</b><br/><br/>'
     + 'Your goal is to <b>collect as many points as possible!</b> '
     + 'The more points you collect, <b>the shorter the duration</b> of the experiment.<br/>'
     + '</p></div>' + CONTINUE;
@@ -114,7 +114,7 @@ const createBlockInstructions1 = function(blockIdx, nBlocks) {
       + '<p>'
       + 'Before continuing with the next set of images, please take a short break.'
       + '</p></div>' + '<p style="text-align: center;"><br/>You can continue in 30 seconds.</p>',
-      trial_duration: 30000,
+      trial_duration: 300,
       on_start: () => {
         save_data_csv();
       }
@@ -155,7 +155,7 @@ const createTestInstructions = function() {
       + '<p>'
       + 'There will be a final part to this experiment. Please take a break now.<br/><br/>'
       + 'You will be able to continue in <b>2 minutes</b>.',
-      trial_duration: 120000,
+      trial_duration: 120,
       on_start: () => {
         save_data_csv();
       }
