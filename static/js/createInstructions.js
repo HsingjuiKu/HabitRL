@@ -114,7 +114,7 @@ const createBlockInstructions1 = function(blockIdx, nBlocks) {
       + '<p>'
       + 'Before continuing with the next set of images, please take a short break.'
       + '</p></div>' + '<p style="text-align: center;"><br/>You can continue in 30 seconds.</p>',
-      trial_duration: 300,
+      trial_duration: 30000,
       on_start: () => {
         save_data_csv();
       }
@@ -155,7 +155,7 @@ const createTestInstructions = function() {
       + '<p>'
       + 'There will be a final part to this experiment. Please take a break now.<br/><br/>'
       + 'You will be able to continue in <b>2 minutes</b>.',
-      trial_duration: 120,
+      trial_duration: 120000,
       on_start: () => {
         save_data_csv();
       }
