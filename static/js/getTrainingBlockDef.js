@@ -45,14 +45,39 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
 
     // Determine reward values
     let rewardValuesBlock
-    if (Array.isArray(rewardValues['A2'])) {
-      rewardValuesBlock = {
-        'A1': rewardValues['A1'],
-        'A2': rewardValues['A2'][i % rewardValues['A2'].length],
-        'A3': rewardValues['A3'],
+    let rewardProbsBlock
+    let rewardsRand
+    if (rewardProbs == null) {
+      if (Array.isArray(rewardValues['A2'])) {
+        rewardValuesBlock = {
+          'A1': rewardValues['A1'],
+          'A2': rewardValues['A2'][i % rewardValues['A2'].length],
+          'A3': rewardValues['A3'],
+        };
+      } else {
+        rewardValuesBlock = rewardValues
+      }
+    } else if (rewardValues == null) {
+      if (Array.isArray(rewardProbs['A2'])) {
+        const rewardProbA2 = rewardProbs['A2'][i % rewardProbs['A2'].length];
+        const nRewardA2 = Math.floor(condition * rewardProbA2);
+        rewardProbsBlock = {
+          'A1': rewardProbs['A1'],
+          'A2': rewardProbA2,
+          'A3': rewardProbs['A3'],
+        };
+        rewardsRand = {
+          'A1': 1,
+          'A2': jsPsych.randomization.shuffle(
+            Array(nRewardA2).fill(1).concat(Array(condition-nRewardA2).fill(0))
+          ),
+          'A3': 0,
+        };
+      } else {
+        rewardProbsBlock = rewardProbs
       }
     } else {
-      rewardValuesBlock = rewardValues
+      console.warn("Warning: rewardProbs and rewardValues are both provided.");
     }
 
     // Determine number of required actions
@@ -60,7 +85,8 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     
     blocks.push({
       condition: condition,
-      rewardProbs: rewardProbs,
+      rewardProbs: rewardProbsBlock,
+      rewardsRand: rewardsRand,
       rewardValues: rewardValuesBlock,
       rewardSD: rewardSD,
       setSize: setSize,

@@ -190,7 +190,12 @@ function createTrainingPhase(BlockDefs) {
             d.reward_values = blockDef.rewardValues;
             d.reward_sd = blockDef.rewardSD;
             d.condition = blockDef.condition;
-            d.a2_value = blockDef.rewardValues['A2'];
+            if (blockDef.rewardValues) {
+              d.a2_value = blockDef.rewardValues['A2'];
+            } else {
+              d.a2_value = blockDef.rewardProbs['A2'];
+            }
+            
             if (attention_check_idx.includes(trialIdx)) {
               const attention_check_subset = attention_check_subsets[attention_check_cnt];
               const attention_check_keys = attention_check_subset.map(a => blockDef.keyMapping[imgIdx][a]);
@@ -222,11 +227,20 @@ function createTrainingPhase(BlockDefs) {
                     return acc;
                   }, {});
                 } else {
-                  d.aRewards = actions.reduce((acc, act) => {
-                    r = Math.random() < blockDef.rewardProbs[act] ? 1 : 0;
-                    acc[act] = r;
-                    return acc;
-                  }, {});
+                  if (action == 'A2' && blockDef.rewardsRand['A2'].length > 0) {
+                    d.aRewards = {
+                      'A1': 1,
+                      'A2': blockDef.rewardsRand['A2'][0],
+                      'A3': 0
+                    };
+                    blockDef.rewardsRand['A2'].slice(1)
+                  } else {
+                    d.aRewards = actions.reduce((acc, act) => {
+                      r = Math.random() < blockDef.rewardProbs[act] ? 1 : 0;
+                      acc[act] = r;
+                      return acc;
+                    }, {});
+                  }
                 }
                 d.keyRewards = {};
                 Object.entries(d.aRewards).forEach(([act, reward]) => {

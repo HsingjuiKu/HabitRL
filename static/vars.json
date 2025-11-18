@@ -1,7 +1,7 @@
 {
-    "reward_probabilities": null,
-    "reward_values": {"A1": 11, "A2": [9, 7, 5, 3], "A3": 1},
-    "reward_sd": 0.3,
+    "reward_probabilities": {"A1": 1, "A2": [0.8, 0.6, 0.4, 0.2], "A3": 0},
+    "reward_values": null,
+    "reward_sd": null,
     "set_size": 3,
     "n_repetitions": 10,
     "h_factor": 2,
