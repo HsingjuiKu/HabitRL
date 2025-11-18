@@ -352,6 +352,7 @@ function createTrainingPhase(BlockDefs) {
             const earlyCompletionLink = `https://app.prolific.com/submissions/complete?cc=C1731C0Y`;
             const percentComplete = Math.round(((blockIdx + 1) / (blockDef.nBlocks + 1)) * 100);
             document.body.style.cursor = "default";
+            save_data_csv();
             jsPsych.abortExperiment(
               '<h3>Experiment Complete</h3>' +
               '<p>Thank you for your participation!</p>' +
