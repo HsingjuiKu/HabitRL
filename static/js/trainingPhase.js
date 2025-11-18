@@ -25,7 +25,7 @@ function createTrainingPhase(BlockDefs) {
 
     // Attention checks
     let attention_check_cnt = 0;
-    nBurnIn = 5;  // +-5 ensures not on first few trials
+    nBurnIn = 0;  // +-5 ensures not on first few trials
     const idx_array = Array.from({ length: imgOrder.length - nBurnIn }, (_, i) => i + nBurnIn);
     batchSize = Math.floor(idx_array.length / blockDef.nAttChecks);
     let attention_check_idx = [];
