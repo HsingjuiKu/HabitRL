@@ -85,8 +85,8 @@
     // Create timeline
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
-    //timeline.push(...createFullScreenInstructions());
-    //timeline.push(...createInstructions());
+    timeline.push(...createFullScreenInstructions());
+    timeline.push(...createInstructions());
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestInstructions());
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));

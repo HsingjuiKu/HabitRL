@@ -17,9 +17,9 @@ const instrPage1 = '<h3>Instruction 1/7</h3>'
 
 const instrPage2 = '<h3>Instruction 2/7</h3>'
     + '<p>'
-    + 'Pressing a key in response to an image can give you between 0 and 12 points. '
+    + 'Pressing a key in response to an image can give you 0 or 1 point. '
     + 'How many points your receive <b>depends on each key and each image</b>: '
-    + 'some will give you more points, others less. <b>Try to figure it out!</b><br/><br/>'
+    + 'some will give you points often, others less often. <b>Try to figure it out!</b><br/><br/>'
     + 'Your goal is to <b>collect as many points as possible!</b> '
     + 'The more points you collect, <b>the shorter the duration</b> of the experiment.<br/>'
     + '</p></div>' + CONTINUE;
@@ -49,8 +49,7 @@ const instrPage5 = '<h3>Instruction 5/7</h3>'
 const instrPage6 = '<h3>Instruction 6/7</h3>'
     + '<p>'
     + 'To make sure you are paying attention, we will also show you occasionally an instruction to <b>press a specific key</b>, like shown below.<br/><br/>'
-    + 'Make sure you <b>press the correct key</b>. If you make too many errors (more than 4 out of 24 checks), the experiment will end and you will receive partial payment. '
-    + 'We will <b>not</b> reject your submission based on this.<br/>'
+    + 'Make sure you <b>press the correct key!</b></br>.' 
     + `<div style="text-align: center;">`
     + `<img src="static/images/f.jpg" style="width: 300px; height: 300px; margin-bottom: 10px;">`
     + `</div>`
@@ -203,7 +202,7 @@ const createEndInstructions = function(id) {
       document.body.style.cursor = "default";
     },
   });
-  const ptq_survey = `https://ucbpsych.qualtrics.com/jfe/form/SV_0OjKiAHNAvhIFDM?id=${id}`
+  const ptq_survey = `https://ucbpsych.qualtrics.com/jfe/form/SV_2ss0E5VtgTG2oZM?id=${id}`
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: `<p>Thank you for contributing to the advancement of cognitive science!<br><br>` +
