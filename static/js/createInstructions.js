@@ -175,13 +175,50 @@ const createTestInstructions = function() {
   return instrTimeline
 }
 
+<<<<<<< Updated upstream
 const createEndInstructions = function(id) {
+=======
+// const createEndInstructions = function() {
+//   let instrTimeline = []
+//   // Final trial showing thank-you message and saving data
+//   instrTimeline.push({
+//     type: jsPsychHtmlKeyboardResponse,
+//     stimulus: '<h3>Experiment Complete</h3>'
+//     + '<p style="text-align: center;">Thank you for your participation!<br/>'
+//     + 'Press SPACE to finish</p>',
+//     choices: [" "],
+//     on_start: () => {
+//       const id = jsPsych.data.get().values()[1].id || 'unknown';
+//       const d = new Date(), ymd = d.toISOString().slice(0,10).replace(/-/g, '');
+//       jsPsych.data.get().localSave('csv', `${id}-${ymd}.csv`);
+//     }
+//   });
+//
+//   // Exit fullscreen and show mouse cursor again
+//   instrTimeline.push({
+//     type: jsPsychFullscreen,
+//     fullscreen_mode: false,
+//     message: '<p  style="text-align: center;>You can now close this window.</p>',
+//     on_finish: function () {
+//       var bodyNode = document.getElementsByTagName("body");
+//       for (let i = 0; i < bodyNode.length; i++) {
+//         bodyNode[i].style.cursor = "default";
+//       }
+//     }
+//   })
+//
+//   return instrTimeline
+// };
+
+const createEndInstructions = function() {
+>>>>>>> Stashed changes
   let instrTimeline = []
 
   instrTimeline.push({
     type: jsPsychHtmlKeyboardResponse,
     stimulus: '<h3>Experiment Complete</h3>' +
         '<p>Thank you for your participation!</p>' +
+<<<<<<< Updated upstream
         '<p>Data is saving, please hold on...</p>',
     choices: [],
     trial_duration: 3000,
@@ -189,11 +226,31 @@ const createEndInstructions = function(id) {
       save_data_csv();
     }
   });
+=======
+        '<p>Data is Saving, Please Hold on...</p>',
+    choices: [],
+    trial_duration: 8000,
+    on_start: () => {
+      const id      = jsPsych.data.get().values()[1].id || 'unknown';
+      const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
+      const fname   = `${id}-${dateStr}`;
+      save_data_csv(fname, jsPsych.data.get());
+    },
+    on_finish: () => {
+      const id      = jsPsych.data.get().values()[1].id || 'unknown';
+      const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
+      const fname   = `${id}-${dateStr}`;
+      setTimeout(() => upload_data_csv(fname), 2000);
+    }
+  });
+
+>>>>>>> Stashed changes
   instrTimeline.push({
     type: jsPsychFullscreen,
     fullscreen_mode: false,
     on_finish: () => {
       document.body.style.cursor = "default";
+<<<<<<< Updated upstream
     },
   });
   const ptq_survey = `https://ucbpsych.qualtrics.com/jfe/form/SV_2ss0E5VtgTG2oZM?id=${id}`
@@ -203,6 +260,9 @@ const createEndInstructions = function(id) {
       `Your data is saved. Please fill out <a href=${ptq_survey}>this <b>required</b> survey</a> about your demographics.<br><br>` +
       `Once you complete the survey, it will take you back to receive credit.</p></div>`,
     choices: "NO_KEYS",
+=======
+    }
+>>>>>>> Stashed changes
   });
 
   return instrTimeline
