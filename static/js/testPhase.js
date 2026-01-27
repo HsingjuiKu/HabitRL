@@ -46,7 +46,7 @@ function createTestPhase(vars, allTrainingBlocksDef) {
                     d.reward_probs = blockDef.rewardProbs;
                     d.reward_values = blockDef.rewardValues;
                     d.reward_sd = blockDef.rewardSD;
-                    d.condition = blockDef.condition;
+                    d.n_a2 = blockDef.nA2;
                     if (blockDef.rewardValues) {
                       d.a2_value = blockDef.rewardValues['A2'];
                     } else {

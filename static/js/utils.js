@@ -1,6 +1,6 @@
 function shuffleSubsets(blockDef) {
     let subsets = [];
-    const nChunks = blockDef.nReps / 2;
+    const nChunks = blockDef.nA1 / 2;
     for (let i = 0; i < nChunks; i++) {
         subsets.push(...jsPsych.randomization.shuffle([
             ...Array(blockDef.nActionTargets['A1'] / nChunks * .5).fill(['A1', 'A3']),

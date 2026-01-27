@@ -189,7 +189,7 @@ function createTrainingPhase(BlockDefs) {
             d.reward_probs = blockDef.rewardProbs;
             d.reward_values = blockDef.rewardValues;
             d.reward_sd = blockDef.rewardSD;
-            d.condition = blockDef.condition;
+            d.n_a2 = blockDef.nA2;
             if (blockDef.rewardValues) {
               d.a2_value = blockDef.rewardValues['A2'];
             } else {
@@ -310,12 +310,7 @@ function createTrainingPhase(BlockDefs) {
               } else {
                 // Determine whether to show rewards or not
                 showRewards = true;
-                if (
-                  blockDef.condition == 1
-                  && actionCounts[imgIdx][action] > (blockDef.nActionTargets['A2'] - blockDef.nNoFeedbackTrials) 
-                  && ['A2'].includes(action)
-                  && availableActions.includes('A3')
-                ) {
+                if (false) {
                   showRewards = false;
                 }
                 if (showRewards) {

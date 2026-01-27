@@ -13,7 +13,7 @@ const showAvailableKeys = function showAvailableKeys(availableKeys, rewards=null
   
   // Rewards
   htmlString = `<div style="display: flex; justify-content: center; gap: 40px;">`
-  for (let key of ["f", "g", "h"]) {
+  for (let key of ["h", "j", "k"]) {
     const isActive = availableKeys.includes(key);
     const opacityFactor = isActive ? 1 : 0.3;
     const r = rewards ? rewards[key] : 'X'
@@ -45,7 +45,7 @@ const showAvailableKeys = function showAvailableKeys(availableKeys, rewards=null
   htmlString += `</div><div style="height: 40px;"></div></div>`;
 
   
-  for (let key of ["f", "g", "h"]) {
+  for (let key of ["h", "j", "k"]) {
     const isActive = availableKeys.includes(key);
     const opacity = isActive ? 1 : 0.3;
     const borderColor = isActive ? '#000' : '#999';

@@ -12,14 +12,23 @@ const instrPage1 = '<h3>Instruction 1/7</h3>'
     + 'You can respond to each image by pressing one of the following keys on the keyboard:<br/>'
     + '</p>'
     + `<div style="display: flex; justify-content: center; gap: 40px; margin: 20px 0;">`
-    + showAvailableKeys(['f', 'g', 'h', 'j'])
+    + showAvailableKeys(['h', 'j', 'k'])
     + '</div>' + CONTINUEEXP;
 
-const instrPage2 = '<h3>Instruction 2/7</h3>'
+const instrPage2Prob = '<h3>Instruction 2/7</h3>'
     + '<p>'
     + 'Pressing a key in response to an image can give you 0 or 1 point. '
     + 'How many points your receive <b>depends on each key and each image</b>: '
     + 'some will give you points more often, others less often. <b>Try to figure it out!</b><br/><br/>'
+    + 'Your goal is to <b>collect as many points as possible!</b> '
+    + 'The more points you collect, <b>the shorter the duration</b> of the experiment.<br/>'
+    + '</p></div>' + CONTINUE;
+
+const instrPage2Val = '<h3>Instruction 2/7</h3>'
+    + '<p>'
+    + 'Pressing a key in response to an image can give you between 0 and 12 points. '
+    + 'How many points your receive <b>depends on each key and each image</b>: '
+    + 'some will give you more points, others less. <b>Try to figure it out!</b><br/><br/>'
     + 'Your goal is to <b>collect as many points as possible!</b> '
     + 'The more points you collect, <b>the shorter the duration</b> of the experiment.<br/>'
     + '</p></div>' + CONTINUE;
@@ -34,16 +43,16 @@ const instrPage4 = '<h3>Instruction 4/7</h3>'
     + '<p>'
     + 'For each image you will learn all three keys on the keyboard.<br/><br/>'
     + 'However, you will <b>not always be allowed to press all three keys at all times</b>. You will see which are available under the image.<br/><br/>'
-    + 'For example, in this trial, only F and H are available - make sure you choose between <b>those two only</b>.<br/>'
+    + 'For example, in this trial, only H and J are available - make sure you choose between <b>those two only</b>.<br/>'
     + `<div style="display: flex; justify-content: center; gap: 40px; margin: 20px 0;">`
-    + showAvailableKeys(['f', 'h'])
+    + showAvailableKeys(['h', 'j'])
     + '</p></div>' + CONTINUE;
 
 const instrPage5 = '<h3>Instruction 5/7</h3>'
     + '<p>'
     + 'There will be <b>eight blocks</b>, each with <b>three images</b> to learn about. You can take short breaks between each block.<br/><br/>'
     + 'The keys that will give more or less points will <b>never be the same for the three images</b> in a block. '
-    + 'So, for example, if F gives the most points for one image (and G the second most etc.), F will not give the most points for the other images (and G not the second most etc.).'
+    + 'So, for example, if H gives the most points for one image (and J the second most etc.), H will not give the most points for the other images (and J not the second most etc.).'
     + '</p></div>' + CONTINUE;
 
 const instrPage6 = '<h3>Instruction 6/7</h3>'
@@ -51,7 +60,7 @@ const instrPage6 = '<h3>Instruction 6/7</h3>'
     + 'To make sure you are paying attention, we will also show you occasionally an instruction to <b>press a specific key</b>, like shown below.<br/><br/>'
     + 'Make sure you <b>press the correct key!</b></br>.' 
     + `<div style="text-align: center;">`
-    + `<img src="static/images/f.jpg" style="width: 300px; height: 300px; margin-bottom: 10px;">`
+    + `<img src="static/images/h.jpg" style="width: 300px; height: 300px; margin-bottom: 10px;">`
     + `</div>`
     + '</p></div>' + CONTINUE;
 
@@ -86,23 +95,42 @@ const createFullScreenInstructions = function() {
   return instrTimeline
 }
 
-const createInstructions = function() {
+const createInstructions = function(BlockDef) {
   let instrTimeline = []
-  instrTimeline.push({
-    type: jsPsychInstructions,
-    pages: [
-        instrPage1,
-        instrPage2,
-        instrPage3,
-        instrPage4,
-        instrPage5,
-        instrPage6,
-        instrPage7,
-    ],
-    key_forward: ' ',
-    key_backward: 'x',
-    show_clickable_nav: false,
-  });
+  if (BlockDef.rewardProbs == null) {
+    instrTimeline.push({
+      type: jsPsychInstructions,
+      pages: [
+          instrPage1,
+          instrPage2Val,
+          instrPage3,
+          instrPage4,
+          instrPage5,
+          instrPage6,
+          instrPage7,
+      ],
+      key_forward: ' ',
+      key_backward: 'x',
+      show_clickable_nav: false,
+    });
+  } else {
+    instrTimeline.push({
+      type: jsPsychInstructions,
+      pages: [
+          instrPage1,
+          instrPage2Prob,
+          instrPage3,
+          instrPage4,
+          instrPage5,
+          instrPage6,
+          instrPage7,
+      ],
+      key_forward: ' ',
+      key_backward: 'x',
+      show_clickable_nav: false,
+    });
+  }
+  
   return instrTimeline
 }
 

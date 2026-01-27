@@ -5,8 +5,8 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
   const rewardValues = designVars["reward_values"];
   const rewardSD = designVars["reward_sd"];
   const setSize = designVars["set_size"];
-  const nReps = designVars["n_repetitions"];
-  const hFactor = designVars["h_factor"];
+  const nA1Reps = designVars["n_a1_repetitions"];
+  const nA2Reps = designVars["n_a2_repetitions"];
   const nBlocks = designVars["n_blocks"];
   const nAttChecks = designVars["n_att_checks"];
   const nNoFeedbackTrials = designVars["n_no_feedback_trials"];
@@ -28,20 +28,26 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       imgs[j] = imgs_numbers[i * setSize + j];
     }
 
-    // Assign condition (shuffle later)
-    const condition = i < nBlocks / 2 ? nReps * hFactor : nReps;
-
     // Determine action-key mapping
     sA = jsPsych.randomization.shuffle(actions)
     let actionKeyMappings = jsPsych.randomization.shuffle([
-      { [sA[0]]: "f", [sA[1]]: "g", [sA[2]]: "h" },
-      { [sA[0]]: "g", [sA[1]]: "h", [sA[2]]: "f" },
-      { [sA[0]]: "h", [sA[1]]: "f", [sA[2]]: "g" },
+      { [sA[0]]: "h", [sA[1]]: "j", [sA[2]]: "k" },
+      { [sA[0]]: "j", [sA[1]]: "k", [sA[2]]: "h" },
+      { [sA[0]]: "k", [sA[1]]: "h", [sA[2]]: "j" },
     ]);
     const keyMap = {}
     for (let j = 0; j < setSize; j++) {
       keyMap[j] = actionKeyMappings[j];
     }
+
+    // Determine number of required actions
+    let nA2RepsBlock
+    if (Array.isArray(nA2Reps)) {
+      nA2RepsBlock = nA2Reps[i % nA2Reps.length];
+    } else {
+      nA2RepsBlock = nA2Reps;
+    }
+    nActionTargets = {'A1': nA1Reps, 'A2': nA2RepsBlock, 'A3': 0};
 
     // Determine reward values
     let rewardValuesBlock
@@ -60,7 +66,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     } else if (rewardValues == null) {
       if (Array.isArray(rewardProbs['A2'])) {
         const rewardProbA2 = rewardProbs['A2'][i % rewardProbs['A2'].length];
-        const nRewardA2 = Math.floor(condition * rewardProbA2);
+        const nRewardA2 = Math.floor(nActionTargets['A2'] * rewardProbA2);
         rewardProbsBlock = {
           'A1': rewardProbs['A1'],
           'A2': rewardProbA2,
@@ -69,7 +75,7 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
         rewardsRand = {
           'A1': 1,
           'A2': jsPsych.randomization.shuffle(
-            Array(nRewardA2).fill(1).concat(Array(condition-nRewardA2).fill(0))
+            Array(nRewardA2).fill(1).concat(Array(nActionTargets['A2']-nRewardA2).fill(0))
           ),
           'A3': 0,
         };
@@ -79,12 +85,10 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
     } else {
       console.warn("Warning: rewardProbs and rewardValues are both provided.");
     }
-
-    // Determine number of required actions
-    nActionTargets = {'A1': nReps, 'A2': condition, 'A3': 0};
     
     blocks.push({
-      condition: condition,
+      nA1: nA1Reps,
+      nA2: nA2RepsBlock,
       rewardProbs: rewardProbsBlock,
       rewardsRand: rewardsRand,
       rewardValues: rewardValuesBlock,
@@ -98,7 +102,6 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
       completeReward: completeReward,
       includeIntro: includeIntro,
       nBlocks: nBlocks,
-      nReps: nReps,
       ACThreshold: ACThreshold
     });
   }
