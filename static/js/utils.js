@@ -54,8 +54,8 @@ function changeTrial(imgOrder, trialIdx, imgCounts, subsets) {
         matchSubsetIdx = matchSubsetIndices[Math.floor(Math.random() * matchSubsetIndices.length)];
     }
 
-    // If a [A2, A3] trial exists, replace it with [A1, A3]
-    if (matchSubsetIdx !== null) {
+    // Create new trial(s)
+    if (matchSubsetIdx !== null) { // if a [A2, A3] trial exists, replace it with [A1, A3]
         subsets[imgId][matchSubsetIdx] = ['A1', 'A3'];
     } else {  // if not, append two new [A1, A3] trials (keeping A1/A2 executions equal)
         for (let i=0; i<2; i++) {

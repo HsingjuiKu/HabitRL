@@ -55,7 +55,7 @@
   });
   
   // Global variables
-  let actions, keys, designVars, allTrainingBlocksDef, minACValues;
+  let actions, keys, designVars, allTrainingBlocksDef, minACValues, maxTime, subj_id;
   async function initGlobalVars() {
     actions = ["A1", "A2", "A3"];
     keys = ["h", "j", "k"];
@@ -63,11 +63,7 @@
     designVars = await responseVars.json();
     allTrainingBlocksDef = getTrainingBlockDef(designVars);
     minACValues = calcMinAC(allTrainingBlocksDef[0]);
-
-    runExp();
-  }
-
-  async function runExp() {
+    maxTime = designVars['max_time'];
 
     // Get ID and define file name
     let subj_id = jsPsych.data.getURLVariable("id")
@@ -76,6 +72,11 @@
     }
     const dateStr = (new Date()).toISOString().slice(0,10).replace(/-/g,'');
     window.fileName = `${subj_id}-${dateStr}.csv`;
+
+    runExp();
+  }
+
+  async function runExp() {
 
     // Load files
     const response_img = await fetch('static/images/images.json');

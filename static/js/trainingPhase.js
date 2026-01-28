@@ -21,7 +21,8 @@ function createTrainingPhase(BlockDefs) {
       actionCounts[i] = {A1: 0, A2: 0, A3: 0};
       subsets[i] = shuffleSubsets(blockDef);
     }
-    const maxTrials = Object.values(blockDef.nActionTargets).reduce((sum, count) => sum + count, 0) * blockDef.setSize * 2 + 20
+    const minTrials = Object.values(blockDef.nActionTargets).reduce((sum, count) => sum + count, 0) * blockDef.setSize
+    const maxTrials = minTrials * 2
 
     // Attention checks
     let attention_check_cnt = 0;
@@ -358,18 +359,20 @@ function createTrainingPhase(BlockDefs) {
             ? at_data.reduce((sum, d) => sum + (d.reward ? 1 : 0), 0) / at_data.length
             : 0;
           if (avgReward < minACValues[blockIdx]) {
-            const earlyCompletionLink = `https://app.prolific.com/submissions/complete?cc=C1731C0Y`;
-            const percentComplete = Math.round(((blockIdx + 1) / (blockDef.nBlocks + 1)) * 100);
-            document.body.style.cursor = "default";
-            save_data_csv();
-            jsPsych.abortExperiment(
-              '<h3>Experiment Complete</h3>' +
-              '<p>Thank you for your participation!</p>' +
-              '<p>Based on attention checks, we are ending the experiment early. ' +
-              `You will still receive a partial payment (${percentComplete}% of blocks completed). ` +
-              'For this, we ask you to return your submission, and we will pay you via a bonus payment.</p>' +
-              `<p>Click <a href=${earlyCompletionLink}>here</a> to return to Prolific</p>.`
-            );
+            const startTime = performance.timeOrigin;
+            const elapsedMinutes = (Date.now() - startTime) / 60000;
+
+            if (elapsedMinutes > maxTime) {
+              save_data_csv();
+              const earlyCompletionLink = `https://app.prolific.com/submissions/complete?cc=C1731C0Y`;
+              document.body.style.cursor = "default";
+              jsPsych.abortExperiment(
+                '<h3>Experiment Complete</h3>' +
+                '<p>Thank you for your participation!</p>' +
+                '<p>Please wait a few seconds for your data to be saved.</p>' +
+                `<p>Click <a href=${earlyCompletionLink}>here</a> to return</p>.`
+              );
+            }
           } else {
             return false;
           }
