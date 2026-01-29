@@ -364,13 +364,12 @@ function createTrainingPhase(BlockDefs) {
 
             if (elapsedMinutes > maxTime) {
               save_data_csv();
-              const earlyCompletionLink = `https://app.prolific.com/submissions/complete?cc=C1731C0Y`;
               document.body.style.cursor = "default";
               jsPsych.abortExperiment(
                 '<h3>Experiment Complete</h3>' +
                 '<p>Thank you for your participation!</p>' +
                 '<p>Please wait a few seconds for your data to be saved.</p>' +
-                `<p>Click <a href=${earlyCompletionLink}>here</a> to return</p>.`
+                `<p>Then you may close the window.</p>.`
               );
             }
           } else {

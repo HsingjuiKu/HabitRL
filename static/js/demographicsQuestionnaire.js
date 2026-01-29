@@ -67,8 +67,8 @@
             <option value="hs">High school / GED</option>
             <option value="some_college">Some college</option>
             <option value="associate">Associate degree</option>
-            <option value="bachelor">Bachelor’s degree</option>
-            <option value="master">Master’s degree</option>
+            <option value="bachelor">Bachelor's degree</option>
+            <option value="master">Master's degree</option>
             <option value="doctorate">Doctorate / professional degree</option>
             <option value="other">Other</option>
           </select>
@@ -128,7 +128,7 @@
         <hr />
 
         <p style="opacity: 0.9;">
-          Click “Continue” to finish and proceed to the next page.
+          Click "Finish" to return to Sona.
         </p>
       </div>
     `;
