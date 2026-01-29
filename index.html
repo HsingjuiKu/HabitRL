@@ -63,7 +63,7 @@
   async function initGlobalVars() {
     actions = ["A1", "A2", "A3"];
     keys = ["h", "j", "k"];
-    const responseVars = await fetch('static/vars_exp3.json');
+    const responseVars = await fetch('static/vars_exp4.json');
     designVars = await responseVars.json();
     allTrainingBlocksDef = getTrainingBlockDef(designVars);
     minACValues = calcMinAC(allTrainingBlocksDef[0]);
@@ -99,7 +99,7 @@
     timeline.push(...createEndInstructions(subj_id));
     timeline.push(...createDemographicsTimelineV8({
       jsPsych,
-      redirectUrl: `https://ucberkeley.sona-systems.com/webstudy_credit.aspx?experiment_id=952&credit_token=137fc5908de6440285aea9cc4b77e54b&survey_code=${subj_id}`,
+      redirectUrl: `https://ucberkeley.sona-systems.com/webstudy_credit.aspx?experiment_id=961&credit_token=e3f41b487cc542da883a3190ad679cb6&survey_code=${subj_id}`,
       buttonLabel: "Finish"
     }));
 
