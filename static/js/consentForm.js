@@ -65,9 +65,8 @@
 
         <h3>Procedures</h3>
         <ul>
-          <li>You will complete a short online questionnaire about yourself. You may be asked for personal information such as ethnicity. You may skip any questions you do not wish to answer.</li>
           <li>You will complete several computerized tasks where you make decisions in response to images on the screen, depending on task instructions.</li>
-          <li>After the session, you will receive a debriefing describing research procedures and contact information, and you may ask questions.</li>
+          <li>After the session, you will complete a short online questionnaire about yourself. You may be asked for personal information such as ethnicity. You may skip any questions you do not wish to answer.</li>
         </ul>
 
         <h3>Study Time</h3>
