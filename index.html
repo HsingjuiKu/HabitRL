@@ -10,12 +10,16 @@
   <script src="https://unpkg.com/@jspsych/plugin-fullscreen@2.1.0"></script>
   <script src="https://unpkg.com/@jspsych/plugin-preload@2.1.0"></script>
   <script src="https://unpkg.com/@jspsych/plugin-call-function@2.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@2.1.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@2.1.0"></script>
 
   <!--import jquery via google's CDN-->
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'></script>
   
 
   <!-- Custom scripts -->
+   <script src="static/js/consentForm.js"></script>
+   <script src="static/js/demographicsQuestionnaire.js"></script>
   <script src="static/js/endExperimentNow.js"></script>
   <script src="static/js/getTrainingBlockDef.js"></script>
   <script src="static/js/generateStimulus.js"></script>
@@ -87,6 +91,12 @@
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
     //timeline.push(...createFullScreenInstructions());
+    timeline.push(...createConsentTimelineV8({ jsPsych, requireScroll: true }));
+    timeline.push(...createDemographicsTimelineV8({
+      jsPsych,
+      redirectUrl: "https://ucberkeley.sona-systems.com/webstudy_credit.aspx?experiment_id=952&credit_token=137fc5908de6440285aea9cc4b77e54b&survey_code=${e://Field/id}",
+      buttonLabel: "Finish"
+    }));
     timeline.push(...createInstructions(allTrainingBlocksDef));
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestInstructions());

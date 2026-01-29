@@ -28,3 +28,24 @@ const save_data_csv = function() {
     // Keep track 
     rows_saved = data.count()
 }
+
+const save_demo_data_csv = function() {
+    // Get data
+    const data = jsPsych.data.get().filter({ component: "demographics" });
+    newDataString = data.csv();
+    
+    // Backend
+    jQuery.ajax({
+        type: 'post',
+        cache: false,
+        url: "https://experiments-ccn.berkeley.edu/HabitRL_probabilistic/HabitRL/save_data.php",
+        data: {
+            data_dir: "demo_data",
+            file_name: 'demo' + window.fileName,
+            exp_data: newDataString
+        }
+    });
+
+    // Keep track 
+    rows_saved = data.count()
+}
