@@ -17,7 +17,7 @@ const save_data_csv = function() {
     jQuery.ajax({
         type: 'post',
         cache: false,
-        url: "https://experiments-ccn.berkeley.edu/HabitRL_probabilistic/HabitRL/save_data.php",
+        url: "https://experiments-ccn.berkeley.edu/HabitRL_exp4/HabitRL/save_data.php",
         data: {
             data_dir: "data",
             file_name: window.fileName,
@@ -38,7 +38,7 @@ const save_demo_data_csv = function() {
     jQuery.ajax({
         type: 'post',
         cache: false,
-        url: "https://experiments-ccn.berkeley.edu/HabitRL_probabilistic/HabitRL/save_data.php",
+        url: "https://experiments-ccn.berkeley.edu/HabitRL_exp4/HabitRL/save_data.php",
         data: {
             data_dir: "demo_data",
             file_name: 'demo' + window.fileName,
