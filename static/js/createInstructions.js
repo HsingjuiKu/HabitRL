@@ -18,7 +18,7 @@ const instrPage1 = '<h3>Instruction 1/7</h3>'
 const instrPage2Prob = '<h3>Instruction 2/7</h3>'
     + '<p>'
     + 'Pressing a key in response to an image can give you 0 or 1 point. '
-    + 'How many points your receive <b>depends on each key and each image</b>: '
+    + 'How often you receive points <b>depends on each key and each image</b>: '
     + 'some will give you points more often, others less often. <b>Try to figure it out!</b><br/><br/>'
     + 'Your goal is to <b>collect as many points as possible!</b> '
     + 'The more points you collect, <b>the shorter the duration</b> of the experiment.<br/>'
@@ -97,7 +97,7 @@ const createFullScreenInstructions = function() {
 
 const createInstructions = function(BlockDef) {
   let instrTimeline = []
-  if (BlockDef.rewardProbs == null) {
+  if (BlockDef[0].rewardProbs == null) {
     instrTimeline.push({
       type: jsPsychInstructions,
       pages: [

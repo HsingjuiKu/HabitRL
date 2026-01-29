@@ -1,0 +1,16 @@
+{
+    "reward_probabilities": {"A1": 1, "A2": [0.6, 0.7, 0.8, 0.9], "A3": 0},
+    "reward_values": null,
+    "reward_sd": null,
+    "set_size": 3,
+    "n_a1_repetitions": 10,
+    "n_a2_repetitions": [10, 20],
+    "n_blocks": 8,
+    "n_test_reps": 4,
+    "n_att_checks": 3,
+    "n_no_feedback_trials": 0,
+    "complete_reward": true,
+    "include_intro": 0,
+    "AC_threshold": 0.85,
+    "max_time": 60
+}

@@ -59,7 +59,7 @@
   async function initGlobalVars() {
     actions = ["A1", "A2", "A3"];
     keys = ["h", "j", "k"];
-    const responseVars = await fetch('static/vars.json');
+    const responseVars = await fetch('static/vars_exp3.json');
     designVars = await responseVars.json();
     allTrainingBlocksDef = getTrainingBlockDef(designVars);
     minACValues = calcMinAC(allTrainingBlocksDef[0]);
@@ -87,7 +87,7 @@
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
     //timeline.push(...createFullScreenInstructions());
-    //timeline.push(...createInstructions(allTrainingBlocksDef));
+    timeline.push(...createInstructions(allTrainingBlocksDef));
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestInstructions());
     timeline.push(...createTestPhase(designVars, allTrainingBlocksDef));
