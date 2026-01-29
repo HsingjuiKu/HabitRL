@@ -1,4 +1,4 @@
-let rows_saved = 3  // init at 3 to avoid issue caused by different variables (column names) in the first three events
+let rows_saved = 4  // init at 4 to avoid issue caused by different variables (column names) in the first three events
 
 const save_data_csv = function() {
     // Get data

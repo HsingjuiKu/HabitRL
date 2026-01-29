@@ -90,8 +90,8 @@
     // Create timeline
     let timeline = []
 	  timeline.push({type: jsPsychPreload, images: img_paths});  // preload images
-    timeline.push(...createFullScreenInstructions());
     timeline.push(...createConsentTimelineV8({ jsPsych, requireScroll: true }));
+    timeline.push(...createFullScreenInstructions());
     timeline.push(...createInstructions(allTrainingBlocksDef));
     timeline.push(...createTrainingPhase(allTrainingBlocksDef));
     timeline.push(...createTestInstructions());
