@@ -230,14 +230,6 @@ const createEndInstructions = function(id) {
       document.body.style.cursor = "default";
     },
   });
-  const ptq_survey = `https://ucbpsych.qualtrics.com/jfe/form/SV_2ss0E5VtgTG2oZM?id=${id}`
-  instrTimeline.push({
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `<p>Thank you for contributing to the advancement of cognitive science!<br><br>` +
-      `Your data is saved. Please fill out <a href=${ptq_survey}>this <b>required</b> survey</a> about your demographics.<br><br>` +
-      `Once you complete the survey, it will take you back to receive credit.</p></div>`,
-    choices: "NO_KEYS",
-  });
 
   return instrTimeline
 };
