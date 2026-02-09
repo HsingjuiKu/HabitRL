@@ -369,7 +369,7 @@ function createTrainingPhase(BlockDefs) {
                 '<h3>Experiment Complete</h3>' +
                 '<p>Thank you for your participation!</p>' +
                 '<p>Please wait a few seconds for your data to be saved.</p>' +
-                `<p>Then you may close the window.</p>.`
+                `<p><a href="https://ucberkeley.sona-systems.com/webstudy_credit.aspx?experiment_id=961&credit_token=e3f41b487cc542da883a3190ad679cb6&survey_code=${subj_id}" target="_blank">Click here to get back to Sona</a></p>.`
               );
             }
           } else {
