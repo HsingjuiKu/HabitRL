@@ -212,7 +212,7 @@ function createTrainingPhase(BlockDefs) {
               d.best_action = availableActions.sort()[0];
               d.worst_action = availableActions.sort()[1];
               d.best_action_chosen = d.best_action == action;
-              d.image = blockDef.imgs[imgIdx]
+              d.image = blockDef.imgs[imgIdx];
               d.attention_check = false;
               if (availableKeys.includes(key)) { // valid trial
                 d.valid = true;
@@ -228,13 +228,14 @@ function createTrainingPhase(BlockDefs) {
                     return acc;
                   }, {});
                 } else {
-                  if (action == 'A2' && blockDef.rewardsRand['A2'].length > 0) {
+                  const rewardsRand = blockDef.rewardsRand[imgIdx];
+                  if (action == 'A2' && rewardsRand['A2'].length > 0) {
                     d.aRewards = {
-                      'A1': 1,
-                      'A2': blockDef.rewardsRand['A2'][0],
-                      'A3': 0
+                      'A1': rewardsRand['A1'],
+                      'A2': rewardsRand['A2'][0],
+                      'A3': rewardsRand['A3']
                     };
-                    blockDef.rewardsRand['A2'].slice(1)
+                    blockDef.rewardsRand[imgIdx]['A2'] = rewardsRand['A2'].slice(1);
                   } else {
                     d.aRewards = actions.reduce((acc, act) => {
                       r = Math.random() < blockDef.rewardProbs[act] ? 1 : 0;

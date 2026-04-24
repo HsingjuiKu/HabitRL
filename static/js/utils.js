@@ -13,12 +13,21 @@ function shuffleSubsets(blockDef) {
 
 function shuffleImgOrder(blockDef) {
     let imgOrder = [];
-    const nTrials = Object.values(blockDef.nActionTargets).reduce((sum, count) => sum + count, 0);
-    const nChunks = nTrials / 2;
-    for (let i = 0; i < nChunks; i++) {
+    const nTrials = Object.values(blockDef.nActionTargets)
+        .reduce((sum, count) => sum + count, 0);
+
+    const nFullChunks = Math.floor(nTrials / 2);
+
+    for (let i = 0; i < nFullChunks; i++) {
         const nums = Array.from({length: blockDef.setSize}, (_, k) => k).flatMap(k => [k, k]);
         imgOrder.push(...jsPsych.randomization.shuffle(nums));
     }
+
+    if (nTrials % 2 === 1) {
+        const nums = Array.from({length: blockDef.setSize}, (_, k) => k);
+        imgOrder.push(...jsPsych.randomization.shuffle(nums));
+    }
+
     return imgOrder;
 }
 
