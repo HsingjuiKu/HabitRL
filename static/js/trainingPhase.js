@@ -173,6 +173,18 @@ function createTrainingPhase(BlockDefs) {
           choices: keys,
           trial_duration: 2000,
 
+          // Logging
+          //on_start: d => {
+          //  const imgIdx = imgOrder[trialIdx];
+          //  const availableActions = subsets[imgIdx][imgCounts[imgIdx]];
+          //  const availableKeys = availableActions.map(a => blockDef.keyMapping[imgIdx][a]);
+          //  const orderedKeyMapping = ['A1', 'A2', 'A3'].reduce((acc, a) => {
+          //    if (blockDef.keyMapping[imgIdx]?.[a] !== undefined) acc[a] = blockDef.keyMapping[imgIdx][a];
+          //    return acc;
+          //  }, {});
+          //  console.log(JSON.stringify(orderedKeyMapping));
+          //},
+
           // Save data
           on_finish: d => {
             const imgIdx = imgOrder[trialIdx];
@@ -212,7 +224,7 @@ function createTrainingPhase(BlockDefs) {
               d.best_action = availableActions.sort()[0];
               d.worst_action = availableActions.sort()[1];
               d.best_action_chosen = d.best_action == action;
-              d.image = blockDef.imgs[imgIdx]
+              d.image = blockDef.imgs[imgIdx];
               d.attention_check = false;
               if (availableKeys.includes(key)) { // valid trial
                 d.valid = true;
@@ -228,13 +240,14 @@ function createTrainingPhase(BlockDefs) {
                     return acc;
                   }, {});
                 } else {
-                  if (action == 'A2' && blockDef.rewardsRand['A2'].length > 0) {
+                  const rewardsRand = blockDef.rewardsRand[imgIdx];
+                  if (action == 'A2' && rewardsRand['A2'].length > 0) {
                     d.aRewards = {
-                      'A1': 1,
-                      'A2': blockDef.rewardsRand['A2'][0],
-                      'A3': 0
+                      'A1': rewardsRand['A1'],
+                      'A2': rewardsRand['A2'][0],
+                      'A3': rewardsRand['A3']
                     };
-                    blockDef.rewardsRand['A2'].slice(1)
+                    blockDef.rewardsRand[imgIdx]['A2'] = rewardsRand['A2'].slice(1);
                   } else {
                     d.aRewards = actions.reduce((acc, act) => {
                       r = Math.random() < blockDef.rewardProbs[act] ? 1 : 0;
@@ -244,9 +257,11 @@ function createTrainingPhase(BlockDefs) {
                   }
                 }
                 d.keyRewards = {};
+                keyRewards = {};
                 Object.entries(d.aRewards).forEach(([act, reward]) => {
                   const key = blockDef.keyMapping[imgIdx][act];
                   d.keyRewards[key] = reward;
+                  keyRewards[key] = reward;
                 });
                 d.reward = d.keyRewards[key];
                 if (action == 'A3') {
@@ -267,9 +282,25 @@ function createTrainingPhase(BlockDefs) {
                 [imgOrder, subsets] = repeatTrial(imgOrder, trialIdx, imgCounts, subsets);
               }
             }
+
+            // Logging
             //console.log(trialIdx, '--------')
             //console.log(imgIdx)
             //console.log(action)
+            //const orderedKeys = ['h', 'j', 'k'];
+            //rewards_print = orderedKeys.reduce((acc, k) => {
+            //if (Object.prototype.hasOwnProperty.call(keyRewards, k)) acc[k] = keyRewards[k];
+            //return acc;
+            //}, {});
+            //console.log(JSON.stringify(rewards_print))
+            //const imageContents = {
+            //  "1": "kaktus", "2": "pink flower", "3": "mohn", "4": "berg", "5": "ziege", "6": "gänseblumchen",
+            //  "7": "freiheitsstatue", "8": "wolke", "9": "kuh", "10": "wuste", "11": "kolosseum", "12": "see",
+            //  "13": "hahn", "14": "meer", "15": "tajmahal", "16": "sidney", "17": "eifelturm", "18": "schwein",
+            //  "19": "bad", "20": "küche", "21": "blitz", "22": "pyramide", "23": "waschmaschine", "24": "regenbogen"
+            //};
+            //const imageName = imageContents[String(d.image)] ?? d.image;
+            //console.log(imageName);
             //console.log(JSON.parse(JSON.stringify(actionCounts)))
             //console.log(JSON.parse(JSON.stringify(subsets)))
             //console.log(JSON.parse(JSON.stringify(imgOrder)))
@@ -316,6 +347,12 @@ function createTrainingPhase(BlockDefs) {
                 }
                 if (showRewards) {
                   rewards = jsPsych.data.get().last(1).values()[0].keyRewards;
+                  //const orderedKeys = ['h', 'j', 'k'];
+                  //rewards_print = orderedKeys.reduce((acc, k) => {
+                  //if (Object.prototype.hasOwnProperty.call(rewards, k)) acc[k] = rewards[k];
+                  //return acc;
+                  //}, {});
+                  //console.log(JSON.stringify(rewards_print))
                 } else {
                   rewards = null
                 }

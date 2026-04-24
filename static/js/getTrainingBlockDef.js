@@ -72,13 +72,16 @@ const getTrainingBlockDef = function getTrainingBlockDef(designVars) {
           'A2': rewardProbA2,
           'A3': rewardProbs['A3'],
         };
-        rewardsRand = {
-          'A1': 1,
-          'A2': jsPsych.randomization.shuffle(
-            Array(nRewardA2).fill(1).concat(Array(nActionTargets['A2']-nRewardA2).fill(0))
-          ),
-          'A3': 0,
-        };
+        rewardsRand = {};
+        for (let j = 0; j < setSize; j++) {
+          rewardsRand[j] = {
+            'A1': 1,
+            'A2': jsPsych.randomization.shuffle(
+              Array(nRewardA2).fill(1).concat(Array(nActionTargets['A2']-nRewardA2).fill(0))
+            ),
+            'A3': 0,
+          };
+        }
       } else {
         rewardProbsBlock = rewardProbs
       }
